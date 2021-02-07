@@ -1,5 +1,4 @@
 import Adafruit_DHT
-import Adafruit_BMP.BMP085 as BMP085
 from time import sleep
 import csv
 import os
