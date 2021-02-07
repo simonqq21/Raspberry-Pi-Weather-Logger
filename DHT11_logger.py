@@ -17,22 +17,17 @@ def exists(filename):
     f.close()
     return 1
 
-# # create csv file
-# # "dht_log" + 4 digit number with leading zeroes starting from 1 + ".csv"
-# def generateFileName(filepathO):
-#     filenum = 0
-#     exists1 = 1
-#     while exists1 == 1:
-#         filepath = filepathO
-#         filepath += '{:04d}'.format(filenum)
-#         filepath += '.csv'
-#         filenum += 1
-#         exists1 = exists(filepath)
-#     return filepath
-
-def generateFileName(filenameprefix0):
-    dnow = datetime.date.today()
-    filepath = filenameprefix0 + dnow.strftime('%m%d%Y') + '.csv'
+# create csv file
+# "dht_log" + 4 digit number with leading zeroes starting from 1 + ".csv"
+def generateFileName(filepathO):
+    filenum = 0
+    exists1 = 1
+    while exists1 == 1:
+        filepath = filepathO
+        filepath += '{:04d}'.format(filenum)
+        filepath += '.csv'
+        filenum += 1
+        exists1 = exists(filepath)
     return filepath
 
 path = "/home/pi/dht_logs/"
@@ -55,7 +50,7 @@ except FileExistsError:
 csvfile = open(filepath, 'a', newline='')
 writer = csv.writer(csvfile, delimiter=',')
 if os.stat(filepath).st_size == 0:
-    writer.writerow(["Time", "Humidity", "Temperature", "BMP_temperature", "Pressure"])
+    writer.writerow(["Date", "Time", "Humidity", "Temperature"])
 csvfile.close()
 
 # define DHT sensor type
