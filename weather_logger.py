@@ -25,6 +25,16 @@ def generateFileName(filenameprefix0):
     filepath = filenameprefix0 + dnow.strftime('%m%d%Y') + '.csv'
     return filepath
 
+# open a new csv file and write the csv file header
+def newLogFile():
+    global filepath 
+
+    csvfile = open(filepath, 'a', newline='')
+    writer = csv.writer(csvfile, delimiter=',')
+    if os.stat(filepath).st_size == 0:
+        writer.writerow(["Time", "Humidity", "Temperature", "BMP_temperature", "Pressure"])
+    csvfile.close()
+
 '''
 specify weather log path, filename, and filepath
 '''
@@ -33,19 +43,12 @@ filenameprefix = "weather_log"
 filepath = path + generateFileName(filenameprefix)
 print(filepath)
 
-# try to create the dir for logs
+# try to create the dir for logs if it does not exist
 try:
     os.mkdir(path)
 except FileExistsError:
     print("dir exists")
     pass
-
-# open csv file and write the csv file header
-csvfile = open(filepath, 'a', newline='')
-writer = csv.writer(csvfile, delimiter=',')
-if os.stat(filepath).st_size == 0:
-    writer.writerow(["Time", "Humidity", "Temperature", "BMP_temperature", "Pressure"])
-csvfile.close()
 
 # define DHT sensor type
 dsensor = Adafruit_DHT.DHT11
@@ -54,6 +57,7 @@ sensor = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
 
 # read sensor and write to log file indefinitely
 while True:
+
     try:
         # read sensors
         humidity, temperature = Adafruit_DHT.read(dsensor, pin)
