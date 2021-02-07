@@ -55,7 +55,7 @@ except FileExistsError:
     pass
 
 filepath = ""
-dtnow = datetime(1, 1, 1)
+newfiledate = datetime(1, 1, 1) # initial value
 
 # define DHT sensor type
 dsensor = Adafruit_DHT.DHT11
@@ -66,14 +66,14 @@ sensor = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
 while True:
     try:
         # if a new day has started, create a new log file for the day
-        if date.today() > dtnow.date():
+        if date.today() > newfiledate.date():
             if debug:
-                if (date.today() - dtnow.date()).days == 1:
+                if (date.today() - newfiledate.date()).days == 1:
                     print("closing current file and opening a new file")
                 else:
                     print("Opening file initially")
             createOpenLogFile()
-            dtnow = datetime.now()
+            newfiledate = datetime.now()
         # read sensors
         humidity, temperature = Adafruit_DHT.read(dsensor, pin)
         bmp_temperature, pressure = sensor.read_temperature(), sensor.read_pressure()
