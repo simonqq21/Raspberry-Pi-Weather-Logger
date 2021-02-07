@@ -5,7 +5,7 @@ import csv
 import os
 from datetime import datetime, date, timedelta
 
-debug = True # setting debug to True will print data
+debug = False # setting debug to True will print data
 delay = 4 # logging delay
 # specify weather log path and filename
 path = "/home/pi/weather_logs/"
