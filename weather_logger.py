@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import Adafruit_DHT
 import Adafruit_BMP.BMP085 as BMP085
 from time import sleep
@@ -95,4 +97,8 @@ while True:
     except KeyboardInterrupt:
         print("Exiting")
         break;
+print("Program exit")
+# debug
+csvfile = open(filepath, 'a', newline='')
+csvfile.write("Program exit")
 csvfile.close()
