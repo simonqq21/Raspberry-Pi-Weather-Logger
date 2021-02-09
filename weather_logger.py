@@ -8,7 +8,7 @@ import os
 from datetime import datetime, date, timedelta
 
 debug = False # setting debug to True will print data
-delay = 4 # logging delay
+delay = 5 # logging delay
 # specify weather log path and filename
 path = "/home/pi/weather_logs/"
 filenameprefix = "weather_log"
@@ -54,15 +54,24 @@ try:
     os.mkdir(path)
 except FileExistsError:
     print("dir exists")
-    pass
 
 filepath = ""
 newfiledate = datetime(1, 1, 1) # initial value
 
-# define DHT sensor type
+# define DHT sensor type and pin
 dsensor = Adafruit_DHT.DHT11
 pin = 4
-sensor = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
+# initialize BMP180 sensor
+# loop until the sensor is properly connected
+sensor = None
+while sensor is None:
+    try:
+        sensor = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
+    except OSError:
+        if debug: print("Cannot initialize BMP180 sensor")
+
+# weather condition variables
+temperature, humidity, bmp_temperature, pressure = -999, -999, -999, -999
 
 # read sensor and write to log file indefinitely
 while True:
@@ -76,27 +85,44 @@ while True:
                     print("Opening file initially")
             createOpenLogFile()
             newfiledate = datetime.now()
-        # read sensors
-        humidity, temperature = Adafruit_DHT.read(dsensor, pin)
-        bmp_temperature, pressure = sensor.read_temperature(), sensor.read_pressure()
+
+        # read DHT11 sensor
+        instTemperature, instHumidity = None, None
+        while instHumidity is None or instTemperature is None:
+            instHumidity, instTemperature = Adafruit_DHT.read(dsensor, pin)
+            if instHumidity is None or instTemperature is None:
+                if debug: print("Faulty DHT11 reading")
+            else:
+                humidity, temperature = instHumidity, instTemperature
+                if debug: print("Good DHT11 reading")
+
+        # read BMP180 sensor
+        try:
+            bmp_temperature, pressure = sensor.read_temperature(), sensor.read_pressure()
+        except OSError:
+            if debug: print("Cannot read BMP180 sensor")
+        except NameError:
+            if debug: print("BMP180 sensor not initialized, please check your sensor wiring.")
+
         # errors may occur due to the precise timing required by the DHT11 sensor
-        if humidity is not None and temperature is not None and bmp_temperature is not None and pressure is not None:
+
+        if temperature > -999 and humidity > -999 and bmp_temperature > -999 and pressure > -999:
             csvfile = open(filepath, 'a', newline='')
             writer = csv.writer(csvfile, delimiter=',')
             dtnow = datetime.now()
             timeStr = dtnow.strftime('%H:%M:%S')
             if debug:
                 print("{} {:0.3f}% {:0.3f}C {:0.3f}C {:0.3f}Pa".format(timeStr, humidity, temperature, bmp_temperature, pressure))
+
             # write csv data to file
             writer.writerow([timeStr, humidity, temperature, bmp_temperature, pressure])
             csvfile.close()
-        else:
-            if debug:
-                print("Error")
-        sleep(delay)
+            sleep(delay)
+
     except KeyboardInterrupt:
         print("Exiting")
         break;
+
 print("Program exit")
 # debug
 csvfile = open(filepath, 'a', newline='')
