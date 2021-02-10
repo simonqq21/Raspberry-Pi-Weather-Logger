@@ -10,7 +10,7 @@ from datetime import datetime, date, timedelta
 from threading import Thread, Event
 import signal
 
-debug = True # setting debug to True will print data
+debug = False # setting debug to True will print data
 delay = 5 # logging delay
 flash_duration = 0.5 # status LED flash duration
 # specify weather log path and filename
@@ -56,14 +56,14 @@ def createOpenLogFile():
 # read BMP180 sensor
 def BMP180read():
     bmp_temperature, pressure = None, None
-    try:
-        bmp_temperature, pressure = sensor.read_temperature(), sensor.read_pressure()
-    except OSError:
-        if debug: print("Cannot read BMP180 sensor")
-    except NameError:
-        if debug: print("BMP180 sensor not initialized, please check your sensor wiring.")
-    else:
-        return bmp_temperature, pressure
+    while bmp_temperature is None or pressure is None:
+        try:
+            bmp_temperature, pressure = sensor.read_temperature(), sensor.read_pressure()
+        except OSError:
+            if debug: print("Cannot read BMP180 sensor")
+        except NameError:
+            if debug: print("BMP180 sensor not initialized, please check your sensor wiring.")
+    return bmp_temperature, pressure
 
 # read DHT11 sensor
 def DHT11read():
