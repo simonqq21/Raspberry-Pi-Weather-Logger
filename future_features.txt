@@ -1,0 +1,18 @@
+future features:
+/ create csv files containing different time resolutions from the original csv file
+eg. The original csv file contains readings every 30 seconds
+The script will produce a csv file containing readings every n minutes or every n hours per
+day
+/ get the mean and standard deviation of weather data for every division in a day and save it
+in a csv file.
+eg. get the mean and standard deviation of weather data for:
+    every hour of the day
+    every 3 hours of the day
+    every quarter of the day
+smallest unit is an hour
+/ compare the mean and standard deviations between weather data of two days
+/ create graphs of the weather for a day from a csv file
+eg. a csv file contains weather data per minute. The script will create a graph of weather data
+with a resolution of 1 minute.
+a csv file contains weather data per 15 minutes. The script will create a graph of weather data
+with a resolution of 15 minutes.
