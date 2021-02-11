@@ -11,7 +11,7 @@ from threading import Thread, Event
 import signal
 
 debug = False # setting debug to True will print data
-delay = 5 # logging delay
+delay = 30 # logging delay
 flash_duration = 0.5 # status LED flash duration
 # specify weather log path and filename
 path = "/home/pi/weather_logs/"
