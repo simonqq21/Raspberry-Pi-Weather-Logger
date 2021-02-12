@@ -14,7 +14,7 @@ debug = False # setting debug to True will print data
 delay = 30 # logging delay
 flash_duration = 0.5 # status LED flash duration
 # specify weather log path and filename
-path = "/home/pi/weather_logs/"
+path = 'weather_logs/'
 filenameprefix = "weather_log"
 
 # check if a file exists
@@ -172,7 +172,3 @@ while True:
         break;
 
 print("Program exit")
-# debug
-# csvfile = open(filepath, 'a', newline='')
-# csvfile.write("Program exit")
-# csvfile.close()
