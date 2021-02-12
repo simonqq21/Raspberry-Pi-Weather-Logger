@@ -14,8 +14,8 @@ debug = False # setting debug to True will print data
 delay = 30 # logging delay
 flash_duration = 0.5 # status LED flash duration
 # specify weather log path and filename
-path = 'weather_logs/'
-filenameprefix = "weather_log"
+path = os.path.abspath(os.path.dirname(__file__)) + '/weather_logs/'
+filenameprefix = 'weather_log'
 
 # check if a file exists
 def exists(filename):
@@ -29,29 +29,31 @@ def exists(filename):
 
 # generate csv filename
 # filename + 4 digit number with leading zeroes starting from 0000 + ".csv"
-def generateFileName():
-    global filenameprefix
-    dnow = date.today()
-    filename = filenameprefix + dnow.strftime('%m%d%Y') + '.csv'
+def generateFileName(filenameprefix):
+    filename = filenameprefix + date.today().strftime('%m%d%Y') + '.csv'
+    if debug: print(filename)
     return filename
 
 
 # create the complete file path of the log file
-def generateFilePath():
-    global path
-    filepath = path + generateFileName()
+def generateFilePath(path, filenameprefix):
+    # try to create the dir for logs if it does not exist
+    if path != '':
+        if not os.path.exists(path):
+            os.mkdir(path)
+    filename = generateFileName(filenameprefix)
+    filepath = path + filename
     return filepath
 
 # create a new csv file and write the csv file header
-def createOpenLogFile():
-    global filepath
-    filepath = generateFilePath()
+def createOpenLogFile(path, filenameprefix):
+    filepath = generateFilePath(path, filenameprefix)
     csvfile = open(filepath, 'a', newline='')
     writer = csv.writer(csvfile, delimiter=',')
     if os.stat(filepath).st_size == 0:
         writer.writerow(["Time", "Humidity", "Temperature", "BMP_temperature", "Pressure"])
     csvfile.close()
-    print(filepath)
+    return filepath
 
 # read BMP180 sensor
 def BMP180read():
@@ -92,12 +94,6 @@ def flashStatusLED(led, duration):
 # set the Event to terminate all threads
 def signal_handler(signum, frame):
     terminateEvent.set()
-
-# try to create the dir for logs if it does not exist
-try:
-    os.mkdir(path)
-except FileExistsError:
-    print("dir exists")
 
 filepath = ""
 newfiledate = datetime(1, 1, 1) # initial value
@@ -140,7 +136,7 @@ while True:
                 print("closing current file and opening a new file")
             else:
                 print("Opening file initially")
-        createOpenLogFile()
+        filepath = createOpenLogFile(path, filenameprefix)
         newfiledate = datetime.now()
 
     # read DHT11 sensor

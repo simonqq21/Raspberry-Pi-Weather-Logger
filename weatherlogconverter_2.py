@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import csv
 from datetime import datetime, date, time, timedelta
 import argparse
@@ -10,10 +11,11 @@ a different measuring interval.
 eg. convert the RAW CSV script from the Pi logger into weather data logged every
 5 minutes
 Usage: python3 weatherlogreader.py -m <month> -d <day> -y <year> (-m <minutes> | -h <hours>)
+The default interval is 1 minute.
 '''
 
 # file path and filename for weather logs
-path = 'weather_logs/'
+path = os.path.abspath(os.path.dirname(__file__)) + '/weather_logs/'
 filenameprefix = "weather_log"
 
 # check if a file exists
@@ -58,6 +60,16 @@ if exists(inputfilepath):
 else:
     print("file does not exist")
     exit()
+
+# copy all records from the input file into memory
+records = []
+header = next(inputfilereader)
+# print("header", header)
+for row in inputfilereader:
+    
+    # print(row)
+
+print("done")
 
 # open a new file where the output will be saved
 outputfilename = 'c_' + inputfilename
