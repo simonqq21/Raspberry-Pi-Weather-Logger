@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import csv
 from datetime import datetime, date, time, timedelta
 import argparse
@@ -10,10 +11,11 @@ a different measuring interval.
 eg. convert the RAW CSV script from the Pi logger into weather data logged every
 5 minutes
 Usage: python3 weatherlogreader.py -m <month> -d <day> -y <year> (-m <minutes> | -h <hours>)
+The default interval is 1 minute.
 '''
 
 # file path and filename for weather logs
-path = 'weather_logs/'
+path = os.path.abspath(os.path.dirname(__file__)) + '/weather_logs/'
 filenameprefix = "weather_log"
 
 # check if a file exists
@@ -48,26 +50,37 @@ else:
     interval_minutes = args.hour * 60
 
 # get the log file name from the date specified and open it
-inputfilename = (filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
+filename = (filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
 + str(args.y) + '.csv')
-print(inputfilename)
-inputfilepath = path + inputfilename
-if exists(inputfilepath):
-    inputfile = open(inputfilepath, 'r', newline='')
-    inputfilereader = csv.reader(inputfile, delimiter=',')
+print(filename)
+filepath = path + filename
+if exists(filepath):
+    file = open(filepath, 'r', newline='')
+    filereader = csv.reader(file, delimiter=',')
 else:
     print("file does not exist")
     exit()
 
-# open a new file where the output will be saved
-outputfilename = 'c_' + inputfilename
-outputfilepath = path + outputfilename
+# copy all records from the input file into memory
+records = []
+header = next(filereader)
+for row in filereader:
+    records.append(row)
+print("done")
+file.close()
+
+# testing
+# filename = ('t_' + filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
+# + str(args.y) + '.csv')
+# print(filename)
+# filepath = path + filename
+
+# overwrite the file
 try:
-    outputfile = open(outputfilepath, 'w')
-    outputfilewriter = csv.writer(outputfile, delimiter=',')
+    file = open(filepath, 'w')
+    filewriter = csv.writer(file, delimiter=',')
     # write the csv file header to the output file
-    outputfilewriter.writerow(next(inputfilereader))
-    outputfile.close()
+    filewriter.writerow(header)
 except IOError:
     print("Write error")
     exit()
@@ -78,14 +91,13 @@ inputTime = time(0,0,0)
 temperature, humidity, bmp_temperature, pressure = 0, 0, 0, 0
 n = 0
 
-for row in inputfilereader:
+for row in records:
     # get the time of each row
     hms  = row[0].split(':')
 
     # save the time as a time object
-    if len(hms) == 3:
-        hms = [int(n) for n in hms]
-        inputTime = time(hms[0], hms[1], hms[2])
+    hms = [int(n) for n in hms]
+    inputTime = time(hms[0], hms[1], hms[2])
 
     # get the sum of the data
     humidity += float(row[1])
@@ -102,15 +114,25 @@ for row in inputfilereader:
         bmp_temperature /= n
         pressure /= n
         # write the data to the csv file
-        outputfile = open(outputfilepath, 'a')
-        outputfilewriter = csv.writer(outputfile, delimiter=',')
-        outputfilewriter.writerow([outputTime, '{:.3f}'.format(humidity),
+        filewriter.writerow([outputTime, '{:.3f}'.format(humidity),
         '{:.3f}'.format(temperature),
         '{:.3f}'.format(bmp_temperature),
         '{:.3f}'.format(pressure)])
-        outputfile.close()
         outputTime = inputTime
         outputTime = outputTime.replace(second=0)
         # reset the average
         temperature, humidity, bmp_temperature, pressure = 0, 0, 0, 0
         n = 0
+
+# average the remaining values
+if n > 0:
+    temperature /= n
+    humidity /= n
+    bmp_temperature /= n
+    pressure /= n
+    filewriter.writerow([outputTime, '{:.3f}'.format(humidity),
+    '{:.3f}'.format(temperature),
+    '{:.3f}'.format(bmp_temperature),
+    '{:.3f}'.format(pressure)])
+
+file.close()
