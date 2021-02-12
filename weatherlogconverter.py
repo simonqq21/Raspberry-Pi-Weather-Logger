@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import csv
 from datetime import datetime, date, time, timedelta
 import argparse
@@ -5,7 +7,8 @@ import argparse
 '''
 This script converts a raw CSV file from the logger into a new CSV file with
 a different measuring interval.
-eg. convert the RAW CSV script into weather data logged every 5 minutes
+eg. convert the RAW CSV script from the Pi logger into weather data logged every
+5 minutes
 Usage: python3 weatherlogreader.py <date> (-m <minutes> | -h <hours>)
 '''
 
@@ -29,12 +32,12 @@ def subtract_time(time1, time2):
 
 # obtain and parse arguments from the command line
 parser = argparse.ArgumentParser()
-parser.add_argument('logdate', help='The specific day when the log was taken in '
-'the format MMDDYYYY, where the MM month and DD day are zero padded and the YYYY '
-'year is four digits')
-group = parser.add_mutually_exclusive_group()
-group.add_argument('-hr', '--hour', help='The new log interval in hours', type=int)
-group.add_argument('-min', '--minute', help='The new log interval in minutes',
+parser.add_argument('-m', help='numeric month from 1-12', default=date.today().month, type=int)
+parser.add_argument('-d', help='numeric day from 1-31', default=date.today().day, type=int)
+parser.add_argument('-y', help='numeric four digit year', default=date.today().year, type=int)
+group2 = parser.add_mutually_exclusive_group()
+group2.add_argument('-hr', '--hour', help='The new log interval in hours', type=float)
+group2.add_argument('-min', '--minute', help='The new log interval in minutes. Default value is 1 minute',
 type=int, default=1)
 args = parser.parse_args()
 
@@ -43,21 +46,24 @@ if args.hour is None:
     interval_minutes = args.minute
 else:
     interval_minutes = args.hour * 60
-# print(interval_minutes)
 
 # get the log file name from the date specified and open it
-inputfilename = path + filenameprefix + args.logdate + '.csv'
-if exists(inputfilename):
-    inputfile = open(inputfilename, 'r', newline='')
+inputfilename = (filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
++ str(args.y) + '.csv')
+print(inputfilename)
+inputfilepath = path + inputfilename
+if exists(inputfilepath):
+    inputfile = open(inputfilepath, 'r', newline='')
     inputfilereader = csv.reader(inputfile, delimiter=',')
 else:
     print("file does not exist")
     exit()
 
 # open a new file where the output will be saved
-outputfilename = path + 'c_' + filenameprefix + args.logdate + '.csv'
+outputfilename = 'c_' + inputfilename
+outputfilepath = path + outputfilename
 try:
-    outputfile = open(outputfilename, 'w')
+    outputfile = open(outputfilepath, 'w')
     outputfilewriter = csv.writer(outputfile, delimiter=',')
     # write the csv file header to the output file
     outputfilewriter.writerow(next(inputfilereader))
@@ -96,14 +102,13 @@ for row in inputfilereader:
         bmp_temperature /= n
         pressure /= n
         # write the data to the csv file
-        outputfile = open(outputfilename, 'a')
+        outputfile = open(outputfilepath, 'a')
         outputfilewriter = csv.writer(outputfile, delimiter=',')
         outputfilewriter.writerow([outputTime, '{:.3f}'.format(humidity),
         '{:.3f}'.format(temperature),
         '{:.3f}'.format(bmp_temperature),
         '{:.3f}'.format(pressure)])
         outputfile.close()
-        print(outputTime)
         outputTime = inputTime
         outputTime = outputTime.replace(second=0)
         # reset the average
