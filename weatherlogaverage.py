@@ -69,11 +69,11 @@ for row in filereader:
 print("done")
 file.close()
 
-# testing
-# filename = ('t_' + filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
-# + str(args.y) + '.csv')
-# print(filename)
-# filepath = path + filename
+# do not overwrite the file for testing
+filename = ('t_' + filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
++ str(args.y) + '.csv')
+print(filename)
+filepath = path + filename
 
 # overwrite the file
 try:

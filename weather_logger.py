@@ -9,7 +9,6 @@ import os
 from datetime import datetime, date, timedelta
 from threading import Thread, Event
 import signal
-import subprocess
 
 debug = False # setting debug to True will print data
 delay = 30 # logging delay
@@ -135,8 +134,6 @@ while True:
         if (date.today() - newfiledate.date()).days == 1:
             if debug:
                 print("closing current file and opening a new file")
-                # auto-average the completed datalog to 1 minute
-                averager = subprocess.Popen('python3 weatherlogaverage.py -m {} -d {} -y {}'.format(newfiledate.month, newfiledate.day, newfiledate.year), stdout=subprocess.PIPE, shell=True)
         else:
             if debug:
                 print("Opening file initially")
