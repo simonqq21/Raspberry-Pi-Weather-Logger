@@ -54,12 +54,12 @@ filename = (filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
 + str(args.y) + '.csv')
 print(filename)
 filepath = path + filename
-if exists(filepath):
-    file = open(filepath, 'r', newline='')
-    filereader = csv.reader(file, delimiter=',')
-else:
-    print("file does not exist")
-    exit()
+# if exists(filepath):
+file = open(filepath, 'r', newline='')
+filereader = csv.reader(file, delimiter=',')
+# else:
+#     print("file does not exist")
+#     exit()
 
 # copy all records from the input file into memory
 records = []
@@ -69,8 +69,8 @@ for row in filereader:
 print("done")
 file.close()
 
-# do not overwrite the file for testing
-filename = ('t_' + filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
+# commenting this will overwrite the raw log file
+filename = ('processed_' + filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
 + str(args.y) + '.csv')
 print(filename)
 filepath = path + filename
