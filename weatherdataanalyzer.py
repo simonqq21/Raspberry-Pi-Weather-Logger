@@ -30,7 +30,7 @@ def exists(filename):
     f.close()
     return 1
 
-# obtain and parse arguments from the command line
+# parse arguments from the command line
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', help='numeric month from 1-12', default=date.today().month, type=int)
 parser.add_argument('-d', help='numeric day from 1-31', default=date.today().day, type=int)
@@ -45,16 +45,20 @@ args = parser.parse_args()
 month = args.m
 day = args.d
 year = args.y
-# get the logging in minutes
+# get the logging interval in minutes
 if args.hour is None:
     interval_minutes = args.minute
 else:
     interval_minutes = args.hour * 60
 
 # initial averaging of weather data of the specified day to the specified interval
-# call a subprocess of the weatherlogaverage.py to average the weather data
+# get the filename and filepath of the raw log file based on the date from arguments
 filename = (filenameprefix + '{:02}'.format(month) + '{:02}'.format(day) + str(year) + '.csv')
 filepath = path + filename
+# get the filename and filepath of the processed log file based on the date from arguments
+processed_filename = 'processed_' + filename
+processed_filepath = path + processed_filename
+# call a subprocess of the weatherlogaverage.py to average the weather data
 if exists(filepath):
     proc1 = subprocess.Popen('python3 {}/weatherlogaverage.py -m {} -d {} -y {} --minute {}'
     .format(script_path, month, day, year, interval_minutes), stdout=subprocess.PIPE, shell=True)
@@ -66,87 +70,108 @@ else:
     exit()
 
 # get the filename of the processed weather data file
-filename = 'processed_' + filename
-filepath = path + filename
-# load the processed weather data CSV file into a numpy 2D array
-filearr = np.genfromtxt(filepath, delimiter=',', dtype=str)
-# get the header
+# load the processed weather data CSV file into a numpy 2D string array
+filearr = np.genfromtxt(processed_filepath, delimiter=',', dtype=str)
+# get the CSV file header
 header = filearr[0]
+# remove 'Time' from the header array
 header = header[1:]
 # print(header)
 
+# create date object from parameters
 day = date(year, month, day)
-print(day)
+# print(day)
 
-# get the time array from filearr
+# get the time array from filearr and convert it into datetime with the day
 timeList = list(filearr[1:,0])
-datetimeList = list(datetime.combine(day, datetime.strptime(time,'%H:%M:%S').time()) for time in timeList)
-datetimeArr = np.array(datetimeList, dtype=np.datetime64)
+datetimeArr = np.array(list(datetime.combine(day, datetime.strptime(time,'%H:%M:%S').time()) for time in timeList))
 # print(datetimeArr)
 # print(datetimeArr.shape)
 
-# get the data arrays from filearr and format it as np.float64
+# get the log data arrays from filearr and format it as float64
 dataArr = filearr[1:, 1:].astype(np.float64)
 # print(dataArr)
 # print(dataArr.shape)
 
-# create datatype definition for results structured array
-Dtype = [('data', 'U16')]
-Dtype.append(('mean', np.float64))
-Dtype.append(('std', np.float64))
-Dtype.append(('min', np.float64))
-Dtype.append(('max', np.float64))
-# Dtype.append(('time_of_min', np.datetime64))
-# Dtype.append(('time_of_max', np.datetime64))
-
 # create empty results array
-resulting_values = np.array(np.zeros([len(header)]), dtype=Dtype)
-# getting the mean, std, min, and max for each item in the header
-resulting_values['data'] = header
-resulting_values['mean'] = dataArr.mean(axis=0)
-resulting_values['std'] = dataArr.std(axis=0)
-resulting_values['min'] = dataArr.min(axis=0)
-resulting_values['max'] = dataArr.max(axis=0)
-# resulting_values['time_of_min'] = dataArr[np.where(dataArr[:] == resulting_values['max'])]
-# resulting_values['time_of_max'] = dataArr[np.where(dataArr[:] == resulting_values['max'])]
-print(resulting_values)
-# print(dataArr)
-# print(dataArr.shape)
-# print(dataArr.max(axis=0))
-# print(resulting_values[:]['max'])
-# get the indices in the array where humidity is the highest
-# print(np.where(dataArr[:,0] == resulting_values[0]['max'])[0])
-# print(np.where(dataArr[:,1] == resulting_values[1]['max'])[0])
-# print(np.where(dataArr[:,2] == resulting_values[2]['max'])[0])
-# print(np.where(dataArr[:,3] == resulting_values[3]['max'])[0])
+mean_std_min_max = np.zeros((4, len(header)), dtype=np.float64)
+# get the mean, std, min, and max for each item in the header and save it to an array
+mean_std_min_max[0] = dataArr.mean(axis=0)
+mean_std_min_max[1] = dataArr.std(axis=0)
+mean_std_min_max[2] = dataArr.min(axis=0)
+mean_std_min_max[3] = dataArr.max(axis=0)
+# print(mean_std_min_max)
 
+# Get the times when the weather data was at maximum values
+# get the indices in the array where the data in each field is the highest
+maxValIndices = np.where(dataArr == dataArr.max(axis=0))
+# print(maxValIndices)
+# depth stack the resulting arrays to form a 2D array with 1st degree elements with 0th element
+# as value index and 1st element as datetime index
+stackedMaxValIndices = np.dstack((maxValIndices[1], maxValIndices[0])).reshape(-1,2)
+# print(stackedMaxValIndices)
+# argsort() generates an array of the indices of the sorted array. It is used for sorting an
+# array according to a specific dimension
+# print(stackedMaxValIndices[:,0].argsort())
+# pass the array of indices of the sorted array to the array to be sorted, in this case
+# stackedMaxValIndices, then assign it back to stackedMaxValIndices.
+stackedMaxValIndices = stackedMaxValIndices[stackedMaxValIndices[:,0].argsort()]
+# print(stackedMaxValIndices)
+# list of the dates of maximum weather conditions
+maxDateList = []
+# for each value column
+for i in range(len(header)):
+    # get the dates of the indices of the maximum values for each value column and append
+    # them to the ith sublist in the maxDateList
+    indices = stackedMaxValIndices[stackedMaxValIndices[:,0] == i][:,1]
+    # print(indices)
+    times = datetimeArr[indices].tolist()
+    maxDateList.append(times)
+# print(maxDateList)
 
-maxWhere = np.where(dataArr == resulting_values['max'])
-maxDateIndices = np.sort(np.dstack((maxWhere[1], maxWhere[0])).reshape(-1,2), axis=0)
-minWhere = np.where(dataArr == resulting_values['min'])
-minDateIndices = np.sort(np.dstack((minWhere[1], minWhere[0])).reshape(-1,2), axis=0)
-print(maxDateIndices)
-print(minDateIndices)
+# Get the times when the weather data was at minimum values
+#  get the indices in the array where the data in each field is the lowest
+minValIndices = np.where(dataArr == dataArr.min(axis=0))
+# print(minValIndices)
+# depth stack the resulting arrays to form a 2D array with 1st degree elements with 0th element
+# as value index and 1st element as datetime index
+stackedMinValIndices = np.dstack((minValIndices[1], minValIndices[0])).reshape(-1,2)
+# print(stackedMinValIndices)
+# argsort() generates an array of the indices of the sorted array. It is used for sorting an
+# array according to a specific dimension
+# print(stackedMinValIndices[:,0].argsort())
+# pass the array of indices of the sorted array to the array to be sorted, in this case
+# stackedMinValIndices, then assign it back to stackedMinValIndices.
+minDateIndices = stackedMinValIndices[stackedMinValIndices[:,0].argsort()]
+# print(minDateIndices)
+# list of the dates of minimum weather conditions
+minDateList = []
+# for each value column
+for i in range(len(header)):
+    # get the dates of the indices of the minimum values for each value column and append
+    # them to the ith sublist in the minDateList
+    indices = minDateIndices[minDateIndices[:,0] == i][:,1]
+    # print(indices)
+    times = datetimeArr[indices].tolist()
+    minDateList.append(times)
+# print(minDateList)
 
-# print(np.where(dataArr == resulting_values[:]['max']))
-
-# print the results to terminal
-for result in resulting_values:
-    print('{} mean: {:.3f}'.format(result['data'], result['mean']))
-    print('{} std: {:.3f}'.format(result['data'], result['std']))
-    print('{} min: {:.3f}'.format(result['data'], result['min']))
-    print('{} max: {:.3f}'.format(result['data'], result['max']))
+# print the mean, standard deviation, minimum value, and maximum value of each value column
+for i in range(len(header)):
+    print('{} mean: {:.3f}'.format(header[i], mean_std_min_max[0,i]))
+    print('{} std: {:.3f}'.format(header[i], mean_std_min_max[1,i]))
+    print('{} min: {:.3f}'.format(header[i], mean_std_min_max[2,i]))
+    print('{} max: {:.3f}'.format(header[i], mean_std_min_max[3,i]))
     print()
 
+# print the times of the day with the minimum and maximum weather conditions
+print('day: {}'.format(day.strftime('%m/%d/%Y')))
+for i in range(len(header)):
+    print("Times of the day with minimum {}".format(header[i]))
+    for d in minDateList[i]:
+        print(d.strftime('%H:%M:%S'))
 
-# get the time of the day with the minimum and maximum weather conditions
-'''
-time of minimum temperature:
-time of maximum temperature:
-'''
-
-    # for value in result:
-        # print(value)
-
-# print(dataArr[:,0].mean())
-# print(dataArr.mean(axis=0))
+    print("Times of the day with maximum {}".format(header[i]))
+    for d in maxDateList[i]:
+        print(d.strftime('%H:%M:%S'))
+    print()
