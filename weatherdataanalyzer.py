@@ -49,7 +49,7 @@ year = args.y
 if args.hour is None:
     interval_minutes = args.minute
 else:
-    interval_minutes = args.hour * 60
+    interval_minutes = int(args.hour * 60)
 
 # initial averaging of weather data of the specified day to the specified interval
 # get the filename and filepath of the raw log file based on the date from arguments
@@ -71,7 +71,11 @@ else:
 
 # get the filename of the processed weather data file
 # load the processed weather data CSV file into a numpy 2D string array
-filearr = np.genfromtxt(processed_filepath, delimiter=',', dtype=str)
+try:
+    filearr = np.genfromtxt(processed_filepath, delimiter=',', dtype=str)
+except:
+    print("Read error")
+    exit()
 # get the CSV file header
 header = filearr[0]
 # remove 'Time' from the header array
@@ -143,7 +147,7 @@ stackedMinValIndices = np.dstack((minValIndices[1], minValIndices[0])).reshape(-
 # to get the sorted min date index array
 minDateIndices = np.lexsort((stackedMinValIndices[:,1], stackedMinValIndices[:,0]))
 minDateIndices = stackedMinValIndices[minDateIndices]
-print(minDateIndices)
+# print(minDateIndices)
 # list of the dates of minimum weather conditions
 minDateList = []
 # for each value column
@@ -175,3 +179,47 @@ for i in range(len(header)):
     for d in maxDateList[i]:
         print(d.strftime('%H:%M:%S'))
     print()
+
+# save data to output file
+summary_filename = 'summary_' + day.strftime('%m%d%Y') + '.txt'
+summary_filepath = path + summary_filename
+try:
+    summary_file = open(summary_filepath, 'w')
+except:
+    print('Write error')
+
+# save the data as a dictionary for ease of representation and saving to file
+summary_dict = {}
+for i in range(len(header)):
+    sub_dict1 = {}
+    sub_dict1['mean'] =  mean_std_min_max[0][i]
+    sub_dict1['std'] =  mean_std_min_max[1][i]
+    sub_dict1['min'] =  mean_std_min_max[2][i]
+    sub_dict1['max'] =  mean_std_min_max[3][i]
+    sub_dict1['min_times'] = minDateList[i]
+    sub_dict1['max_times'] = maxDateList[i]
+    summary_dict[header[i]] = sub_dict1
+print(summary_dict)
+
+# # write mean, std, min, max, dates with min values, and dates with max values for each
+# # value column
+# for i in range(len(header)):
+#     str1 = header[i] + ':'
+#     for j in range(mean_std_min_max.shape[0]):
+#         str1 += '{:.3f}'.format(mean_std_min_max[j][i]) + ','
+#
+#     minDatesStr = []
+#     str1 += '['
+#     for date in minDateList[i]:
+#         str1 += date.strftime('%H:%M:%S') + ','
+#     str1 += ']'
+#
+#     maxDatesStr = []
+#     str1 += '['
+#     for date in maxDateList[i]:
+#         str1 += date.strftime('%H:%M:%S') + ','
+#     str1 += ']\n'
+#     print(str1)
+#     summary_file.write(str1)
+
+summary_file.close()
