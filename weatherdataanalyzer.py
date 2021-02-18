@@ -110,13 +110,13 @@ maxValIndices = np.where(dataArr == dataArr.max(axis=0))
 # as value index and 1st element as datetime index
 stackedMaxValIndices = np.dstack((maxValIndices[1], maxValIndices[0])).reshape(-1,2)
 # print(stackedMaxValIndices)
-# argsort() generates an array of the indices of the sorted array. It is used for sorting an
-# array according to a specific dimension
-# print(stackedMaxValIndices[:,0].argsort())
-# pass the array of indices of the sorted array to the array to be sorted, in this case
-# stackedMaxValIndices, then assign it back to stackedMaxValIndices.
-stackedMaxValIndices = stackedMaxValIndices[stackedMaxValIndices[:,0].argsort()]
-# print(stackedMaxValIndices)
+# lexsort() generates an array of the indices of the sorted array. It is used for sorting an
+# array according to a specific order of dimensions
+# make the indices that indicate how maxValIndices should be sorted the index of stackedMaxValIndices
+# to get the sorted max date index array
+maxDateIndices = np.lexsort((stackedMaxValIndices[:,1],stackedMaxValIndices[:,0]))
+maxDateIndices = stackedMaxValIndices[maxDateIndices]
+# print(maxDateIndices)
 # list of the dates of maximum weather conditions
 maxDateList = []
 # for each value column
@@ -137,13 +137,13 @@ minValIndices = np.where(dataArr == dataArr.min(axis=0))
 # as value index and 1st element as datetime index
 stackedMinValIndices = np.dstack((minValIndices[1], minValIndices[0])).reshape(-1,2)
 # print(stackedMinValIndices)
-# argsort() generates an array of the indices of the sorted array. It is used for sorting an
-# array according to a specific dimension
-# print(stackedMinValIndices[:,0].argsort())
-# pass the array of indices of the sorted array to the array to be sorted, in this case
-# stackedMinValIndices, then assign it back to stackedMinValIndices.
-minDateIndices = stackedMinValIndices[stackedMinValIndices[:,0].argsort()]
-# print(minDateIndices)
+# lexsort() generates an array of the indices of the sorted array. It is used for sorting an
+# array according to a specific order of dimensions
+# make the indices that indicate how minValIndices should be sorted the index of stackedMinValIndices
+# to get the sorted min date index array
+minDateIndices = np.lexsort((stackedMinValIndices[:,1], stackedMinValIndices[:,0]))
+minDateIndices = stackedMinValIndices[minDateIndices]
+print(minDateIndices)
 # list of the dates of minimum weather conditions
 minDateList = []
 # for each value column
