@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import os
 from datetime import datetime, date, time, timedelta
 import argparse
@@ -160,35 +160,7 @@ for i in range(len(header)):
     minDateList.append(times)
 # print(minDateList)
 
-# print the mean, standard deviation, minimum value, and maximum value of each value column
-for i in range(len(header)):
-    print('{} mean: {:.3f}'.format(header[i], mean_std_min_max[0,i]))
-    print('{} std: {:.3f}'.format(header[i], mean_std_min_max[1,i]))
-    print('{} min: {:.3f}'.format(header[i], mean_std_min_max[2,i]))
-    print('{} max: {:.3f}'.format(header[i], mean_std_min_max[3,i]))
-    print()
-
-# print the times of the day with the minimum and maximum weather conditions
-print('day: {}'.format(day.strftime('%m/%d/%Y')))
-for i in range(len(header)):
-    print("Times of the day with minimum {}".format(header[i]))
-    for d in minDateList[i]:
-        print(d.strftime('%H:%M:%S'))
-
-    print("Times of the day with maximum {}".format(header[i]))
-    for d in maxDateList[i]:
-        print(d.strftime('%H:%M:%S'))
-    print()
-
-# save data to output file
-summary_filename = 'summary_' + day.strftime('%m%d%Y') + '.txt'
-summary_filepath = path + summary_filename
-try:
-    summary_file = open(summary_filepath, 'w')
-except:
-    print('Write error')
-
-# save the data as a dictionary for ease of representation and saving to file
+# save the data as a dictionary for ease of data representation and saving to file
 summary_dict = {}
 for i in range(len(header)):
     sub_dict1 = {}
@@ -199,27 +171,56 @@ for i in range(len(header)):
     sub_dict1['min_times'] = minDateList[i]
     sub_dict1['max_times'] = maxDateList[i]
     summary_dict[header[i]] = sub_dict1
-print(summary_dict)
+# print(summary_dict)
 
-# # write mean, std, min, max, dates with min values, and dates with max values for each
-# # value column
-# for i in range(len(header)):
-#     str1 = header[i] + ':'
-#     for j in range(mean_std_min_max.shape[0]):
-#         str1 += '{:.3f}'.format(mean_std_min_max[j][i]) + ','
-#
-#     minDatesStr = []
-#     str1 += '['
-#     for date in minDateList[i]:
-#         str1 += date.strftime('%H:%M:%S') + ','
-#     str1 += ']'
-#
-#     maxDatesStr = []
-#     str1 += '['
-#     for date in maxDateList[i]:
-#         str1 += date.strftime('%H:%M:%S') + ','
-#     str1 += ']\n'
-#     print(str1)
-#     summary_file.write(str1)
+# print summarized data for the day
+print('Day: {}'.format(day.strftime('%m/%d/%Y')))
+# print the mean, standard deviation, minimum value, and maximum value of each value column
+for column_name in summary_dict.keys():
+    print('{} mean: {:.3f}'.format(column_name, summary_dict[column_name]['mean']))
+    print('{} std: {:.3f}'.format(column_name, summary_dict[column_name]['std']))
+    print('{} min: {:.3f}'.format(column_name, summary_dict[column_name]['min']))
+    print('{} max: {:.3f}'.format(column_name, summary_dict[column_name]['max']))
+    print()
+
+# print the times of the day with the minimum and maximum weather conditions
+for column_name in summary_dict.keys():
+    print("Times of the day with minimum {}".format(column_name))
+    for time in summary_dict[column_name]['min_times']:
+        print(time.strftime('%H:%M:%S'))
+
+    print("Times of the day with maximum {}".format(column_name))
+    for time in summary_dict[column_name]['max_times']:
+        print(time.strftime('%H:%M:%S'))
+    print()
+
+# open a new file to save the summarized data
+summary_filename = 'summary_' + day.strftime('%m%d%Y') + '.txt'
+summary_filepath = path + summary_filename
+try:
+    summary_file = open(summary_filepath, 'w')
+except:
+    print('Write error')
+
+# save data to output file
+# write mean, std, min, max, min times, and max times for each value column from the dictionary
+for column_name in summary_dict.keys():
+    str1 = column_name + ':'
+    str1 += '{:.3f}'.format(summary_dict[column_name]['mean']) + ','
+    str1 += '{:.3f}'.format(summary_dict[column_name]['std']) + ','
+    str1 += '{:.3f}'.format(summary_dict[column_name]['min']) + ','
+    str1 += '{:.3f}'.format(summary_dict[column_name]['max']) + ','
+
+    str1 += '['
+    for date in summary_dict[column_name]['min_times']:
+        str1 += date.strftime('%H:%M:%S') + ','
+    str1 += ']'
+
+    str1 += '['
+    for date in summary_dict[column_name]['max_times']:
+        str1 += date.strftime('%H:%M:%S') + ','
+    str1 += ']\n'
+    # print(str1)
+    summary_file.write(str1)
 
 summary_file.close()
