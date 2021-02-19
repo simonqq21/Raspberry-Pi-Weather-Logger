@@ -196,7 +196,9 @@ for column_name in summary_dict.keys():
     print()
 
 # Plotting
-figure = plt.figure()
+titlefont = {'family':'monospace','color':'orangered','size':15}
+axisfont = {'family':'monospace','color':'orangered','size':10}
+figure = plt.figure(figsize=(15,10))
 axes = []
 timeformat = mdates.DateFormatter('%H:%M')
 
@@ -204,36 +206,33 @@ axes.append(plt.subplot2grid((2,2), (0,0)))
 axes.append(plt.subplot2grid((2,2), (0,1)))
 axes.append(plt.subplot2grid((2,2), (1,0), colspan=2))
 
-axes[0].set_title('Relative Humidity over Time')
-axes[0].set_xlabel('Time')
-axes[0].set_ylabel('Relative Humidity (%)')
+axes[0].set_title('Relative Humidity over Time', fontdict=titlefont)
+axes[0].set_xlabel('Time', fontdict=axisfont)
+axes[0].set_ylabel('Relative Humidity (%)', fontdict=axisfont)
 axes[0].tick_params(axis='x',rotation=60)
 axes[0].plot(datetimeArr, dataArr[:,0], linestyle='-', color='slateblue', linewidth=1)
 
-axes[1].set_title('Temperature over Time')
-axes[1].set_xlabel('Time')
-axes[1].set_ylabel('Temperature (°C)')
+axes[1].set_title('Barometric Pressure over Time', fontdict=titlefont)
+axes[1].set_xlabel('Time', fontdict=axisfont)
+axes[1].set_ylabel('Barometric Pressure (Pa)', fontdict=axisfont)
 axes[1].tick_params(axis='x',rotation=60)
-axes[1].plot(datetimeArr, dataArr[:,1], linestyle='-', color='red', linewidth=1)
+axes[1].plot(datetimeArr, dataArr[:,3], linestyle='-', color='seagreen', linewidth=1)
 
-axes[2].set_title('BMP_Temperature over Time')
-axes[2].set_xlabel('Time')
-axes[2].set_ylabel('Temperature (°C)')
+axes[2].set_title('Temperature over Time', fontdict=titlefont)
+axes[2].set_xlabel('Time', fontdict=axisfont)
+axes[2].set_ylabel('Temperature (°C)', fontdict=axisfont)
 axes[2].tick_params(axis='x',rotation=60)
+axes[2].plot(datetimeArr, dataArr[:,1], linestyle='-', color='red', linewidth=1)
 axes[2].plot(datetimeArr, dataArr[:,2], linestyle='-', color='magenta', linewidth=1)
 
-# axes[1,1].set_title('Barometric Pressure over Time')
-# axes[1,1].set_xlabel('Time')
-# axes[1,1].set_ylabel('Barometric Pressure (Pa)')
-# axes[1,1].tick_params(axis='x',rotation=60)
-# axes[1,1].plot(datetimeArr, dataArr[:,3], linestyle='-', color='seagreen', linewidth=1)
+
 
 for axis in axes:
     axis.xaxis.set_major_formatter(timeformat)
     axis.xaxis_date()
 
 figure.set_tight_layout(True)
-plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')))
+plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')), dpi=300, bbox_inches='tight')
 plt.show()
 
 # open a new file to save the summarized data
