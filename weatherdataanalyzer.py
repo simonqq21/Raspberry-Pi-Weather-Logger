@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import os
 from datetime import datetime, date, time, timedelta
 import argparse
@@ -194,8 +195,50 @@ for column_name in summary_dict.keys():
         print(time.strftime('%H:%M:%S'))
     print()
 
+# Plotting
+figure = plt.figure()
+axes = []
+timeformat = mdates.DateFormatter('%H:%M')
+
+axes.append(plt.subplot2grid((2,2), (0,0)))
+axes.append(plt.subplot2grid((2,2), (0,1)))
+axes.append(plt.subplot2grid((2,2), (1,0), colspan=2))
+
+axes[0].set_title('Relative Humidity over Time')
+axes[0].set_xlabel('Time')
+axes[0].set_ylabel('Relative Humidity (%)')
+axes[0].tick_params(axis='x',rotation=60)
+axes[0].plot(datetimeArr, dataArr[:,0], linestyle='-', color='slateblue', linewidth=1)
+
+axes[1].set_title('Temperature over Time')
+axes[1].set_xlabel('Time')
+axes[1].set_ylabel('Temperature (°C)')
+axes[1].tick_params(axis='x',rotation=60)
+axes[1].plot(datetimeArr, dataArr[:,1], linestyle='-', color='red', linewidth=1)
+
+axes[2].set_title('BMP_Temperature over Time')
+axes[2].set_xlabel('Time')
+axes[2].set_ylabel('Temperature (°C)')
+axes[2].tick_params(axis='x',rotation=60)
+axes[2].plot(datetimeArr, dataArr[:,2], linestyle='-', color='magenta', linewidth=1)
+
+# axes[1,1].set_title('Barometric Pressure over Time')
+# axes[1,1].set_xlabel('Time')
+# axes[1,1].set_ylabel('Barometric Pressure (Pa)')
+# axes[1,1].tick_params(axis='x',rotation=60)
+# axes[1,1].plot(datetimeArr, dataArr[:,3], linestyle='-', color='seagreen', linewidth=1)
+
+for axis in axes:
+    axis.xaxis.set_major_formatter(timeformat)
+    axis.xaxis_date()
+
+figure.set_tight_layout(True)
+plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')))
+plt.show()
+
 # open a new file to save the summarized data
 summary_filename = 'summary_' + day.strftime('%m%d%Y') + '.txt'
+print(summary_filename)
 summary_filepath = path + summary_filename
 try:
     summary_file = open(summary_filepath, 'w')
