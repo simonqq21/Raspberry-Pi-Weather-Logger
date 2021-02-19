@@ -196,8 +196,9 @@ for column_name in summary_dict.keys():
     print()
 
 # Plotting
-titlefont = {'family':'monospace','color':'orangered','size':15}
-axisfont = {'family':'monospace','color':'orangered','size':10}
+suptitlefont = {'family':'monospace','color':'black','size':150, 'weight': 100}
+titlefont = {'family':'monospace','color':'black','size':12}
+axisfont = {'family':'monospace','color':'black','size':8}
 figure = plt.figure(figsize=(15,10))
 axes = []
 timeformat = mdates.DateFormatter('%H:%M')
@@ -222,15 +223,16 @@ axes[2].set_title('Temperature over Time', fontdict=titlefont)
 axes[2].set_xlabel('Time', fontdict=axisfont)
 axes[2].set_ylabel('Temperature (°C)', fontdict=axisfont)
 axes[2].tick_params(axis='x',rotation=60)
-axes[2].plot(datetimeArr, dataArr[:,1], linestyle='-', color='red', linewidth=1)
-axes[2].plot(datetimeArr, dataArr[:,2], linestyle='-', color='magenta', linewidth=1)
-
-
+axes[2].plot(datetimeArr, dataArr[:,1], label='Temperature', linestyle='-', color='red', linewidth=1)
+axes[2].legend()
+axes[2].plot(datetimeArr, dataArr[:,2], label='BMP_temperature', linestyle='-', color='magenta', linewidth=1)
+axes[2].legend()
 
 for axis in axes:
     axis.xaxis.set_major_formatter(timeformat)
     axis.xaxis_date()
 
+plt.suptitle('Weather Data for {}'.format(day.strftime('%m%d%Y')), fontdict=suptitlefont)
 figure.set_tight_layout(True)
 plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')), dpi=300, bbox_inches='tight')
 plt.show()
