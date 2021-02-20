@@ -244,8 +244,8 @@ plt.suptitle('Weather Data for {}'.format(day.strftime('%m%d%Y')), fontdict=supt
 # set tight layout to set proper spacing between elements
 figure.set_tight_layout(True)
 # save the graph and show it
-plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')), dpi=200, bbox_inches='tight')
-plt.show()
+plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')), dpi=160, bbox_inches='tight')
+# plt.show()
 
 # open a new file to save the summarized data
 summary_filename = 'summary_' + day.strftime('%m%d%Y') + '.txt'
