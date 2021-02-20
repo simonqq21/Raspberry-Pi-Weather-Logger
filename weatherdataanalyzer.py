@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date, time
 import argparse
 import subprocess
 
@@ -98,9 +98,9 @@ dataArr = filearr[1:, 1:].astype(np.float64)
 # print(dataArr)
 # print(dataArr.shape)
 
-# create empty results array
+# create results array
 mean_std_min_max = np.zeros((4, len(header)), dtype=np.float64)
-# get the mean, std, min, and max for each item in the header and save it to an array
+# get the mean, std, min, and max for each item in the header and save it to the results array
 mean_std_min_max[0] = dataArr.mean(axis=0)
 mean_std_min_max[1] = dataArr.std(axis=0)
 mean_std_min_max[2] = dataArr.min(axis=0)
@@ -118,21 +118,20 @@ stackedMaxValIndices = np.dstack((maxValIndices[1], maxValIndices[0])).reshape(-
 # lexsort() generates an array of the indices of the sorted array. It is used for sorting an
 # array according to a specific order of dimensions
 # make the indices that indicate how maxValIndices should be sorted the index of stackedMaxValIndices
-# to get the sorted max date index array
-maxDateIndices = np.lexsort((stackedMaxValIndices[:,1],stackedMaxValIndices[:,0]))
-maxDateIndices = stackedMaxValIndices[maxDateIndices]
-# print(maxDateIndices)
-# list of the dates of maximum weather conditions
-maxDateList = []
-# for each value column
+# to get the sorted max times index array
+sorted_indices = np.lexsort((stackedMaxValIndices[:,1],stackedMaxValIndices[:,0]))
+maxTimeIndices = stackedMaxValIndices[sorted_indices]
+# print(maxTimeIndices)
+# list of the times of maximum weather conditions
+maxTimeList = []
+# for each value column, get the times of the indices of the maximum values for each value
+# column and append them to the ith sublist in the maxTimeList
 for i in range(len(header)):
-    # get the dates of the indices of the maximum values for each value column and append
-    # them to the ith sublist in the maxDateList
     indices = stackedMaxValIndices[stackedMaxValIndices[:,0] == i][:,1]
     # print(indices)
     times = datetimeArr[indices].tolist()
-    maxDateList.append(times)
-# print(maxDateList)
+    maxTimeList.append(times)
+# print(maxTimeList)
 
 # Get the times when the weather data was at minimum values
 #  get the indices in the array where the data in each field is the lowest
@@ -145,21 +144,20 @@ stackedMinValIndices = np.dstack((minValIndices[1], minValIndices[0])).reshape(-
 # lexsort() generates an array of the indices of the sorted array. It is used for sorting an
 # array according to a specific order of dimensions
 # make the indices that indicate how minValIndices should be sorted the index of stackedMinValIndices
-# to get the sorted min date index array
-minDateIndices = np.lexsort((stackedMinValIndices[:,1], stackedMinValIndices[:,0]))
-minDateIndices = stackedMinValIndices[minDateIndices]
-# print(minDateIndices)
-# list of the dates of minimum weather conditions
-minDateList = []
-# for each value column
+# to get the sorted min times index array
+sorted_indices = np.lexsort((stackedMinValIndices[:,1], stackedMinValIndices[:,0]))
+minTimeIndices = stackedMinValIndices[sorted_indices]
+# print(minTimeIndices)
+# list of the times of minimum weather conditions
+minTimeList = []
+# for each value column, get the times of the indices of the minimum values for each value
+# column and append them to the ith sublist in the minTimeList
 for i in range(len(header)):
-    # get the dates of the indices of the minimum values for each value column and append
-    # them to the ith sublist in the minDateList
-    indices = minDateIndices[minDateIndices[:,0] == i][:,1]
+    indices = minTimeIndices[minTimeIndices[:,0] == i][:,1]
     # print(indices)
     times = datetimeArr[indices].tolist()
-    minDateList.append(times)
-# print(minDateList)
+    minTimeList.append(times)
+# print(minTimeList)
 
 # save the data as a dictionary for ease of data representation and saving to file
 summary_dict = {}
@@ -169,8 +167,8 @@ for i in range(len(header)):
     sub_dict1['std'] =  mean_std_min_max[1][i]
     sub_dict1['min'] =  mean_std_min_max[2][i]
     sub_dict1['max'] =  mean_std_min_max[3][i]
-    sub_dict1['min_times'] = minDateList[i]
-    sub_dict1['max_times'] = maxDateList[i]
+    sub_dict1['min_times'] = minTimeList[i]
+    sub_dict1['max_times'] = maxTimeList[i]
     summary_dict[header[i]] = sub_dict1
 # print(summary_dict)
 
