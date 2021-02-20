@@ -148,9 +148,9 @@ stackedMinValIndices = np.dstack((minValIndices[1], minValIndices[0])).reshape(-
 sorted_indices = np.lexsort((stackedMinValIndices[:,1], stackedMinValIndices[:,0]))
 minTimeIndices = stackedMinValIndices[sorted_indices]
 # print(minTimeIndices)
-# list of the dates of minimum weather conditions
+# list of the times of minimum weather conditions
 minTimeList = []
-# for each value column, get the dates of the indices of the minimum values for each value
+# for each value column, get the times of the indices of the minimum values for each value
 # column and append them to the ith sublist in the minTimeList
 for i in range(len(header)):
     indices = minTimeIndices[minTimeIndices[:,0] == i][:,1]
