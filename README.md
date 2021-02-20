@@ -1,7 +1,7 @@
 # Raspberry-Pi-Weather-Logger
 
 Introduction
-This application takes temperature, barometric pressure, and relative humidity data from sensors connected to a Raspberry Pi. The data is autonomously and continuously logged into CSV files, even after a reboot cycle. Another script is 
+This application takes temperature, barometric pressure, and relative humidity data from sensors connected to a Raspberry Pi. The data is autonomously and continuously logged into CSV files, even after a reboot cycle. This application is just a simple hobby project intended for exploration and educational purposes.
 
 This program is written in Python and utilizes 3rd party sensor libraries from Adafruit.
 
@@ -12,3 +12,6 @@ weatherdataanalyzer.py - the program that computes for the mean, standard deviat
 
 Hardware Setup
 This application runs on a Raspberry Pi single board computer (SBC). The Raspberry Pi is the  computer used for this application mainly because of its general purpose IO (GPIO) pins, which allow it to interface with external electronics programmatically. It also has low power draw and is well suited for being a lightweight always-on datalogger and web server. The external hardware needed for this application are a DHT11 1-wire temperature and humidity sensor, a BMP180 i2c precision temperature and barometric pressure sensor, a DS1307 i2c real time clock (RTC), and an indicator LED that flashes every time a row of sensor data is logged. Equivalent components can be used in place.
+
+Status:
+The RPi datalogger and the data analysis and visualization is satisfactorily complete, and a web based front-end will be created for this soon.
