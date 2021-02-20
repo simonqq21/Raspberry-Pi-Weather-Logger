@@ -195,46 +195,58 @@ for column_name in summary_dict.keys():
         print(time.strftime('%H:%M:%S'))
     print()
 
-# Plotting
+# Plotting the weather data into a graph
+# fonts
 suptitlefont = {'family':'monospace','color':'black','size':150, 'weight': 100}
 titlefont = {'family':'monospace','color':'black','size':12}
 axisfont = {'family':'monospace','color':'black','size':8}
+# set figure size
 figure = plt.figure(figsize=(15,10))
+# create list of axes, where each element is one graph.
 axes = []
+# set the time format
 timeformat = mdates.DateFormatter('%H:%M')
 
+# set the graph sizes and positions
 axes.append(plt.subplot2grid((2,2), (0,0)))
 axes.append(plt.subplot2grid((2,2), (0,1)))
 axes.append(plt.subplot2grid((2,2), (1,0), colspan=2))
 
+# graph for humidity
 axes[0].set_title('Relative Humidity over Time', fontdict=titlefont)
 axes[0].set_xlabel('Time', fontdict=axisfont)
 axes[0].set_ylabel('Relative Humidity (%)', fontdict=axisfont)
 axes[0].tick_params(axis='x',rotation=60)
 axes[0].plot(datetimeArr, dataArr[:,0], linestyle='-', color='slateblue', linewidth=1)
 
+# graph for barometric pressure
 axes[1].set_title('Barometric Pressure over Time', fontdict=titlefont)
 axes[1].set_xlabel('Time', fontdict=axisfont)
 axes[1].set_ylabel('Barometric Pressure (Pa)', fontdict=axisfont)
 axes[1].tick_params(axis='x',rotation=60)
 axes[1].plot(datetimeArr, dataArr[:,3], linestyle='-', color='seagreen', linewidth=1)
 
+# graph for both temperature sensors
 axes[2].set_title('Temperature over Time', fontdict=titlefont)
 axes[2].set_xlabel('Time', fontdict=axisfont)
 axes[2].set_ylabel('Temperature (°C)', fontdict=axisfont)
 axes[2].tick_params(axis='x',rotation=60)
-axes[2].plot(datetimeArr, dataArr[:,1], label='Temperature', linestyle='-', color='red', linewidth=1)
+axes[2].plot(datetimeArr, dataArr[:,1], label='DHT11_Temperature', linestyle='-', color='red', linewidth=1)
 axes[2].legend()
-axes[2].plot(datetimeArr, dataArr[:,2], label='BMP_temperature', linestyle='-', color='magenta', linewidth=1)
+axes[2].plot(datetimeArr, dataArr[:,2], label='BMP180_temperature', linestyle='-', color='magenta', linewidth=1)
 axes[2].legend()
 
+# specify time format of x-axis
 for axis in axes:
     axis.xaxis.set_major_formatter(timeformat)
     axis.xaxis_date()
 
+# super title
 plt.suptitle('Weather Data for {}'.format(day.strftime('%m%d%Y')), fontdict=suptitlefont)
+# set tight layout to set proper spacing between elements
 figure.set_tight_layout(True)
-plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')), dpi=300, bbox_inches='tight')
+# save the graph and show it
+plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')), dpi=200, bbox_inches='tight')
 plt.show()
 
 # open a new file to save the summarized data
