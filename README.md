@@ -1,7 +1,12 @@
 # Raspberry-Pi-Weather-Logger
 
+<<<<<<< HEAD
 ## Introduction
 This application takes temperature, barometric pressure, and relative humidity data from sensors connected to a Raspberry Pi. The weather data for each day is autonomously and continuously logged into CSV files, continuing even after an unplanned reboot cycle. The raw weather data will be averaged into continuous time intervals for consistency. The averaged weather data can be analyzed by getting the mean, standard deviation, minimum value, maximum value, and times of the day when the minimum and maximum values of each data column were recorded, and visualized as a line graph. The summarized textual results of this application is saved into a formatted text file for use with a planned web front-end. This application is a simple hobby project intended for exploration and educational purposes.
+=======
+Introduction
+This application takes temperature, barometric pressure, and relative humidity data from sensors connected to a Raspberry Pi. The data is autonomously and continuously logged into CSV files, even after a reboot cycle. This application is just a simple hobby project intended for exploration and educational purposes.
+>>>>>>> ba72d17cf100e8f1fbc2ee9220b6ce6da442f449
 
 ### Python libraries used for this application:
 - Adafruit_DHT
