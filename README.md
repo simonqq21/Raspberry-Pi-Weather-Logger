@@ -3,20 +3,120 @@
 ## Introduction
 This application logs temperature, barometric pressure, and relative humidity data from sensors connected to a Raspberry Pi. The weather data for each day is autonomously and continuously logged into CSV files, continuing even after an unplanned reboot cycle. The raw weather data will be averaged into continuous time intervals for consistency. The averaged weather data can be analyzed by getting the mean, standard deviation, minimum value, maximum value, and times of the day when the minimum and maximum values of each data column were recorded, and visualized as a graph. The summarized textual results of this application is saved into a formatted text file for use with a planned web front-end. This application is a simple hobby project intended for exploration and educational purposes.
 
+## Sample Output
+### Plot Image
+![weather data for 02192021](/weather_logs/plot_02192021.png)
+
+### Text Output on Command Line
+    Day: 02/19/2021
+    Humidity mean: 22.273
+    Humidity std: 7.124
+    Humidity min: 14.800
+    Humidity max: 36.200
+
+    Temperature mean: 28.618
+    Temperature std: 0.789
+    Temperature min: 27.000
+    Temperature max: 30.000
+
+    BMP_temperature mean: 27.455
+    BMP_temperature std: 0.718
+    BMP_temperature min: 26.340
+    BMP_temperature max: 29.000
+
+    Pressure mean: 100971.975
+    Pressure std: 92.142
+    Pressure min: 100786.700
+    Pressure max: 101106.667
+
+    Times of the day with minimum Humidity
+    13:50:00
+    Times of the day with maximum Humidity
+    08:55:00
+
+    Times of the day with minimum Temperature
+    08:40:00
+    Times of the day with maximum Temperature
+    13:20:00
+    13:25:00
+    13:30:00
+    13:35:00
+    13:40:00
+    13:45:00
+    13:50:00
+    13:55:00
+    14:00:00
+    14:05:00
+    14:10:00
+    14:15:00
+    14:20:00
+    14:25:00
+    14:30:00
+    14:35:00
+    14:40:00
+    14:45:00
+    14:50:00
+    14:55:00
+    15:00:00
+    15:05:00
+    15:10:00
+    15:15:00
+    15:20:00
+    15:25:00
+    15:30:00
+    15:35:00
+    15:40:00
+    15:45:00
+    15:50:00
+    15:55:00
+    16:00:00
+    16:05:00
+    16:10:00
+    16:15:00
+    16:20:00
+    16:25:00
+    16:30:00
+    16:35:00
+    16:40:00
+    16:45:00
+    16:50:00
+    16:55:00
+    17:00:00
+    17:05:00
+    17:10:00
+    17:15:00
+    17:20:00
+    17:30:00
+
+    Times of the day with minimum BMP_temperature
+    08:05:00
+    Times of the day with maximum BMP_temperature
+    15:40:00
+
+    Times of the day with minimum Pressure
+    14:55:00
+    Times of the day with maximum Pressure
+    09:30:00
+
+    Creating weather data graph
+    summary_02192021.txt
+
 ### Python libraries used for this application:
-- **Adafruit_DHT** - DHT11 sensor library for the Raspberry Pi
-- **Adafruit_BMP.BMP085** - BMP180 sensor library for the Raspberry Pi
-- **argparse** - parse command line arguments
-- **csv** - read and write CSV files
-- **datetime** - standard date and time in Python
-- **gpiozero** - high level Python GPIO API for the Raspberry Pi
-- **matplotlib** - data visualization
-- **numpy** - fast contiguous arrays and array operations in Python
-- **os** - miscellaneous operating system functions
-- **signal** - interpret the Ctrl-C when run in console mode to safely shutdown application
-- **subprocess** - call a process within a Python script
-- **threading** - run multiple threads concurrently
-- **time** - time delay
+- Stock Python
+    - **argparse** - parse command line arguments
+    - **csv** - read and write CSV files
+    - **datetime** - standard date and time in Python
+    - **os** - miscellaneous operating system functions
+    - **signal** - interpret the Ctrl-C when run in console mode to safely shutdown application
+    - **subprocess** - call a process within a Python script
+    - **threading** - run multiple threads concurrently
+    - **time** - time delay
+- 3rd party
+    - **Adafruit_DHT** - DHT11 sensor library for the Raspberry Pi
+    - **Adafruit_BMP.BMP085** - BMP180 sensor library for the Raspberry Pi
+    - **gpiozero** - high level Python GPIO API for the Raspberry Pi
+    - **matplotlib** - data visualization
+    - **numpy** - fast contiguous arrays and array operations in Python
 
 *This application is written in Python and utilizes 3rd party sensor libraries from Adafruit.*
 
