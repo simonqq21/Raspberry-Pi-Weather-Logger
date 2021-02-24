@@ -89,6 +89,8 @@ def flashStatusLED(led, duration):
             statusLedEvent.clear()
         if terminateEvent.is_set():
             break
+        # stop thread from running too fast and eating CPU resources
+        terminateEvent.wait(0.1)
 
 # Ctrl-C KeyboardInterrupt signal handler
 # set the Event to terminate all threads
@@ -161,7 +163,8 @@ while True:
 
         # set the Event to flash the status LED
         statusLedEvent.set()
-        terminateEvent.wait(delay)
+    # delay per reading that also checks for the terminating event triggered by Ctrl-C
+    terminateEvent.wait(delay)
 
     # terminate main thread when Ctrl-C is entered
     if terminateEvent.is_set():
