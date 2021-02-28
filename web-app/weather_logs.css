@@ -1,0 +1,62 @@
+#main-grid-container {
+    margin-top: -70px;
+    display: grid;
+    grid-template-columns: 400px 900px;
+}
+
+.datastatistics {
+    display: flex;
+    flex-direction: column;
+    font-size: 25px;
+}
+
+table {
+    width:90%;
+    margin:5%;
+}
+
+.columntimes-flex-container {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    margin: 0;
+}
+
+.columntimes-flex-container div {
+    flex-basis: 200px;
+    margin: 0 20px 0;
+    align-items: flex-start;
+}
+
+.time {
+    font-size: 25px;
+    background-color: white;
+    padding: 10px;
+    margin: 15px;
+    width: 100px;
+    border: 2px solid black;
+}
+
+#dateinput {
+    outline:2px solid black;
+    width: 205px;
+    height: 25px;
+}
+
+#weathergraph {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+#weathergraph img {
+    width:800px;
+    height:600px;
+}
+
+#timesdiv {
+    margin: auto;
+    outline: 2px solid grey;
+    outline-offset: 10px;
+    width: 80%;
+}

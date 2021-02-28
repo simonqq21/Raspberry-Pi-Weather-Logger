@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <!-- This page is where historical weather data of a particular day can be viewed.
+    It displays statistics, a graph, and the times of the day when the extreme values occurred. -->
+        <meta charset="utf-8">
+        <title>Weather Log History</title>
+        <link rel="stylesheet" href="base.css">
+        <link rel="stylesheet" href="weather_logs.css">
+    </head>
+
+    <body>
+        <!-- main header -->
+        <h1>Weather Log Statistics</h1>
+        <!-- user input date -->
+        <form style="position:relative;bottom:50px">
+        <label for="userdate" style="font-size:25px">Enter date:</label><br>
+        <input type="date" name="userdate" id="dateinput" value="02282021">
+        </form>
+
+        <!-- main grid container -->
+        <div id="main-grid-container">
+            <!-- column 1 -->
+            <div id="main-col1">
+                <!-- statistics section -->
+                <h2>Weather Data Statistics</h2>
+                <!-- temperature statistics table with dummy data -->
+                <h3>Temperature</h3>
+                <div class="datastatistics">
+                    <table>
+                        <tr>
+                            <th>mean</th>
+                            <th>std</th>
+                            <th>min</th>
+                            <th>max</th>
+                        </tr>
+                        <tr>
+                            <td>28</td>
+                            <td>1</td>
+                            <td>26</td>
+                            <td>30</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- humidity statistics table with dummy data -->
+                <h3>Humidity</h3>
+                <div class="datastatistics">
+                    <table>
+                        <tr>
+                            <th>mean</th>
+                            <th>std</th>
+                            <th>min</th>
+                            <th>max</th>
+                        </tr>
+                        <tr>
+                            <td>50</td>
+                            <td>25</td>
+                            <td>20</td>
+                            <td>85</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- pressure statistics table with dummy data -->
+                <h3>Pressure</h3>
+                <div class="datastatistics">
+                    <table>
+                        <tr>
+                            <th>mean</th>
+                            <th>std</th>
+                            <th>min</th>
+                            <th>max</th>
+                        </tr>
+                        <tr>
+                            <td>100200</td>
+                            <td>100</td>
+                            <td>100000</td>
+                            <td>100400</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- button field -->
+                <div class="vbuttonfield">
+                    <!-- button to download the data for a day as .txt -->
+                    <button class="vbutton" type="button" name="txtdlbutton">download data as .txt</button>
+                    <!-- redirect back to the index page -->
+                    <button class="vbutton" type="button" name="mainpagebutton">Back to main page</button>
+                </div>
+            </div>
+
+            <!-- main column 2 -->
+            <div id="main-col2">
+                <!-- graph of the weather data for a day -->
+                <h2>Weather Data Graph</h2>
+                <div id="weathergraph" >
+                    <img src="weather_plot.png" alt="weather graph">
+                </div>
+
+                <!-- extreme weather data values for the day -->
+                <h2>Times of the day with minimum and maximum values</h2>
+                <div id="timesdiv">
+                    <!-- dummy extreme temperature times -->
+                    <div class="columntimes-flex-container">
+                        <div class="columntime">
+                            <p>min. temperature</p>
+                            <p class="time">00:00</p>
+                        </div>
+                        <div class="columntime">
+                            <p>max. temperature</p>
+                            <p class="time">12:00</p>
+                        </div>
+                    </div>
+
+                    <!-- dummy extreme humidity times -->
+                    <div class="columntimes-flex-container">
+                        <div class="columntime">
+                            <p>min. humidity</p>
+                            <p class="time">00:00</p>
+                        </div>
+                        <div class="columntime">
+                            <p>max. humidity</p>
+                            <p class="time">12:00</p>
+                        </div>
+                    </div>
+
+                    <!-- dummy extreme pressure times -->
+                    <div class="columntimes-flex-container">
+                        <div class="columntime">
+                            <p>min. pressure</p>
+                            <p class="time">00:00</p>
+                        </div>
+                        <div class="columntime">
+                            <p>max. pressure</p>
+                            <p class="time">12:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,56 @@
+body {
+    font-family: Ubuntu, Monospace;
+    background-image: linear-gradient(lightgreen, white);
+    background-size:auto;
+    background-repeat:no-repeat;
+    background-position: fixed;
+}
+
+h1 {
+    background-color: violet;
+    font-size:40px;
+    text-align:center;
+    margin-bottom: 10px;
+    outline: 2px solid red;
+}
+
+h2 {
+    background-color: blue;
+    font-size:30px;
+    text-align:center;
+    outline: 2px solid red;
+}
+
+input {
+    margin: 10px 10px 30px;
+}
+
+button {
+    background-color: yellow;
+    font-size: 22px;
+    padding: 9px;
+    width: 200px;
+    display: block;
+}
+
+.vbutton {
+    margin: 50px;
+}
+
+.hbutton {
+    margin: 0 auto;
+}
+
+table, th, td {
+    border: 2px solid black;
+    border-collapse: collapse;
+}
+
+.buttonfield {
+    /* background-color: blue; */
+    display:flex;
+    justify-content: center;
+    /* align-content: left; */
+    margin:10px auto 0;
+    width:600px;
+}

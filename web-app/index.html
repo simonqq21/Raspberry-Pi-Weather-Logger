@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <!-- This page is the main page for the weather logger web application. It displays
+    the current temperature, pressure, and humidity. -->
+        <meta charset="utf-8">
+        <title>Weather Logger Index Page</title>
+        <link rel="stylesheet" href="base.css">
+        <link rel="stylesheet" href="index.css">
+    </head>
+
+    <body>
+        <!-- current date and time -->
+        <p id="datetime">02/27/2020 10:00</p>
+        <!-- main header -->
+        <h1>Weather Logger Index Page</h1>
+
+        <!-- flexbox for current weather values -->
+        <div id="flex-container">
+            <!-- temperature display -->
+            <div class="datacell">
+                <p class="datalabel">Temperature</p>
+                <p id="temperaturedata" class="data">28 °C</p>
+                <!-- temperature unit selector -->
+                <div class="unitsradiobox">
+                    <form>
+                        <input type="radio" id="°C" name="temp" value="C">
+                        <label for="">°C</label>
+                        <br>
+                        <input type="radio" id="°F" name="temp" value="F">
+                        <label for="">°F</label>
+                    </form>
+                </div>
+            </div>
+
+            <!-- humidity display -->
+            <div class="datacell">
+                <p class="datalabel">Relative Humidity</p>
+                <p id="humiditydata" class="data">54 %</p>
+            </div>
+
+            <!-- temperature display -->
+            <div class="datacell">
+                <p class="datalabel">Barometric Pressure</p>
+                <p id="pressuredata" class="data">100113 Pa</p>
+                <!-- pressure unit selector -->
+                <div class="unitsradiobox">
+                    <form>
+                        <input type="radio" id="HPa" name="pres" value="HPa">
+                        <label for="">HPa</label>
+                        <br>
+                        <input type="radio" id="mmHg" name="pres" value="mmHg">
+                        <label for="">mmHg</label>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- spacer -->
+        <div class="" style="height:60px;display:block">
+
+        </div>
+        <!-- bottom button field -->
+        <div class="hbuttonfield">
+            <!-- button to save current weather values as .txt -->
+            <button class="hbutton" type="button" name="savebtn">Save data as .txt</button>
+            <!-- button to go to the log history page -->
+            <button class="hbutton" type="button" name="loghistorybtn">Log history page</button>
+        </div>
+    </body>
+</html>
