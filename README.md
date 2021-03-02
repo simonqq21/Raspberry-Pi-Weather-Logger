@@ -170,3 +170,20 @@ For example, to analyze the sample weather data provided for February 19, 2021 i
 
 ## Status and Plans:
 The RPi datalogger and the data analysis and visualization program is functionally complete, and a web based front-end will be created for this soon. While the program is satisfactorily organized as of now, future cleaning and streamlining may be done.
+
+The project will be in the form of a Python Flask application.
+
+### Specifications and Objectives for Web Application:
+- Main page
+    - The main page shows the latest weather data recorded from the sensors.
+    - The data on page is updated every time new data is read from the sensors.
+    - The units of pressure and temperature on the main page can be changed.
+    - The instantaneous data can be downloaded as a text file with the date and time taken as the filename.
+    - The date and time on the main page is updated every time new data is read.
+    - The main page contains a link to the weather data history page.
+- Log history page
+    -The weather data history page displays weather statistics, weather graph, and times of the day when the minimum and maximum values were recorded for each day.
+    - Selecting a day on the data selector will load the processed weather data for that day processed with an interval of 5 minutes. If the day selected is before today, it will load existing processed data if it exists. If it does not exist, it will generate the processed data from the raw data of the selected day. If the day selected is today, it will always generate new data so that the latest weather values taken will be considered. If the day selected is a day that comes after today, it will empty all fields and display an error message.
+    - There is a button to download the summarized info as a human readable text file.
+    - There is a link to redirect back to the main page.
+    - There is an option to change the units of the temperature and pressure data.
