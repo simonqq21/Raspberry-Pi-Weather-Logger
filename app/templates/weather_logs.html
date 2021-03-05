@@ -5,48 +5,40 @@
     It displays statistics, a graph, and the times of the day when the extreme values occurred. -->
         <meta charset="utf-8">
         <title>Weather Log History</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='/css/base.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='/css/weather_logs.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/weather_logs.css') }}">
+        <script src="{{ url_for('static', filename='js/jquery.js') }}" charset="utf-8"></script>
     </head>
 
     <body>
-        <script src="" charset="utf-8"></script>
-
         <!-- main header -->
         <h1>Weather Log Statistics</h1>
+        <hr>
         <!-- user input date -->
-        <form style="position:relative;bottom:50px">
-        <label for="userdate" style="font-size:25px">Enter date:</label><br>
-        <input type="date" name="userdate" id="dateinput" value="02282021">
+        <form method='post'>
+            <label for="rawdatadate">Choose a datalog to load:</label><br>
+            <select name="rawdatadate">
+                {% for date in dates %}
+                    {% if loop.index == 10 %}
+                        <option value={{ date }} selected>{{ date }}</option>
+                    {% else %}
+                        <option value={{ date }}>{{ date }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <input type="submit" name="submit" value="submit">
         </form>
 
         <!-- main grid container -->
-        <div id="main-grid-container">
+        <div id="completedview">
             <!-- column 1 -->
             <div id="main-col1">
                 <!-- statistics section -->
                 <h2>Weather Data Statistics</h2>
                 <!-- temperature statistics table with dummy data -->
-                <h3>Temperature</h3>
-                <div class="datastatistics">
-                    <table>
-                        <tr>
-                            <th>mean</th>
-                            <th>std</th>
-                            <th>min</th>
-                            <th>max</th>
-                        </tr>
-                        <tr>
-                            <td>28</td>
-                            <td>1</td>
-                            <td>26</td>
-                            <td>30</td>
-                        </tr>
-                    </table>
-                </div>
 
-                <!-- humidity statistics table with dummy data -->
-                <h3>Humidity</h3>
+                {% for key, value in data.items() %}
+                <h3>{{ key }}</h3>
                 <div class="datastatistics">
                     <table>
                         <tr>
@@ -56,32 +48,14 @@
                             <th>max</th>
                         </tr>
                         <tr>
-                            <td>50</td>
-                            <td>25</td>
-                            <td>20</td>
-                            <td>85</td>
+                            <td>{{ value.mean }}</td>
+                            <td>{{ value.std }}</td>
+                            <td>{{ value.min }}</td>
+                            <td>{{ value.max }}</td>
                         </tr>
                     </table>
                 </div>
-
-                <!-- pressure statistics table with dummy data -->
-                <h3>Pressure</h3>
-                <div class="datastatistics">
-                    <table>
-                        <tr>
-                            <th>mean</th>
-                            <th>std</th>
-                            <th>min</th>
-                            <th>max</th>
-                        </tr>
-                        <tr>
-                            <td>100200</td>
-                            <td>100</td>
-                            <td>100000</td>
-                            <td>100400</td>
-                        </tr>
-                    </table>
-                </div>
+                {% endfor %}
 
                 <!-- button field -->
                 <div class="vbuttonfield">
@@ -97,7 +71,7 @@
                 <!-- graph of the weather data for a day -->
                 <h2>Weather Data Graph</h2>
                 <div id="weathergraph" >
-                    <img src="{{ url_for('static', filename='/files/weather_plot.png') }}" alt="weather graph">
+                    <img src="{{ url_for('static', filename='files/plots/' + plot_filename) }}" alt="weather graph">
                 </div>
 
                 <!-- extreme weather data values for the day -->
@@ -141,5 +115,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- view to show on first session -->
+        <div id="emptyview">
+            <p class="prompt">Please select a raw data log to load from the dropdown.</p>
+        </div>
+
+        <!-- view to show when the processed data is loading -->
+        <div id="loadingview">
+            <p class="prompt">Generating data...</p>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/log_history.js') }}" charset="utf-8"></script>
     </body>
 </html>

@@ -1,7 +1,20 @@
-#main-grid-container {
-    margin-top: -70px;
+#completedview {
+    margin-top: -30px;
     display: grid;
     grid-template-columns: 400px 900px;
+}
+
+#emptyview {
+    display: none;
+}
+
+#loadingview {
+    display: none;
+}
+
+.prompt {
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .datastatistics {
@@ -10,6 +23,12 @@
     font-size: 25px;
 }
 
+hr {
+    color: darkorchid;
+    background-color: darkorchid;
+    height:4px;
+    width:100%;
+}
 table {
     width:90%;
     margin:5%;
@@ -56,6 +75,8 @@ table {
 
 #timesdiv {
     margin: auto;
+    margin-bottom: 30px;
+    border: 2px solid black;
     outline: 2px solid grey;
     outline-offset: 10px;
     width: 80%;
