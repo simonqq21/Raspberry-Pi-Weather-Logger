@@ -38,7 +38,7 @@ def log_history():
         return render_template("weather_logs.html", dates=dates)
 
     else:
-        # rawdatadate = request.form['rawdatadate']
+        rawdatadate = request.form['rawdatadate']
         rawdatadate = "02/21/2021"
         '''
         things to pass:
@@ -82,9 +82,9 @@ def log_history():
 
         # debug
         print(weather_data_dict)
-        print(rawdatadate)
+        # print(rawdatadate)
         # print(summary_path)
         print(plot_filename)
 
-        # return jsonify(data=weather_data_dict, plot_url=plot_filename)
-        return render_template("weather_logs.html", data=weather_data_dict, plot_filename=plot_filename)
+        return jsonify(data=weather_data_dict, plot_url=plot_filename)
+        # return render_template("weather_logs.html", data=weather_data_dict, plot_filename=plot_filename)
