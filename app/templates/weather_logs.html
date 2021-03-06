@@ -55,7 +55,7 @@
                 <!-- graph of the weather data for a day -->
                 <h2>Weather Data Graph</h2>
                 <div id="weathergraph" >
-                    <img src="{{ url_for('static', filename='files/plots/') }}"
+                    <img src=""
                     alt="weather graph">
                 </div>
 
@@ -64,7 +64,7 @@
                 <div id="timesdiv">
 
                     <!-- extreme value times -->
-                    <div class="columntimes-flex-container">
+                    <!-- <div class="columntimes-flex-container">
                         <div class="columntime">
                             <p>min. </p>
 
@@ -74,7 +74,7 @@
                             <p>max. </p>
                             <p class="time">12:00</p>
                         </div>
-                    </div>
+                    </div> -->
 
                 </div>
             </div>
@@ -95,89 +95,6 @@
 
 
 
-
-        <script type="text/javascript">
-
-            function requestData(ev)
-            {
-                ev.preventDefault();
-                data1 = $.ajax ({
-                    method:'POST',
-                    url: {{ url_for('log_history')|tojson }},
-                    data: $(this).serialize()
-                }).done(showdata);
-            }
-
-            function showdata(requesteddata)
-            {
-                weatherdata = requesteddata.data;
-                plot_url = requesteddata.plot_url;
-
-                statistical_data = ['mean', 'std', 'min', 'max'];
-
-                // get the parent element
-                parent = document.getElementById("stattables");
-                for (x in weatherdata)
-                {
-                    // create header
-                    var header = document.createElement("h3");
-                    var headertext = document.createTextNode(x);
-                    header.appendChild(headertext);
-
-                    // create table
-                    var table = document.createElement("table");
-                    var tbody = document.createElement("tbody");
-
-                    // create new row header
-                    var newheader = document.createElement("tr");
-                    for (sd of statistical_data)
-                    {
-                        console.log(sd);
-                        var newdata = document.createElement("th");
-                        var newdatatext = document.createTextNode(sd);
-                        newdata.appendChild(newdatatext);
-                        newheader.appendChild(newdata);
-                    }
-
-                    var statdatarow = document.createElement("tr");
-                    // add metrics
-                    for (sd of statistical_data)
-                    {
-                        var newdata = document.createElement("td");
-                        var newdatatext = document.createTextNode(weatherdata[x][sd]);
-                        newdata.appendChild(newdatatext);
-                        statdatarow.appendChild(newdata);
-                    }
-
-                    tbody.appendChild(newheader);
-                    tbody.appendChild(statdatarow);
-                    // append new table to parent
-                    table.appendChild(tbody);
-                    parent.appendChild(header);
-                    parent.appendChild(table);
-                }
-
-                setview("complete");
-            }
-
-            function setview(status)
-            {
-                $("#completedview").css({display: "none"});
-                $("#emptyview").css({display: "none"});
-                $("#loadingview").css({display: "none"});
-                switch (status) {
-                    case "complete":
-                        $("#completedview").css({display: "grid"});
-                        break;
-                    case "loading":
-                        $("#loadingview").css({display: "block"});
-                        break;
-                    default:
-                        $("#emptyview").css({display: "block"});
-                }
-            }
-
-            $("#dateform").on('submit', requestData);
-        </script>
+        <script src="{{ url_for('static', filename='js/log_history.js') }}" charset="utf-8"></script>
     </body>
 </html>

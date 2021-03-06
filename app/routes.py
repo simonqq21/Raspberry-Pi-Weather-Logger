@@ -39,7 +39,6 @@ def log_history():
 
     else:
         rawdatadate = request.form['rawdatadate']
-        rawdatadate = "02/21/2021"
         '''
         things to pass:
         mean, std, min, and max for temperature, pressure, and humidity
@@ -47,17 +46,21 @@ def log_history():
         minimum and maximum times of the day for temperature, pressure, and humidity
         '''
         rawdatadate = rawdatadate[:2] + rawdatadate[3:5] + rawdatadate[6:]
-        summary_path, plot_filename = "", ""
+        summary_path, plot_path = "", ""
 
         # get the summary file URL
         for filename in os.listdir(summaries_path):
             if rawdatadate in filename:
                 summary_path = summaries_path + filename
 
+        plot_url = ""
         # get the plot file URL
         for filename in os.listdir(plots_path):
             if rawdatadate in filename:
-                plot_filename = filename
+                plot_path = plots_path + filename
+                plot_url = filename
+
+        summarydata = ''
 
         # process the summary
         if summary_path != "":
@@ -66,9 +69,11 @@ def log_history():
 
         # data dictionary
         weather_data_dict = {}
+        header = []
 
         for line in summarydata:
             curr_header = line.split(':')[0]
+            header.append(curr_header)
             weather_data_dict[curr_header] = {}
             data = line.strip('\n').split(':', maxsplit=1)[1].split(',',maxsplit=4)
             weather_data_dict[curr_header]['mean'] = data[0]
@@ -79,12 +84,11 @@ def log_history():
             weather_data_dict[curr_header]['min_times'] = data[4].strip('[').strip(']').split('][')[0].split(',')[:-1]
             weather_data_dict[curr_header]['max_times'] = data[4].strip('[').strip(']').split('][')[1].split(',')[:-1]
 
-
         # debug
         print(weather_data_dict)
         # print(rawdatadate)
         # print(summary_path)
-        print(plot_filename)
+        print(plot_path)
 
-        return jsonify(data=weather_data_dict, plot_url=plot_filename)
+        return jsonify(data=weather_data_dict, plot_url=plot_url, header=header)
         # return render_template("weather_logs.html", data=weather_data_dict, plot_filename=plot_filename)

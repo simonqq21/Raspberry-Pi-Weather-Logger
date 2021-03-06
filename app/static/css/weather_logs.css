@@ -58,7 +58,9 @@ table {
     padding: 10px;
     margin: 15px;
     width: 100px;
+    height: 20px;
     border: 2px solid black;
+    overflow: hidden;
 }
 
 #dateinput {
@@ -85,4 +87,10 @@ table {
     outline: 2px solid grey;
     outline-offset: 10px;
     width: 80%;
+}
+
+.timesexpanded {
+    width: 100%;
+    height: 100px;
+    overflow-y: auto;
 }
