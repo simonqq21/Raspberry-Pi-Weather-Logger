@@ -14,31 +14,25 @@
         <!-- main header -->
         <h1>Weather Log Statistics</h1>
         <hr>
-        <!-- user input date -->
+        <!-- user input of the date -->
         <form id="dateform">
             <label for="rawdatadate">Choose a datalog to load:</label><br>
             <select name="rawdatadate">
                 {% for date in dates %}
-                    {% if loop.index == 10 %}
-                        <option value={{ date }} selected>{{ date }}</option>
-                    {% else %}
                         <option value={{ date }}>{{ date }}</option>
-                    {% endif %}
                 {% endfor %}
             </select>
             <input type="submit" name="submit" value="submit">
         </form>
 
-        <!-- main grid container -->
+        <!-- view that displays the completed data after it has been retrieved by javascipt -->
         <div id="completedview">
             <!-- column 1 -->
             <div id="main-col1">
                 <!-- statistics section -->
                 <h2>Weather Data Statistics</h2>
-                <!-- temperature statistics table with dummy data -->
-
                 <div id="stattables">
-
+                    <!-- statistics table division to be filled in javascript -->
                 </div>
 
                 <!-- button field -->
@@ -55,27 +49,14 @@
                 <!-- graph of the weather data for a day -->
                 <h2>Weather Data Graph</h2>
                 <div id="weathergraph" >
-                    <img src=""
-                    alt="weather graph">
+                    <!-- url to be filled in javascript -->
+                    <img src="" alt="weather graph">
                 </div>
 
                 <!-- extreme weather data values for the day -->
                 <h2>Times of the day with minimum and maximum values</h2>
                 <div id="timesdiv">
-
-                    <!-- extreme value times -->
-                    <!-- <div class="columntimes-flex-container">
-                        <div class="columntime">
-                            <p>min. </p>
-
-                            <p class="time">00:00</p>
-                        </div>
-                        <div class="columntime">
-                            <p>max. </p>
-                            <p class="time">12:00</p>
-                        </div>
-                    </div> -->
-
+                    <!-- extreme value times divison to be filled in javascript -->
                 </div>
             </div>
         </div>
@@ -87,13 +68,13 @@
 
         <!-- view to show when the processed data is loading -->
         <div id="loadingview">
-            <p class="prompt">Generating data...</p>
+            <p class="prompt">Loading data...</p>
         </div>
 
-
-
-
-
+        <!-- view to show when the data is being generated -->
+        <div id="generatingview">
+            <p class="prompt">Generating data...</p>
+        </div>
 
         <script src="{{ url_for('static', filename='js/log_history.js') }}" charset="utf-8"></script>
     </body>
