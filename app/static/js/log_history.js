@@ -1,91 +1,105 @@
-// ajax function
+// ajax request function
 function requestData(ev)
 {
+    // remove default page reloading behavior from the submit button
     ev.preventDefault();
-    data1 = $.ajax ({
+    // set the view to loading view
+    setview("loading");
+
+    // AJAX request
+    $.ajax ({
         method:'POST',
         url: '/history',
-        data: $(this).serialize()
-    }).done(showdata);
+        data: $(this).serialize(),
+        success: function(result, status, xhr) {
+            setTimeout(function() {showdata(result);}, 500);
+            }
+        });
 }
 
-// function to fill up the values of the statistical tables
+// fill up the values of the statistical tables
 function get_statistics(data)
 {
-    for (x of weathervalues)
-    {
-        for (sd of statistical_data)
-        {
+    for (x of weathervalues) {
+        for (sd of statistical_data) {
             $('#'+x+sd).text(data[x][sd]);
-        }
-    }
+    }}
 }
 
-// function to get the url of the plot image
+// set the url of the plot image in HTML
 function setplotimage(plot_url)
 {
-    console.log("/static/files/plots/" + plot_url);
+    // console.log("/static/files/plots/" + plot_url);
     $("#weathergraph > img").attr("src", "/static/files/plots/" + plot_url);
 }
 
+// fill up the values of the extreme value time fields
 function get_times(data)
 {
-    for (x of weathervalues)
-    {
-        for (m of ['min_times', 'max_times'])
-        {
-            console.log(data[x][m].toString().replace(/,/g, "\n"));
+    for (x of weathervalues) {
+        for (m of ['min_times', 'max_times']) {
+            // console.log(data[x][m].toString().replace(/,/g, "\n"));
             $("#"+m+x+"time").text(data[x][m].toString().replace(/,/g, "\n"));
-        }
-    }
+        }}
 }
 
-function createtimesfields()
-{
-    // get parent
+// create blank time fields that will contain the times when extreme values occured for
+// each weather data column
+function createtimesfields() {
+    // get parent to attach the time fields to
     parent = document.getElementById("timesdiv");
-    for (x of weathervalues)
-    {
+    // create a flex container for each weather column value
+    for (x of weathervalues) {
         columntime = document.createElement("div");
+        // container for all times per weather data column
         columntime.classList.add("columntimes-flex-container");
-        for (m of ['min_times', 'max_times'])
-        {
+        // create a time cell for the minimum and maximum value
+        for (m of ['min_times', 'max_times']) {
+            // container for label and time
             timecell = document.createElement("div");
-            timecell.classList.add("columntime");
-            pgraph = document.createElement("p");
-            pgraph.appendChild(document.createTextNode(m + " " + x));
+            // label
+            pheader = document.createElement("p");
+            pheader.appendChild(document.createTextNode(m + " " + x));
+            // time
             pdata = document.createElement("p");
             pdata.classList.add("time");
             pdata.id = m+x+"time";
             pdata.appendChild(document.createTextNode("00:00"));
-            timecell.appendChild(pgraph);
+            timecell.appendChild(pheader);
             timecell.appendChild(pdata);
             columntime.append(timecell);
         }
+        // append each weather time container to the parent
         parent.append(columntime);
     }
-
 }
 
-function showdata(requesteddata)
-{
-    weatherdata = requesteddata.data;
-    plot_url = requesteddata.plot_url;
+// show the results of the AJAX query
+function showdata(result, status, xhr) {
+    // get weather data JSON object
+    weatherdata = result.data;
+    // get weather data graph URL
+    plot_url = result.plot_url;
 
-    get_statistics(weatherdata);
-    setplotimage(plot_url);
-    get_times(weatherdata);
+    if (jQuery.isEmptyObject(weatherdata)) {
 
+    }
+    // if the weather data is not empty, display completed view with the data
+    else {
+        get_statistics(weatherdata);
+        setplotimage(plot_url);
+        get_times(weatherdata);
 
-    setview("complete");
+        setview("complete");
+    }
 }
 
 // sets the main view to either empty, loading, or complete
-function setview(status)
-{
+function setview(status) {
     $("#completedview").css({display: "none"});
     $("#emptyview").css({display: "none"});
     $("#loadingview").css({display: "none"});
+    $("#generatingview").css({display: "none"});
     switch (status) {
         case "complete":
             $("#completedview").css({display: "grid"});
@@ -93,30 +107,35 @@ function setview(status)
         case "loading":
             $("#loadingview").css({display: "block"});
             break;
+        case "generating":
+            $("#generatingview").css({display: "block"});
+            break;
         default:
             $("#emptyview").css({display: "block"});
     }
 }
 
-function createblankstattables(weathervalues, statistical_data)
+// function to create blank statistical tables, which will be filled with information on
+// data load
+function createblankstattables()
 {
-    // create statistical tables with blank values
-    // get the parent element
+    // get the parent element, where the tables will be added to
     parent = document.getElementById("stattables");
-    parent.textContent = '';
 
+    // for each weather data column
     for (x of weathervalues)
     {
-        // create header
+        // header
         var header = document.createElement("h3");
         var headertext = document.createTextNode(x);
         header.appendChild(headertext);
 
-        // create table
+        // table and table body
         var table = document.createElement("table");
+        table.classList.add("stattable");
         var tbody = document.createElement("tbody");
 
-        // create new row header
+        // table header
         var newheader = document.createElement("tr");
         for (sd of statistical_data)
         {
@@ -126,18 +145,17 @@ function createblankstattables(weathervalues, statistical_data)
             newheader.appendChild(newdata);
         }
 
+        // table data
         var statdatarow = document.createElement("tr");
-        // add metrics
         for (sd of statistical_data)
         {
             var newdata = document.createElement("td");
             var newdatatext = document.createTextNode(" ");
             newdata.appendChild(newdatatext)
-            console.log(x + sd);
             newdata.id = x + sd;
             statdatarow.appendChild(newdata);
         }
-
+        // append data to table
         tbody.appendChild(newheader);
         tbody.appendChild(statdatarow);
         table.appendChild(tbody);
@@ -147,15 +165,18 @@ function createblankstattables(weathervalues, statistical_data)
     }
 }
 
-// add event handler to date submit button
-$("#dateform").on('submit', requestData);
+// run when document ready
+$(document).ready(function() {
+    // add event handler to data load button
+    $("#dateform").on('submit', requestData);
 
-weathervalues = ['Humidity', 'Temperature', 'BMP_temperature', 'Pressure'];
-statistical_data = ['mean', 'std', 'min', 'max'];
-createblankstattables(weathervalues, statistical_data);
-createtimesfields();
+    // define weather data columns and statistical values
+    weathervalues = ['Humidity', 'Temperature', 'BMP_temperature', 'Pressure'];
+    statistical_data = ['mean', 'std', 'min', 'max'];
 
-function togglesize() {
-    $(this).toggleClass("timesexpanded");
-}
-$(".time").click(togglesize);
+    // create blank tables that will contain weather data statistics for each weather data column
+    createblankstattables();
+    // create blank time fields that will contain the times when extreme values occured for
+    // each weather data column
+    createtimesfields();
+});
