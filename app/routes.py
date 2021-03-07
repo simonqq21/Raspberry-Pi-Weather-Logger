@@ -2,13 +2,12 @@ from flask import render_template, url_for, request, jsonify
 from app import App
 from datetime import datetime
 import os
+import re
 
 # get the absolute path of the app and append the relative path inside the app dir
 APP_DATA_PATH = os.path.abspath(os.path.dirname(__file__)) + '/static/files/'
 # absolute path of raw weather logs
-raw_logs_path = APP_DATA_PATH + "weather_logs/"
-# absolute path of processed weather logs
-processed_logs_path = APP_DATA_PATH + "processed_weather_logs/"
+weather_logs_path = APP_DATA_PATH + "weather_logs/"
 # absolute path of summarized data
 summaries_path = APP_DATA_PATH + "summaries/"
 # absolute path of weather plot images
@@ -38,6 +37,7 @@ def log_history():
         return render_template("weather_logs.html", dates=dates)
 
     else:
+        print(request)
         rawdatadate = request.form['rawdatadate']
         '''
         things to pass:
@@ -85,10 +85,10 @@ def log_history():
             weather_data_dict[curr_header]['max_times'] = data[4].strip('[').strip(']').split('][')[1].split(',')[:-1]
 
         # debug
-        print(weather_data_dict)
+        # print(weather_data_dict)
         # print(rawdatadate)
         # print(summary_path)
-        print(plot_path)
+        # print(plot_path)
 
         return jsonify(data=weather_data_dict, plot_url=plot_url, header=header)
         # return render_template("weather_logs.html", data=weather_data_dict, plot_filename=plot_filename)
