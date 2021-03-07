@@ -50,6 +50,7 @@ def createOpenLogFile(path, filenameprefix):
     filepath = generateFilePath(path, filenameprefix)
     csvfile = open(filepath, 'a', newline='')
     writer = csv.writer(csvfile, delimiter=',')
+    # write the file header only if the file is empty
     if os.stat(filepath).st_size == 0:
         writer.writerow(["Time", "Humidity", "Temperature", "BMP_temperature", "Pressure"])
     csvfile.close()
