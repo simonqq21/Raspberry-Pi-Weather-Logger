@@ -45,6 +45,7 @@ hr {
 table {
     width:90%;
     margin:auto;
+    background-color: white;
 }
 
 /* each weather data column under the times container */

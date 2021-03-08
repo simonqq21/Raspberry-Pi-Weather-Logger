@@ -13,6 +13,7 @@ from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, P
 np.set_printoptions(precision=3, suppress=True)
 
 DEBUG = False
+INTERVAL = 5
 
 '''
 This program takes optional year, month, day, and interval as parameters.
@@ -42,7 +43,7 @@ parser.add_argument('-g', '--graph', help='graph the data and save it to an imag
 group2 = parser.add_mutually_exclusive_group()
 group2.add_argument('-hr', '--hour', help='The new log interval in hours', type=float)
 group2.add_argument('-min', '--minute', help='The new log interval in minutes. Default value is 1 minute',
-type=int, default=5)
+type=int, default=INTERVAL)
 args = parser.parse_args()
 
 # saving parameters to variables

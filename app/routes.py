@@ -5,7 +5,7 @@ import os
 import re
 from app.config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, PLOTS_PATH, RAW_LOG_PREFIX
 
-DEBUG = False
+DEBUG = True
 
 @App.route('/')
 @App.route('/index')
@@ -43,23 +43,31 @@ def log_history():
         minimum and maximum times of the day for temperature, pressure, and humidity
         '''
         rawdatadate = rawdatadate[:2] + rawdatadate[3:5] + rawdatadate[6:]
-        summary_path, plot_path = "", ""
+        summary_path, plot_path, plot_url = "", "", ""
 
         # get the summary file URL
         for filename in os.listdir(SUMMARIES_PATH):
             if rawdatadate in filename:
                 summary_path = SUMMARIES_PATH + filename
 
-        plot_url = ""
+        if summary_path == '':
+            if DEBUG:
+                print("summary file does not exist")
+
+
         # get the plot file URL
         for filename in os.listdir(PLOTS_PATH):
             if rawdatadate in filename:
                 plot_path = PLOTS_PATH + filename
                 plot_url = filename
 
-        summarydata = ''
+        if plot_path == '':
+            if DEBUG:
+                print("plot image file does not exist")
+
 
         # process the summary
+        summarydata = ''
         if summary_path != "":
             with open(summary_path, 'r') as summaryfile:
                 summarydata = summaryfile.readlines()
