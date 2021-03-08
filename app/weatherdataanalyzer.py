@@ -7,9 +7,13 @@ import os
 from datetime import datetime, date, time
 import argparse
 import subprocess
+from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, PLOTS_PATH, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
+
+DEBUG = False
+
 '''
 This program takes optional year, month, day, and interval as parameters.
 This program calls the datalog averager program to process the raw datalog file, then computes
@@ -17,9 +21,7 @@ for the mean, standard deviation, maximum value and minimum value for temperatur
 and humidity of a particular day. The data will be graphed and saved as an image file.
 '''
 
-# file path and filename for weather logs
-script_path = os.path.abspath(os.path.dirname(__file__))
-path = script_path + '/weather_logs/'
+# file SUMMARIES_PATH and filename for weather logs
 filenameprefix = "weather_log"
 
 # check if a file exists
@@ -56,14 +58,14 @@ else:
 # initial averaging of weather data of the specified day to the specified interval
 # get the filename and filepath of the raw log file based on the date from arguments
 filename = (filenameprefix + '{:02}'.format(month) + '{:02}'.format(day) + str(year) + '.csv')
-filepath = path + filename
+filepath = WEATHER_LOGS_PATH + filename
 # get the filename and filepath of the processed log file based on the date from arguments
 processed_filename = 'processed_' + filename
-processed_filepath = path + processed_filename
+processed_filepath = WEATHER_LOGS_PATH + processed_filename
 # call a subprocess of the weatherlogaverage.py to average the weather data
 if exists(filepath):
     proc1 = subprocess.Popen('python3 {}/weatherlogaverage.py -m {} -d {} -y {} --minute {}'
-    .format(script_path, month, day, year, interval_minutes), stdout=subprocess.PIPE, shell=True)
+    .format(APP_PATH, month, day, year, interval_minutes), stdout=subprocess.PIPE, shell=True)
     output = proc1.communicate()[0]
     output = str(output, 'UTF-8')
     print(output)
@@ -247,13 +249,13 @@ if args.graph:
     # set tight layout to set proper spacing between elements
     figure.set_tight_layout(True)
     # save the graph and show it
-    plt.savefig(path + 'plot_{}.png'.format(day.strftime('%m%d%Y')), dpi=160, bbox_inches='tight')
+    plt.savefig(PLOTS_PATH + PLOT_PREFIX + '{}.png'.format(day.strftime('%m%d%Y')), dpi=160, bbox_inches='tight')
     # plt.show()
 
 # open a new file to save the summarized data
-summary_filename = 'summary_' + day.strftime('%m%d%Y') + '.txt'
+summary_filename = SUMMARY_PREFIX + day.strftime('%m%d%Y') + '.txt'
 print(summary_filename)
-summary_filepath = path + summary_filename
+summary_filepath = SUMMARIES_PATH + summary_filename
 try:
     summary_file = open(summary_filepath, 'w')
 except:

@@ -4,7 +4,9 @@ import os
 import csv
 from datetime import datetime, date, time, timedelta
 import argparse
+from config import WEATHER_LOGS_PATH, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX
 
+DEBUG = False
 '''
 This script converts a raw CSV file from the logger into a new CSV file with
 a different measuring interval.
@@ -13,10 +15,6 @@ eg. convert the RAW CSV script from the Pi logger into weather data logged every
 Usage: python3 weatherlogreader.py -m <month> -d <day> -y <year> (-m <minutes> | -h <hours>)
 The default interval is 1 minute.
 '''
-
-# file path and filename for weather logs
-path = os.path.abspath(os.path.dirname(__file__)) + '/static/files/weather_logs/'
-filenameprefix = "weather_log"
 
 # check if a file exists
 def exists(filename):
@@ -29,7 +27,8 @@ def exists(filename):
 
 # return True if file is empty, return False otherwise
 def isEmpty(filename):
-    # print(os.stat(filename).st_size)
+    if DEBUG:
+        print(os.stat(filename).st_size)
     if os.stat(filename).st_size <= 52:
         return True
     return False
@@ -58,10 +57,11 @@ else:
     interval_minutes = args.hour * 60
 
 # get the log file name from the date specified and open it
-filename = (filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
+filename = (RAW_LOG_PREFIX + '{:02}'.format(args.m) + '{:02}'.format(args.d)
 + str(args.y) + '.csv')
-print(filename)
-filepath = path + filename
+if DEBUG:
+    print(filename)
+filepath = WEATHER_LOGS_PATH + filename
 # if exists(filepath):
 file = open(filepath, 'r', newline='')
 filereader = csv.reader(file, delimiter=',')
@@ -75,15 +75,17 @@ else:
     header = next(filereader)
     for row in filereader:
         records.append(row)
-    print("done")
+    if DEBUG:
+        print("done")
     file.close()
 
     # overwrite the raw log file if overwrite is specified in arguments
     if not args.overwrite:
-        filename = ('processed_' + filenameprefix + '{:02}'.format(args.m) + '{:02}'.format(args.d)
+        filename = (PROCESSED_LOG_PREFIX + '{:02}'.format(args.m) + '{:02}'.format(args.d)
         + str(args.y) + '.csv')
-        print(filename)
-        filepath = path + filename
+        if DEBUG:
+            print(filename)
+        filepath = WEATHER_LOGS_PATH + filename
 
     # write to the file
     try:
@@ -96,7 +98,8 @@ else:
         exit()
 
     # initialize variables
-    print(records[0])
+    if DEBUG:
+        print(records[0])
     outputTime = datetime.strptime(records[0][0], "%H:%M:%S").time().replace(second=0)
     inputTime = datetime.strptime(records[0][0], "%H:%M:%S").time().replace(second=0)
     temperature, humidity, bmp_temperature, pressure = 0, 0, 0, 0

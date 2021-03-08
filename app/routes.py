@@ -3,15 +3,9 @@ from app import App
 from datetime import datetime
 import os
 import re
+from app.config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, PLOTS_PATH, RAW_LOG_PREFIX
 
-# get the absolute path of the app and append the relative path inside the app dir
-APP_DATA_PATH = os.path.abspath(os.path.dirname(__file__)) + '/static/files/'
-# absolute path of raw weather logs
-weather_logs_path = APP_DATA_PATH + "weather_logs/"
-# absolute path of summarized data
-summaries_path = APP_DATA_PATH + "summaries/"
-# absolute path of weather plot images
-plots_path = APP_DATA_PATH + "plots/"
+DEBUG = False
 
 @App.route('/')
 @App.route('/index')
@@ -22,14 +16,18 @@ def index():
 # if http post request,
 @App.route('/history', methods=['GET', 'POST'])
 def log_history():
-    print(request.method)
+    if DEBUG:
+        print(request.method)
     if request.method == 'GET':
         # get all raw weather logs and save them as an array
         dates = []
-        for file in os.listdir(raw_logs_path):
-            if "weather_log" in file and ".csv" in file:
+        for file in os.listdir(WEATHER_LOGS_PATH):
+            if re.search("^" + RAW_LOG_PREFIX, file) is not None:
                 # format the string into a date
-                dates.append(file[11:13] + '/' + file[13:15] + '/' + file[15:19])
+                date1 = re.search("\d{8}", file).group()
+                if DEBUG:
+                    print(date1)
+                dates.append(date1[:2] + '/' + date1[2:4] + '/' + date1[4:])
 
         # sort dates
         dates.sort()
@@ -37,7 +35,6 @@ def log_history():
         return render_template("weather_logs.html", dates=dates)
 
     else:
-        print(request)
         rawdatadate = request.form['rawdatadate']
         '''
         things to pass:
@@ -49,15 +46,15 @@ def log_history():
         summary_path, plot_path = "", ""
 
         # get the summary file URL
-        for filename in os.listdir(summaries_path):
+        for filename in os.listdir(SUMMARIES_PATH):
             if rawdatadate in filename:
-                summary_path = summaries_path + filename
+                summary_path = SUMMARIES_PATH + filename
 
         plot_url = ""
         # get the plot file URL
-        for filename in os.listdir(plots_path):
+        for filename in os.listdir(PLOTS_PATH):
             if rawdatadate in filename:
-                plot_path = plots_path + filename
+                plot_path = PLOTS_PATH + filename
                 plot_url = filename
 
         summarydata = ''
@@ -84,11 +81,10 @@ def log_history():
             weather_data_dict[curr_header]['min_times'] = data[4].strip('[').strip(']').split('][')[0].split(',')[:-1]
             weather_data_dict[curr_header]['max_times'] = data[4].strip('[').strip(']').split('][')[1].split(',')[:-1]
 
-        # debug
-        # print(weather_data_dict)
-        # print(rawdatadate)
-        # print(summary_path)
-        # print(plot_path)
+        if DEBUG:
+            print(weather_data_dict)
+            print(rawdatadate)
+            print(summary_path)
+            print(plot_path)
 
         return jsonify(data=weather_data_dict, plot_url=plot_url, header=header)
-        # return render_template("weather_logs.html", data=weather_data_dict, plot_filename=plot_filename)

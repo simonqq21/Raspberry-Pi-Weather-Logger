@@ -9,13 +9,11 @@ import os
 from datetime import datetime, date, timedelta
 from threading import Thread, Event
 import signal
+from config import APP_PATH, WEATHER_LOGS_PATH. RAW_LOG_PREFIX
 
-debug = False # setting debug to True will print data
+DEBUG = False # setting DEBUG to True will print data
 delay = 30 # logging delay
 flash_duration = 0.5 # status LED flash duration
-# specify weather log path and filename
-path = os.path.abspath(os.path.dirname(__file__)) + '/weather_logs/'
-filenameprefix = 'weather_log'
 
 # check if a file exists
 def exists(filename):
@@ -31,7 +29,7 @@ def exists(filename):
 # filename + 4 digit number with leading zeroes starting from 0000 + ".csv"
 def generateFileName(filenameprefix):
     filename = filenameprefix + date.today().strftime('%m%d%Y') + '.csv'
-    if debug: print(filename)
+    if DEBUG: print(filename)
     return filename
 
 
@@ -63,9 +61,9 @@ def BMP180read():
         try:
             bmp_temperature, pressure = sensor.read_temperature(), sensor.read_pressure()
         except OSError:
-            if debug: print("Cannot read BMP180 sensor")
+            if DEBUG: print("Cannot read BMP180 sensor")
         except NameError:
-            if debug: print("BMP180 sensor not initialized, please check your sensor wiring.")
+            if DEBUG: print("BMP180 sensor not initialized, please check your sensor wiring.")
     return bmp_temperature, pressure
 
 # read DHT11 sensor
@@ -74,10 +72,10 @@ def DHT11read():
     while instHumidity is None or instTemperature is None:
         instHumidity, instTemperature = Adafruit_DHT.read(dsensor, pin)
         if instHumidity is None or instTemperature is None:
-            if debug: print("Faulty DHT11 reading")
+            if DEBUG: print("Faulty DHT11 reading")
         else:
             humidity, temperature = instHumidity, instTemperature
-            if debug: print("Good DHT11 reading")
+            if DEBUG: print("Good DHT11 reading")
     return instTemperature, instHumidity
 
 # flash the status LED
@@ -123,7 +121,7 @@ while sensor is None:
     try:
         sensor = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
     except OSError:
-        if debug: print("Cannot initialize BMP180 sensor")
+        if DEBUG: print("Cannot initialize BMP180 sensor")
 
 # weather condition variables
 temperature, humidity, bmp_temperature, pressure = -999, -999, -999, -999
@@ -135,12 +133,12 @@ while True:
     # if a new day has started, create a new log file for the day
     if date.today() > newfiledate.date():
         if (date.today() - newfiledate.date()).days == 1:
-            if debug:
+            if DEBUG:
                 print("closing current file and opening a new file")
         else:
-            if debug:
+            if DEBUG:
                 print("Opening file initially")
-        filepath = createOpenLogFile(path, filenameprefix)
+        filepath = createOpenLogFile(WEATHER_LOGS_PATH, RAW_LOG_PREFIX)
         newfiledate = datetime.now()
 
     # read DHT11 sensor
@@ -155,7 +153,7 @@ while True:
         writer = csv.writer(csvfile, delimiter=',')
         dtnow = datetime.now()
         timeStr = dtnow.strftime('%H:%M:%S')
-        if debug:
+        if DEBUG:
             print("{} {:0.3f}% {:0.3f}C {:0.3f}C {:0.3f}Pa".format(timeStr, humidity, temperature, bmp_temperature, pressure))
 
         # write csv data to file
