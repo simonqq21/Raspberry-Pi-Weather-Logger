@@ -12,7 +12,8 @@ function requestData(ev)
         url: '/history',
         data: $(this).serialize(),
         success: function(result, status, xhr) {
-            setTimeout(function() {showdata(result);}, 500);
+                setTimeout(function() {showdata(result);}, 500);
+
             }
         });
 }
@@ -29,7 +30,6 @@ function get_statistics(data)
 // set the url of the plot image in HTML
 function setplotimage(plot_url)
 {
-    // console.log("/static/files/plots/" + plot_url);
     $("#weathergraph > img").attr("src", "/static/files/plots/" + plot_url);
 }
 

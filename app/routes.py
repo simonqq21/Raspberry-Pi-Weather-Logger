@@ -3,7 +3,9 @@ from app import App
 from datetime import datetime
 import os
 import re
-from app.config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, PLOTS_PATH, RAW_LOG_PREFIX
+from app.config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, \
+PLOTS_PATH, RAW_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX
+import subprocess
 
 DEBUG = True
 
@@ -42,6 +44,7 @@ def log_history():
         plot image file URL
         minimum and maximum times of the day for temperature, pressure, and humidity
         '''
+        month, day, year = rawdatadate[:2], rawdatadate[3:5], rawdatadate[6:]
         rawdatadate = rawdatadate[:2] + rawdatadate[3:5] + rawdatadate[6:]
         summary_path, plot_path, plot_url = "", "", ""
 
@@ -50,21 +53,22 @@ def log_history():
             if rawdatadate in filename:
                 summary_path = SUMMARIES_PATH + filename
 
-        if summary_path == '':
-            if DEBUG:
-                print("summary file does not exist")
-
-
         # get the plot file URL
         for filename in os.listdir(PLOTS_PATH):
             if rawdatadate in filename:
-                plot_path = PLOTS_PATH + filename
                 plot_url = filename
 
-        if plot_path == '':
+        if summary_path == '' or plot_url == '':
             if DEBUG:
-                print("plot image file does not exist")
-
+                print("summary file or plot image file does not exist")
+            proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} \
+            -g'.format(APP_PATH, month, day, year), stdout=subprocess.PIPE, shell=True)
+            proc1.wait()
+            output = proc1.communicate()[0]
+            output = str(output, 'UTF-8')
+            print(output)
+            summary_path = SUMMARIES_PATH + SUMMARY_PREFIX + rawdatadate + '.txt'
+            plot_url = PLOT_PREFIX + rawdatadate + '.png'
 
         # process the summary
         summarydata = ''
@@ -93,6 +97,6 @@ def log_history():
             print(weather_data_dict)
             print(rawdatadate)
             print(summary_path)
-            print(plot_path)
+            print(plot_url)
 
         return jsonify(data=weather_data_dict, plot_url=plot_url, header=header)
