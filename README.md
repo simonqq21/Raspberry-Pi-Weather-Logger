@@ -5,7 +5,7 @@ This application logs temperature, barometric pressure, and relative humidity da
 
 ## Sample Output
 ### Plot Image
-![weather data for 02192021](/weather_logs/plot_02192021.png)
+![weather data for 02192021](/app/static/files/plots/plot_02192021.png)
 
 ### Text Output on Command Line
     Day: 02/19/2021
