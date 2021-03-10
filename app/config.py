@@ -17,6 +17,15 @@ REPORTS_FOLDER = 'reports/'
 PLOTS_FOLDER = 'plots/'
 
 # path for the generated data of the weather logger
+WEATHER_LOGS_STATIC_PATH = STATIC_PATH + WEATHER_LOGS_FOLDER
+# absolute path of summarized data
+SUMMARIES_STATIC_PATH = STATIC_PATH + SUMMARIES_FOLDER
+# absolute path of reports
+REPORTS_STATIC_PATH = STATIC_PATH + REPORTS_FOLDER
+# absolute path of weather plot images
+PLOTS_STATIC_PATH = STATIC_PATH + PLOTS_FOLDER
+
+# path for the generated data of the weather logger
 APP_DATA_PATH = APP_PATH + STATIC_PATH
 # absolute path of weather logs
 WEATHER_LOGS_PATH = APP_DATA_PATH + WEATHER_LOGS_FOLDER

@@ -4,8 +4,8 @@ from datetime import datetime
 import os
 import re
 from app.config import APP_PATH, APP_DATA_PATH, STATIC_PATH, \
-WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 WEATHER_LOGS_PATH, SUMMARIES_PATH, REPORTS_PATH, PLOTS_PATH, \
+WEATHER_LOGS_STATIC_PATH, SUMMARIES_STATIC_PATH, REPORTS_STATIC_PATH, PLOTS_STATIC_PATH, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, REPORT_PREFIX, PLOT_PREFIX
 import subprocess
 
@@ -58,12 +58,12 @@ def log_history():
         # get the report file URL
         for filename in os.listdir(REPORTS_PATH):
             if rawdatadate in filename:
-                report_path = STATIC_PATH + REPORTS_FOLDER + filename
+                report_path = REPORTS_STATIC_PATH + filename
 
         # get the plot file URL
         for filename in os.listdir(PLOTS_PATH):
             if rawdatadate in filename:
-                plot_url = STATIC_PATH + PLOTS_FOLDER + filename
+                plot_url = PLOTS_STATIC_PATH + filename
 
         if summary_path == '' or plot_url == '' or report_path == '':
             if DEBUG:
@@ -75,11 +75,11 @@ def log_history():
             output = str(output, 'UTF-8')
             print(output)
             summary_path = SUMMARIES_PATH + SUMMARY_PREFIX + rawdatadate + '.txt'
-            report_path = STATIC_PATH + REPORTS_FOLDER + REPORT_PREFIX + rawdatadate + '.txt'
-            plot_url = STATIC_PATH + PLOTS_FOLDER + PLOT_PREFIX + rawdatadate + '.png'
+            report_path = REPORTS_STATIC_PATH + REPORT_PREFIX + rawdatadate + '.txt'
+            plot_url = PLOTS_STATIC_PATH + PLOT_PREFIX + rawdatadate + '.png'
 
         # raw csv data path
-        processed_data_path = STATIC_PATH + WEATHER_LOGS_FOLDER + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
+        processed_data_path = WEATHER_LOGS_STATIC_PATH + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
 
         # process the summary
         summarydata = ''

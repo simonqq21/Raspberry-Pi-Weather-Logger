@@ -97,10 +97,8 @@ function showdata(result, status, xhr) {
 function setDownloadLink(filepath, btnid)
 {
     button = $("#" + btnid);
-    console.log(button.text());
     button.attr('href', filepath);
     button.attr('download', filepath);
-    button.attr('target', '_blank');
 }
 
 function downloadFile(btnid)
