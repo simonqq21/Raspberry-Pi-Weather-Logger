@@ -172,6 +172,10 @@ $(document).ready(function() {
     // add event handler to data load button
     $("#dateform").on('submit', requestData);
 
+    // download buttons
+    $("reportdlbtn").click();
+    $("datadlbtn").click();
+
     // define weather data columns and statistical values
     weathervalues = ['Humidity', 'Temperature', 'BMP_temperature', 'Pressure'];
     statistical_data = ['mean', 'std', 'min', 'max'];
