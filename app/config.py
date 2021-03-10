@@ -7,16 +7,27 @@ import os
 
 # path for the python scripts
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
+# used for building Flask URLs
+STATIC_PATH = '/static/files/'
+
+# folder names
+WEATHER_LOGS_FOLDER = 'weather_logs/'
+SUMMARIES_FOLDER = 'summaries/'
+REPORTS_FOLDER = 'reports/'
+PLOTS_FOLDER = 'plots/'
+
 # path for the generated data of the weather logger
-APP_DATA_PATH = APP_PATH + '/static/files/'
-# path of weather logs
-WEATHER_LOGS_PATH = APP_DATA_PATH + 'weather_logs/'
+APP_DATA_PATH = APP_PATH + STATIC_PATH
+# absolute path of weather logs
+WEATHER_LOGS_PATH = APP_DATA_PATH + WEATHER_LOGS_FOLDER
 # absolute path of summarized data
-SUMMARIES_PATH = APP_DATA_PATH + 'summaries/'
+SUMMARIES_PATH = APP_DATA_PATH + SUMMARIES_FOLDER
 # absolute path of reports
-REPORTS_PATH = APP_DATA_PATH + 'reports/'
+REPORTS_PATH = APP_DATA_PATH + REPORTS_FOLDER
 # absolute path of weather plot images
-PLOTS_PATH = APP_DATA_PATH + 'plots/'
+PLOTS_PATH = APP_DATA_PATH + PLOTS_FOLDER
+
+# filename prefixes
 # filename prefix for raw weather logs
 RAW_LOG_PREFIX = 'weather_log'
 # filename prefix for processed weather logs

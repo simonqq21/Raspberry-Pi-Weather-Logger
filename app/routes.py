@@ -3,8 +3,10 @@ from app import App
 from datetime import datetime
 import os
 import re
-from app.config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, REPORTS_PATH, \
-PLOTS_PATH, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, REPORT_PREFIX, PLOT_PREFIX
+from app.config import APP_PATH, APP_DATA_PATH, STATIC_PATH, \
+WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
+WEATHER_LOGS_PATH, SUMMARIES_PATH, REPORTS_PATH, PLOTS_PATH, \
+RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, REPORT_PREFIX, PLOT_PREFIX
 import subprocess
 
 DEBUG = True
@@ -46,7 +48,7 @@ def log_history():
         '''
         month, day, year = rawdatadate[:2], rawdatadate[3:5], rawdatadate[6:]
         rawdatadate = rawdatadate[:2] + rawdatadate[3:5] + rawdatadate[6:]
-        summary_path, report_path, plot_name = "", "", ""
+        summary_path, report_path, plot_url = "", "", ""
 
         # get the summary file URL
         for filename in os.listdir(SUMMARIES_PATH):
@@ -56,14 +58,14 @@ def log_history():
         # get the report file URL
         for filename in os.listdir(REPORTS_PATH):
             if rawdatadate in filename:
-                report_path = REPORTS_PATH + filename
+                report_path = STATIC_PATH + REPORTS_FOLDER + filename
 
         # get the plot file URL
         for filename in os.listdir(PLOTS_PATH):
             if rawdatadate in filename:
-                plot_name = filename
+                plot_url = STATIC_PATH + PLOTS_FOLDER + filename
 
-        if summary_path == '' or plot_name == '' or report_path == '':
+        if summary_path == '' or plot_url == '' or report_path == '':
             if DEBUG:
                 print("summary file or plot image file does not exist")
             proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} \
@@ -73,11 +75,11 @@ def log_history():
             output = str(output, 'UTF-8')
             print(output)
             summary_path = SUMMARIES_PATH + SUMMARY_PREFIX + rawdatadate + '.txt'
-            report_path = REPORTS_PATH + REPORT_PREFIX + rawdatadate + '.txt'
-            plot_name = PLOT_PREFIX + rawdatadate + '.png'
+            report_path = STATIC_PATH + REPORTS_FOLDER + REPORT_PREFIX + rawdatadate + '.txt'
+            plot_url = STATIC_PATH + PLOTS_FOLDER + PLOT_PREFIX + rawdatadate + '.png'
 
         # raw csv data path
-        processed_data_path = WEATHER_LOGS_PATH + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
+        processed_data_path = STATIC_PATH + WEATHER_LOGS_FOLDER + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
 
         # process the summary
         summarydata = ''
@@ -106,9 +108,9 @@ def log_history():
             print(weather_data_dict)
             print(rawdatadate)
             print(summary_path)
-            print(plot_name)
+            print(plot_url)
             print(report_path)
             print(processed_data_path)
 
-        return jsonify(data=weather_data_dict, plot_name=plot_name, report_path=report_path,
+        return jsonify(data=weather_data_dict, plot_url=plot_url, report_path=report_path,
         data_path=processed_data_path)

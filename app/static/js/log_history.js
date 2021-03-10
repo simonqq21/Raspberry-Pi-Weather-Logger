@@ -32,7 +32,7 @@ function get_statistics(data)
 // set the url of the plot image in HTML
 function setplotimage(plot_url)
 {
-    $("#weathergraph > img").attr("src", "/static/files/plots/" + plot_url);
+    $("#weathergraph > img").attr("src", plot_url);
 }
 
 // fill up the values of the extreme value time fields
@@ -82,18 +82,30 @@ function showdata(result, status, xhr) {
     weatherdata = result.data;
     // get weather data graph URL
     plot_url = result.plot_url;
+    report_path = result.report_path;
+    data_path = result.data_path;
 
-    if (jQuery.isEmptyObject(weatherdata)) {
-
-    }
     // if the weather data is not empty, display completed view with the data
-    else {
-        get_statistics(weatherdata);
-        setplotimage(plot_url);
-        get_times(weatherdata);
+    get_statistics(weatherdata);
+    setplotimage(plot_url);
+    get_times(weatherdata);
+    setDownloadLink(report_path, "reportdlbtn");
+    setDownloadLink(data_path, "datadlbtn");
+    setview("complete");
+}
 
-        setview("complete");
-    }
+function setDownloadLink(filepath, btnid)
+{
+    button = $("#" + btnid);
+    console.log(button.text());
+    button.attr('href', filepath);
+    button.attr('download', filepath);
+    button.attr('target', '_blank');
+}
+
+function downloadFile(btnid)
+{
+    window.open($(this).attr('href'), '_blank');
 }
 
 // sets the main view to either empty, loading, or complete
@@ -173,8 +185,8 @@ $(document).ready(function() {
     $("#dateform").on('submit', requestData);
 
     // download buttons
-    $("reportdlbtn").click();
-    $("datadlbtn").click();
+    $("#reportdlbtn").click(downloadFile);
+    $("#datadlbtn").click(downloadFile);
 
     // define weather data columns and statistical values
     weathervalues = ['Humidity', 'Temperature', 'BMP_temperature', 'Pressure'];
