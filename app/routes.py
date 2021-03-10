@@ -3,8 +3,8 @@ from app import App
 from datetime import datetime
 import os
 import re
-from app.config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, \
-PLOTS_PATH, RAW_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX
+from app.config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, REPORTS_PATH, \
+PLOTS_PATH, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, REPORT_PREFIX, PLOT_PREFIX
 import subprocess
 
 DEBUG = True
@@ -46,19 +46,24 @@ def log_history():
         '''
         month, day, year = rawdatadate[:2], rawdatadate[3:5], rawdatadate[6:]
         rawdatadate = rawdatadate[:2] + rawdatadate[3:5] + rawdatadate[6:]
-        summary_path, plot_path, plot_url = "", "", ""
+        summary_path, report_path, plot_name = "", "", ""
 
         # get the summary file URL
         for filename in os.listdir(SUMMARIES_PATH):
             if rawdatadate in filename:
                 summary_path = SUMMARIES_PATH + filename
 
+        # get the report file URL
+        for filename in os.listdir(REPORTS_PATH):
+            if rawdatadate in filename:
+                report_path = REPORTS_PATH + filename
+
         # get the plot file URL
         for filename in os.listdir(PLOTS_PATH):
             if rawdatadate in filename:
-                plot_url = filename
+                plot_name = filename
 
-        if summary_path == '' or plot_url == '':
+        if summary_path == '' or plot_name == '' or report_path == '':
             if DEBUG:
                 print("summary file or plot image file does not exist")
             proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} \
@@ -68,7 +73,11 @@ def log_history():
             output = str(output, 'UTF-8')
             print(output)
             summary_path = SUMMARIES_PATH + SUMMARY_PREFIX + rawdatadate + '.txt'
-            plot_url = PLOT_PREFIX + rawdatadate + '.png'
+            report_path = REPORTS_PATH + REPORT_PREFIX + rawdatadate + '.txt'
+            plot_name = PLOT_PREFIX + rawdatadate + '.png'
+
+        # raw csv data path
+        processed_data_path = WEATHER_LOGS_PATH + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
 
         # process the summary
         summarydata = ''
@@ -97,6 +106,9 @@ def log_history():
             print(weather_data_dict)
             print(rawdatadate)
             print(summary_path)
-            print(plot_url)
+            print(plot_name)
+            print(report_path)
+            print(processed_data_path)
 
-        return jsonify(data=weather_data_dict, plot_url=plot_url, header=header)
+        return jsonify(data=weather_data_dict, plot_name=plot_name, report_path=report_path,
+        data_path=processed_data_path)

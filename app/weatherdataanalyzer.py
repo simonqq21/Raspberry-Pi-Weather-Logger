@@ -7,12 +7,13 @@ import os
 from datetime import datetime, date, time
 import argparse
 import subprocess
-from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, PLOTS_PATH, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX
+from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, REPORTS_PATH, PLOTS_PATH, \
+RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX, REPORT_PREFIX
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
 
-DEBUG = False
+DEBUG = True
 INTERVAL = 5
 
 '''
@@ -22,9 +23,6 @@ for the mean, standard deviation, maximum value and minimum value for temperatur
 and humidity of a particular day. The data will be graphed and saved as an image file.
 '''
 
-# file SUMMARIES_PATH and filename for weather logs
-filenameprefix = "weather_log"
-
 # check if a file exists
 def exists(filename):
     try:
@@ -33,6 +31,10 @@ def exists(filename):
         return 0
     f.close()
     return 1
+
+# append newline to string
+def appendNewline(str):
+    return str + '\n'
 
 # parse arguments from the command line
 parser = argparse.ArgumentParser()
@@ -58,11 +60,11 @@ else:
 
 # initial averaging of weather data of the specified day to the specified interval
 # get the filename and filepath of the raw log file based on the date from arguments
-filename = (filenameprefix + '{:02}'.format(month) + '{:02}'.format(day) + str(year) + '.csv')
+strDate = '{:02}'.format(month) + '{:02}'.format(day) + str(year)
+filename = (RAW_LOG_PREFIX + strDate + '.csv')
 filepath = WEATHER_LOGS_PATH + filename
 # get the filename and filepath of the processed log file based on the date from arguments
-processed_filename = 'processed_' + filename
-processed_filepath = WEATHER_LOGS_PATH + processed_filename
+processed_filepath = WEATHER_LOGS_PATH + PROCESSED_LOG_PREFIX + strDate + '.csv'
 # call a subprocess of the weatherlogaverage.py to average the weather data
 if exists(filepath):
     proc1 = subprocess.Popen('python3 {}/weatherlogaverage.py -m {} -d {} -y {} --minute {}'
@@ -89,7 +91,6 @@ header = header[1:]
 
 # create date object from parameters
 day = date(year, month, day)
-# print(day)
 
 # get the time array from filearr and convert it into datetime with the day
 timeList = list(filearr[1:,0])
@@ -176,26 +177,60 @@ for i in range(len(header)):
     summary_dict[header[i]] = sub_dict1
 # print(summary_dict)
 
-# print summarized data for the day
-print('Day: {}'.format(day.strftime('%m/%d/%Y')))
+stats = ['mean', 'std', 'min', 'max']
+
+# generate report file
+report_filepath = REPORTS_PATH + REPORT_PREFIX + day.strftime('%m%d%Y') + '.txt'
+try:
+    report_file = open(report_filepath, 'w')
+except:
+    print('Write error')
+
+# save data to report file
+str = 'Day: {}'.format(day.strftime('%m/%d/%Y'))
+if DEBUG:
+    print(str)
+report_file.write(appendNewline(str))
+
 # print the mean, standard deviation, minimum value, and maximum value of each value column
 for column_name in summary_dict.keys():
-    print('{} mean: {:.3f}'.format(column_name, summary_dict[column_name]['mean']))
-    print('{} std: {:.3f}'.format(column_name, summary_dict[column_name]['std']))
-    print('{} min: {:.3f}'.format(column_name, summary_dict[column_name]['min']))
-    print('{} max: {:.3f}'.format(column_name, summary_dict[column_name]['max']))
-    print()
+
+    for st in stats:
+        str = '{} {}: {:.3f}'.format(column_name, st, summary_dict[column_name][st])
+        if DEBUG:
+            print(str)
+        report_file.write(appendNewline(str))
+    if DEBUG:
+        print()
+    report_file.write('\n')
 
 # print the times of the day with the minimum and maximum weather conditions
 for column_name in summary_dict.keys():
-    print("Times of the day with minimum {}".format(column_name))
-    for time in summary_dict[column_name]['min_times']:
-        print(time.strftime('%H:%M:%S'))
+    str = "Times of the day with minimum {}".format(column_name)
+    if DEBUG:
+        print(str)
+    report_file.write(appendNewline(str))
 
-    print("Times of the day with maximum {}".format(column_name))
+    for time in summary_dict[column_name]['min_times']:
+        str = time.strftime('%H:%M:%S')
+        if DEBUG:
+            print(str)
+        report_file.write(appendNewline(str))
+
+    str = "Times of the day with maximum {}".format(column_name)
+    if DEBUG:
+        print(str)
+    report_file.write(appendNewline(str))
+
     for time in summary_dict[column_name]['max_times']:
-        print(time.strftime('%H:%M:%S'))
-    print()
+        str = time.strftime('%H:%M:%S')
+        if DEBUG:
+            print(str)
+        report_file.write(appendNewline(str))
+    if DEBUG:
+        print()
+    report_file.write('\n')
+
 
 if args.graph:
     print('Creating weather data graph')
