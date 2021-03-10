@@ -5,6 +5,7 @@ function requestData(ev)
     ev.preventDefault();
     // set the view to loading view
     setview("loading");
+    setGenerateView = setTimeout(function () {setview("generating");}, 1000);
 
     // AJAX request
     $.ajax ({
@@ -12,10 +13,11 @@ function requestData(ev)
         url: '/history',
         data: $(this).serialize(),
         success: function(result, status, xhr) {
-                setTimeout(function() {showdata(result);}, 500);
-
-            }
-        });
+            clearTimeout(setGenerateView);
+            showdata(result);
+            // setTimeout(function() {showdata(result);}, 500);
+        }
+    });
 }
 
 // fill up the values of the statistical tables
