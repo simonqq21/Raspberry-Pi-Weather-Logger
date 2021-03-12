@@ -6,11 +6,10 @@ import re
 from datetime import timedelta, date, time, datetime
 import csv
 from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX
+from config import DEBUG
 
 # This Python script averages all raw sensor data in the logging directory to a specified interval,
 # default 1 minute. It overwrites raw data with its average, and ignores data that is already averaged.
-
-DEBUG = False
 
 # averaging interval in minutes
 INTERVAL = 1
@@ -20,7 +19,7 @@ INTERVAL = 1
 def subtract_time(time1, time2):
     return (datetime.combine(date.min, time1) - datetime.combine(date.min, time2))
 
-today = datetime.now().date()
+today = date.today()
 
 # get the list of files in the weather log dir and sort it
 filenames = os.listdir(APP_DATA_PATH + WEATHER_LOGS_FOLDER)

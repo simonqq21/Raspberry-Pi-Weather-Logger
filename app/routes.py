@@ -3,12 +3,11 @@ from app import App
 from datetime import datetime, date
 import os
 import re
+import subprocess
 from app.config import APP_PATH, APP_DATA_PATH, STATIC_PATH, \
 WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, REPORT_PREFIX, PLOT_PREFIX
-import subprocess
-
-DEBUG = True
+from app.config import DEBUG
 
 # base page
 @App.route('/')

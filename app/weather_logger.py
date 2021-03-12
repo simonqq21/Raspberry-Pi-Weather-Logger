@@ -9,9 +9,10 @@ import os
 from datetime import datetime, date, timedelta
 from threading import Thread, Event
 import signal
+import subprocess
 from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX
+from config import DEBUG
 
-DEBUG = False # setting DEBUG to True will print data
 delay = 30 # logging delay
 flash_duration = 0.5 # status LED flash duration
 
@@ -140,6 +141,13 @@ while True:
                 print("Opening file initially")
         filepath = createOpenLogFile(APP_DATA_PATH + WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX)
         newfiledate = datetime.now()
+
+        # call a process to average all unaveraged raw log files to 1 minute intervals
+        proc1 = subprocess.Popen('python3 -m {}/average_raw_logs.py'.format(APP_PATH),
+        stdout = subprocess.PIPE, shell=True)
+        output = proc1.communicate()[0]
+        output = str(output, 'UTF-8')
+        print(output)
 
     # read DHT11 sensor
     temperature, humidity = DHT11read()

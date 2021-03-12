@@ -10,11 +10,11 @@ import subprocess
 from config import APP_PATH, APP_DATA_PATH, \
 WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX, REPORT_PREFIX
+from config import DEBUG
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
 
-DEBUG = True
 # time interval of processed log in minutes
 INTERVAL = 5
 

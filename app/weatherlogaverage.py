@@ -5,8 +5,8 @@ import csv
 from datetime import datetime, date, time, timedelta
 import argparse
 from config import APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX
+from config import DEBUG
 
-DEBUG = False
 '''
 This script converts a raw CSV file from the logger into a new CSV file with
 a different measuring interval.
