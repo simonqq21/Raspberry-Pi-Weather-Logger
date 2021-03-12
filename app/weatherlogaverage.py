@@ -4,7 +4,7 @@ import os
 import csv
 from datetime import datetime, date, time, timedelta
 import argparse
-from config import WEATHER_LOGS_PATH, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX
+from config import APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX
 
 DEBUG = False
 '''
@@ -61,7 +61,7 @@ filename = (RAW_LOG_PREFIX + '{:02}'.format(args.m) + '{:02}'.format(args.d)
 + str(args.y) + '.csv')
 if DEBUG:
     print(filename)
-filepath = WEATHER_LOGS_PATH + filename
+filepath = APP_DATA_PATH + WEATHER_LOGS_FOLDER + filename
 # if exists(filepath):
 file = open(filepath, 'r', newline='')
 filereader = csv.reader(file, delimiter=',')
@@ -85,7 +85,7 @@ else:
         + str(args.y) + '.csv')
         if DEBUG:
             print(filename)
-        filepath = WEATHER_LOGS_PATH + filename
+        filepath = APP_DATA_PATH + WEATHER_LOGS_FOLDER + filename
 
     # write to the file
     try:

@@ -9,7 +9,7 @@ import os
 from datetime import datetime, date, timedelta
 from threading import Thread, Event
 import signal
-from config import APP_PATH, WEATHER_LOGS_PATH. RAW_LOG_PREFIX
+from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX
 
 DEBUG = False # setting DEBUG to True will print data
 delay = 30 # logging delay
@@ -138,7 +138,7 @@ while True:
         else:
             if DEBUG:
                 print("Opening file initially")
-        filepath = createOpenLogFile(WEATHER_LOGS_PATH, RAW_LOG_PREFIX)
+        filepath = createOpenLogFile(APP_DATA_PATH + WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX)
         newfiledate = datetime.now()
 
     # read DHT11 sensor

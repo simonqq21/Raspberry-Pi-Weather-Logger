@@ -7,13 +7,15 @@ import os
 from datetime import datetime, date, time
 import argparse
 import subprocess
-from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_PATH, SUMMARIES_PATH, REPORTS_PATH, PLOTS_PATH, \
+from config import APP_PATH, APP_DATA_PATH, \
+WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX, REPORT_PREFIX
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
 
 DEBUG = True
+# time interval of processed log in minutes
 INTERVAL = 5
 
 '''
@@ -61,10 +63,11 @@ else:
 # initial averaging of weather data of the specified day to the specified interval
 # get the filename and filepath of the raw log file based on the date from arguments
 strDate = '{:02}'.format(month) + '{:02}'.format(day) + str(year)
-filename = (RAW_LOG_PREFIX + strDate + '.csv')
-filepath = WEATHER_LOGS_PATH + filename
+filename = RAW_LOG_PREFIX + strDate + '.csv'
+weather_logs_path = APP_DATA_PATH + WEATHER_LOGS_FOLDER
+filepath = weather_logs_path + filename
 # get the filename and filepath of the processed log file based on the date from arguments
-processed_filepath = WEATHER_LOGS_PATH + PROCESSED_LOG_PREFIX + strDate + '.csv'
+processed_filepath = weather_logs_path + PROCESSED_LOG_PREFIX + strDate + '.csv'
 # call a subprocess of the weatherlogaverage.py to average the weather data
 if exists(filepath):
     proc1 = subprocess.Popen('python3 {}/weatherlogaverage.py -m {} -d {} -y {} --minute {}'
@@ -180,7 +183,7 @@ for i in range(len(header)):
 stats = ['mean', 'std', 'min', 'max']
 
 # generate report file
-report_filepath = REPORTS_PATH + REPORT_PREFIX + day.strftime('%m%d%Y') + '.txt'
+report_filepath = APP_DATA_PATH + REPORTS_FOLDER + REPORT_PREFIX + day.strftime('%m%d%Y') + '.txt'
 try:
     report_file = open(report_filepath, 'w')
 except:
@@ -192,7 +195,8 @@ if DEBUG:
     print(str)
 report_file.write(appendNewline(str))
 
-# print the mean, standard deviation, minimum value, and maximum value of each value column
+# save the mean, standard deviation, minimum value, and maximum value of each value column
+# to the report file
 for column_name in summary_dict.keys():
 
     for st in stats:
@@ -204,7 +208,7 @@ for column_name in summary_dict.keys():
         print()
     report_file.write('\n')
 
-# print the times of the day with the minimum and maximum weather conditions
+# save the times of the day with the minimum and maximum weather conditions to the report file
 for column_name in summary_dict.keys():
     str = "Times of the day with minimum {}".format(column_name)
     if DEBUG:
@@ -284,14 +288,14 @@ if args.graph:
     plt.suptitle('Weather Data for {}'.format(day.strftime('%m%d%Y')), fontdict=suptitlefont)
     # set tight layout to set proper spacing between elements
     figure.set_tight_layout(True)
-    # save the graph and show it
-    plt.savefig(PLOTS_PATH + PLOT_PREFIX + '{}.png'.format(day.strftime('%m%d%Y')), dpi=160, bbox_inches='tight')
-    # plt.show()
+    # save the graph to a file
+    plt.savefig(APP_DATA_PATH + PLOTS_FOLDER + PLOT_PREFIX + '{}.png'.format(day.strftime('%m%d%Y')),
+    dpi=160, bbox_inches='tight')
 
 # open a new file to save the summarized data
 summary_filename = SUMMARY_PREFIX + day.strftime('%m%d%Y') + '.txt'
 print(summary_filename)
-summary_filepath = SUMMARIES_PATH + summary_filename
+summary_filepath = APP_DATA_PATH + SUMMARIES_FOLDER + summary_filename
 try:
     summary_file = open(summary_filepath, 'w')
 except:

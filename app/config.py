@@ -1,7 +1,11 @@
 #!/usr/bin/python3
 
-# This is the global configuration file for this application. It contains file paths of the
-# application.
+'''
+This is the global configuration file for this application. It contains file paths and file prefixes
+of the application.
+absolute paths are used to access files from Python scripts, while Flask static paths are used
+to access files from the webpage in the web browser.
+'''
 
 import os
 
@@ -9,32 +13,14 @@ import os
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
 # used for building Flask URLs
 STATIC_PATH = '/static/files/'
+# absolute path for the generated data of the weather logger
+APP_DATA_PATH = APP_PATH + STATIC_PATH
 
-# folder names
+# folder names within the static path
 WEATHER_LOGS_FOLDER = 'weather_logs/'
 SUMMARIES_FOLDER = 'summaries/'
 REPORTS_FOLDER = 'reports/'
 PLOTS_FOLDER = 'plots/'
-
-# path for the generated data of the weather logger
-WEATHER_LOGS_STATIC_PATH = STATIC_PATH + WEATHER_LOGS_FOLDER
-# absolute path of summarized data
-SUMMARIES_STATIC_PATH = STATIC_PATH + SUMMARIES_FOLDER
-# absolute path of reports
-REPORTS_STATIC_PATH = STATIC_PATH + REPORTS_FOLDER
-# absolute path of weather plot images
-PLOTS_STATIC_PATH = STATIC_PATH + PLOTS_FOLDER
-
-# path for the generated data of the weather logger
-APP_DATA_PATH = APP_PATH + STATIC_PATH
-# absolute path of weather logs
-WEATHER_LOGS_PATH = APP_DATA_PATH + WEATHER_LOGS_FOLDER
-# absolute path of summarized data
-SUMMARIES_PATH = APP_DATA_PATH + SUMMARIES_FOLDER
-# absolute path of reports
-REPORTS_PATH = APP_DATA_PATH + REPORTS_FOLDER
-# absolute path of weather plot images
-PLOTS_PATH = APP_DATA_PATH + PLOTS_FOLDER
 
 # filename prefixes
 # filename prefix for raw weather logs
@@ -55,7 +41,7 @@ def create_path(path):
 
 create_path(APP_PATH)
 create_path(APP_DATA_PATH)
-create_path(WEATHER_LOGS_PATH)
-create_path(SUMMARIES_PATH)
-create_path(REPORTS_PATH)
-create_path(PLOTS_PATH)
+create_path(APP_DATA_PATH + WEATHER_LOGS_FOLDER)
+create_path(APP_DATA_PATH + SUMMARIES_FOLDER)
+create_path(APP_DATA_PATH + REPORTS_FOLDER)
+create_path(APP_DATA_PATH + PLOTS_FOLDER)

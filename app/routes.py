@@ -1,31 +1,35 @@
 from flask import render_template, url_for, request, jsonify
 from app import App
-from datetime import datetime
+from datetime import datetime, date
 import os
 import re
 from app.config import APP_PATH, APP_DATA_PATH, STATIC_PATH, \
-WEATHER_LOGS_PATH, SUMMARIES_PATH, REPORTS_PATH, PLOTS_PATH, \
-WEATHER_LOGS_STATIC_PATH, SUMMARIES_STATIC_PATH, REPORTS_STATIC_PATH, PLOTS_STATIC_PATH, \
+WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, REPORT_PREFIX, PLOT_PREFIX
 import subprocess
 
 DEBUG = True
 
+# base page
 @App.route('/')
 @App.route('/index')
 def index():
     return render_template("index.html")
 
-# if http get request, serve the empty page and ask user to load raw data
-# if http post request,
+'''
+weather log history page
+if GET request, ask user for date
+else if POST request, display data on that date
+'''
 @App.route('/history', methods=['GET', 'POST'])
 def log_history():
     if DEBUG:
         print(request.method)
+
     if request.method == 'GET':
-        # get all raw weather logs and save them as an array
+        # get all raw weather log dates and save them as an array
         dates = []
-        for file in os.listdir(WEATHER_LOGS_PATH):
+        for file in os.listdir(APP_DATA_PATH + WEATHER_LOGS_FOLDER):
             if re.search("^" + RAW_LOG_PREFIX, file) is not None:
                 # format the string into a date
                 date1 = re.search("\d{8}", file).group()
@@ -36,50 +40,65 @@ def log_history():
         # sort dates
         dates.sort()
 
+        # display the page
         return render_template("weather_logs.html", dates=dates)
 
+    # POST request
     else:
+        # get the date the user selected
         rawdatadate = request.form['rawdatadate']
         '''
         things to pass:
         mean, std, min, and max for temperature, pressure, and humidity
-        plot image file URL
         minimum and maximum times of the day for temperature, pressure, and humidity
+        averaged raw weather data URL
+        weather report URL
+        plot image static URL
         '''
-        month, day, year = rawdatadate[:2], rawdatadate[3:5], rawdatadate[6:]
+        # get month, day, and year
+        month, day, year = int(rawdatadate[:2]), int(rawdatadate[3:5]), int(rawdatadate[6:])
+        # convert to date object
+        lDate = date(year, month, day)
+        # get date string without the slashes
         rawdatadate = rawdatadate[:2] + rawdatadate[3:5] + rawdatadate[6:]
+        # URLs
         summary_path, report_path, plot_url = "", "", ""
 
-        # get the summary file URL
-        for filename in os.listdir(SUMMARIES_PATH):
+        # get the absolute summary file URL
+        for filename in os.listdir(APP_DATA_PATH + SUMMARIES_FOLDER):
             if rawdatadate in filename:
-                summary_path = SUMMARIES_PATH + filename
+                summary_path = APP_DATA_PATH + SUMMARIES_FOLDER + filename
 
-        # get the report file URL
-        for filename in os.listdir(REPORTS_PATH):
+        # get the static report file URL
+        for filename in os.listdir(APP_DATA_PATH + REPORTS_FOLDER):
             if rawdatadate in filename:
-                report_path = REPORTS_STATIC_PATH + filename
+                report_path = STATIC_PATH + REPORTS_FOLDER + filename
 
-        # get the plot file URL
-        for filename in os.listdir(PLOTS_PATH):
+        # get the static plot file URL
+        for filename in os.listdir(APP_DATA_PATH + PLOTS_FOLDER):
             if rawdatadate in filename:
-                plot_url = PLOTS_STATIC_PATH + filename
+                plot_url = STATIC_PATH + PLOTS_FOLDER + filename
 
-        if summary_path == '' or plot_url == '' or report_path == '':
+        # if one of the required generated data does not exist
+        if summary_path == '' or plot_url == '' or report_path == '' or \
+        lDate == date.today():
             if DEBUG:
+                print("today!!!")
                 print("summary file or plot image file does not exist")
+            # call process to generate the information
             proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} \
             -g'.format(APP_PATH, month, day, year), stdout=subprocess.PIPE, shell=True)
             proc1.wait()
             output = proc1.communicate()[0]
             output = str(output, 'UTF-8')
             print(output)
-            summary_path = SUMMARIES_PATH + SUMMARY_PREFIX + rawdatadate + '.txt'
-            report_path = REPORTS_STATIC_PATH + REPORT_PREFIX + rawdatadate + '.txt'
-            plot_url = PLOTS_STATIC_PATH + PLOT_PREFIX + rawdatadate + '.png'
+
+            summary_path = APP_DATA_PATH + SUMMARIES_FOLDER + SUMMARY_PREFIX + rawdatadate + '.txt'
+            report_path = STATIC_PATH + REPORTS_FOLDER + REPORT_PREFIX + rawdatadate + '.txt'
+            plot_url = STATIC_PATH + PLOTS_FOLDER + PLOT_PREFIX + rawdatadate + '.png'
 
         # raw csv data path
-        processed_data_path = WEATHER_LOGS_STATIC_PATH + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
+        processed_data_path = STATIC_PATH + WEATHER_LOGS_FOLDER + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
 
         # process the summary
         summarydata = ''
