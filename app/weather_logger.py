@@ -150,6 +150,14 @@ while True:
             output = str(output, 'UTF-8')
             print(output)
 
+        # call a process to (re)generate report data for days with incomplete or missing reports
+        proc1 = subprocess.Popen('python3 {}/process_incomplete_reports.py'.format(APP_PATH),
+        stdout = subprocess.PIPE, shell=True)
+        if DEBUG:
+            output = proc1.communicate()[0]
+            output = str(output, 'UTF-8')
+            print(output)
+
     # read DHT11 sensor
     temperature, humidity = DHT11read()
 
