@@ -11,12 +11,10 @@ from config import APP_PATH, APP_DATA_PATH, \
 WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX, REPORT_PREFIX
 from config import DEBUG
+from config import PROCESSED_LOGGING_FREQ
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
-
-# time interval of processed log in minutes
-INTERVAL = 5
 
 '''
 This program takes optional year, month, day, and interval as parameters.
@@ -46,8 +44,8 @@ parser.add_argument('-y', help='numeric four digit year', default=date.today().y
 parser.add_argument('-g', '--graph', help='graph the data and save it to an image file', action='store_true')
 group2 = parser.add_mutually_exclusive_group()
 group2.add_argument('-hr', '--hour', help='The new log interval in hours', type=float)
-group2.add_argument('-min', '--minute', help='The new log interval in minutes. Default value is 1 minute',
-type=int, default=INTERVAL)
+group2.add_argument('-min', '--minute', help='The new log interval in minutes. Default value is {} minutes'.format(PROCESSED_LOGGING_FREQ),
+type=int, default=PROCESSED_LOGGING_FREQ)
 args = parser.parse_args()
 
 # saving parameters to variables

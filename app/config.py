@@ -36,6 +36,10 @@ REPORT_PREFIX = 'report_'
 # filename prefix for plot image files
 PLOT_PREFIX = 'plot_'
 
+# datalogging frequencies in minutes
+RAW_LOGGING_FREQ = 1
+PROCESSED_LOGGING_FREQ = 5
+
 # create path if it does not exist
 def create_path(path):
     if not os.path.exists(path):

@@ -56,10 +56,10 @@ for filename in filenames:
             # If it is not exactly 1 minute, call the process to overwrite it with its average.
             if subtract_time(times[1], times[0]).seconds < INTERVAL * 60 and \
             subtract_time(times[2], times[1]).seconds < INTERVAL * 60:
-                if DEBUG:
-                    print("RAW")
                 proc1 = subprocess.Popen('python3 {}/weatherlogaverage.py -m {} -d {} -y {} -o'
                 .format(APP_PATH, month, day, year), stdout=subprocess.PIPE, shell=True)
-                output = proc1.communicate()[0]
-                output = str(output, 'UTF-8')
-                print(output)
+                if DEBUG:
+                    print("RAW")
+                    output = proc1.communicate()[0]
+                    output = str(output, 'UTF-8')
+                    print(output)

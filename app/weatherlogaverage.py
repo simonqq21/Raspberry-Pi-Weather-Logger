@@ -6,6 +6,7 @@ from datetime import datetime, date, time, timedelta
 import argparse
 from config import APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX
 from config import DEBUG
+from config import RAW_LOGGING_FREQ
 
 '''
 This script converts a raw CSV file from the logger into a new CSV file with
@@ -47,7 +48,7 @@ parser.add_argument('-o', '--overwrite', help='overwrite the original file', act
 group2 = parser.add_mutually_exclusive_group()
 group2.add_argument('-hr', '--hour', help='The new log interval in hours', type=float)
 group2.add_argument('-min', '--minute', help='The new log interval in minutes. Default value is 1 minute',
-type=int, default=1)
+type=int, default=RAW_LOGGING_FREQ)
 args = parser.parse_args()
 
 # get the new logging interval_minutes in minutes
@@ -57,8 +58,7 @@ else:
     interval_minutes = args.hour * 60
 
 # get the log file name from the date specified and open it
-filename = (RAW_LOG_PREFIX + '{:02}'.format(args.m) + '{:02}'.format(args.d)
-+ str(args.y) + '.csv')
+filename = RAW_LOG_PREFIX + '{:02}{:02}{}'.format(args.m, args.d, args.y) + '.csv'
 if DEBUG:
     print(filename)
 filepath = APP_DATA_PATH + WEATHER_LOGS_FOLDER + filename
