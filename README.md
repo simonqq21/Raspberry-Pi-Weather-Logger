@@ -258,6 +258,7 @@ To get information on the usage of the files `weatherdataanalyzer.py` and `weath
 The RPi datalogger and the data analysis and visualization program is complete, the app directory structure is now in the form of a Flask application structure, the app configuration is already centralized in config.py, and the view log history part of the web frontend is now fully functional.
 
 ## Future plans:
+- move the weather log data folder to external storage such as a USB flash drive to reduce write wear on the SD card
 - create a navbar containing 4 buttons - main page, log history page, weather trends page, and about page
 - create the about page
 - get started on database creation and manipulation; create a database containing the mean, std, min, max, min_times, and max_times of each day
