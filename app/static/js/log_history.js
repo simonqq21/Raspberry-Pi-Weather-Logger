@@ -15,9 +15,10 @@ function requestData(ev)
         success: function(result, status, xhr) {
             clearTimeout(setGenerateView);
             showdata(result);
-            // setTimeout(function() {showdata(result);}, 500);
         }
     });
+
+    $('#dateoutput').val($('#rawdatadate').val());
 }
 
 // fill up the values of the statistical tables
@@ -32,7 +33,7 @@ function get_statistics(data)
 // set the url of the plot image in HTML
 function setplotimage(plot_url)
 {
-    $("#weathergraph > img").attr("src", plot_url);
+    $("#weathergraph > img").attr("src", '/download/' + plot_url);
 }
 
 // fill up the values of the extreme value time fields
@@ -97,8 +98,7 @@ function showdata(result, status, xhr) {
 function setDownloadLink(filepath, btnid)
 {
     button = $("#" + btnid);
-    button.attr('href', filepath);
-    button.attr('download', filepath);
+    button.attr('href', '/download/' + filepath);
 }
 
 function downloadFile(btnid)

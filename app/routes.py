@@ -1,4 +1,4 @@
-from flask import render_template, url_for, request, jsonify
+from flask import render_template, url_for, request, jsonify, send_from_directory
 from app import App
 from datetime import datetime, date
 import os
@@ -8,6 +8,11 @@ from app.config import APP_PATH, APP_DATA_PATH, STATIC_PATH, \
 WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, REPORT_PREFIX, PLOT_PREFIX
 from app.config import DEBUG
+
+#download URL
+@App.route('/download/<path:filename>')
+def downloadFile(filename):
+    return send_from_directory(APP_DATA_PATH, filename, as_attachment=True)
 
 # base page
 @App.route('/')
@@ -67,16 +72,19 @@ def log_history():
         for filename in os.listdir(APP_DATA_PATH + SUMMARIES_FOLDER):
             if rawdatadate in filename:
                 summary_path = APP_DATA_PATH + SUMMARIES_FOLDER + filename
+                print(summary_path)
 
-        # get the static report file URL
+        # get the download report file URL
         for filename in os.listdir(APP_DATA_PATH + REPORTS_FOLDER):
             if rawdatadate in filename:
-                report_path = STATIC_PATH + REPORTS_FOLDER + filename
+                report_path = REPORTS_FOLDER + filename
+                print(report_path)
 
-        # get the static plot file URL
+        # get the download plot file URL
         for filename in os.listdir(APP_DATA_PATH + PLOTS_FOLDER):
             if rawdatadate in filename:
-                plot_url = STATIC_PATH + PLOTS_FOLDER + filename
+                plot_url = PLOTS_FOLDER + filename
+                print(plot_url)
 
         # if one of the required generated data does not exist
         if summary_path == '' or plot_url == '' or report_path == '' or \
@@ -91,13 +99,13 @@ def log_history():
             output = proc1.communicate()[0]
             output = str(output, 'UTF-8')
             print(output)
-
+            # get the paths of the generated files
             summary_path = APP_DATA_PATH + SUMMARIES_FOLDER + SUMMARY_PREFIX + rawdatadate + '.txt'
-            report_path = STATIC_PATH + REPORTS_FOLDER + REPORT_PREFIX + rawdatadate + '.txt'
-            plot_url = STATIC_PATH + PLOTS_FOLDER + PLOT_PREFIX + rawdatadate + '.png'
+            report_path = REPORTS_FOLDER + REPORT_PREFIX + rawdatadate + '.txt'
+            plot_url = PLOTS_FOLDER + PLOT_PREFIX + rawdatadate + '.png'
 
         # raw csv data path
-        processed_data_path = STATIC_PATH + WEATHER_LOGS_FOLDER + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
+        processed_data_path = WEATHER_LOGS_FOLDER + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
 
         # process the summary
         summarydata = ''

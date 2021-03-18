@@ -16,7 +16,7 @@ selected date. -->
 <!-- user input of the date -->
 <form id="dateform">
     <label for="rawdatadate" id="dateinput" >Choose a datalog to load:</label><br>
-    <select name="rawdatadate">
+    <select id="rawdatadate" name="rawdatadate">
         {% for date in dates %}
                 <option value={{ date }}>{{ date }}</option>
         {% endfor %}
@@ -28,6 +28,13 @@ selected date. -->
 <div id="completedview">
     <!-- column 1 -->
     <div id="main-col1">
+        <!-- display date selected -->
+        <div class="">
+            <h2 style="float: left; margin-left: 10px;">Date Selected: </h2>
+            <input id="dateoutput" style="font-size: 20px; position: relative; top: 12px;" type="text"
+            name="dateoutput" value="" size=10 readonly=true>
+        </div>
+
         <!-- statistics section -->
         <h2>Weather Data Statistics</h2>
         <div id="stattables">

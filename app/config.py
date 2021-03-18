@@ -43,7 +43,7 @@ PROCESSED_LOGGING_FREQ = 5
 # create path if it does not exist
 def create_path(path):
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path)
 
 create_path(APP_PATH)
 create_path(APP_DATA_PATH)
