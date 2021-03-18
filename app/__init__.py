@@ -1,5 +1,7 @@
 from flask import Flask
 
+# "App" is the Flask application instance
+# app is the application directory
 print(__name__)
 App = Flask(__name__)
 

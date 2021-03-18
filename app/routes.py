@@ -132,3 +132,11 @@ def log_history():
 
         return jsonify(data=weather_data_dict, plot_url=plot_url, report_path=report_path,
         data_path=processed_data_path)
+
+@App.route('/trends', methods=['GET', 'POST'])
+def trends():
+    return "trends under construction"
+
+@App.route('/about', methods=['GET'])
+def about():
+    return "about under construction"

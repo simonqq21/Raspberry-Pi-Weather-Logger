@@ -162,6 +162,22 @@ function createblankstattables()
         for (sd of statistical_data)
         {
             var newdata = document.createElement("td");
+            // set the color of the data text
+            switch (x) {
+                case 'Temperature':
+
+                case 'BMP_temperature':
+                    newdata.setAttribute('class', "redtext");
+                    break;
+
+                case 'Humidity':
+                    newdata.classList.add("bluetext");
+                    break;
+
+                case 'Pressure':
+                    newdata.classList.add("greentext");
+                    break;
+            }
             var newdatatext = document.createTextNode(" ");
             newdata.appendChild(newdatatext)
             newdata.id = x + sd;

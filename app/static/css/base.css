@@ -105,3 +105,15 @@ table, th, td {
     color: floralwhite;
     background-color: rebeccapurple;
 }
+
+.redtext {
+    color: red;
+}
+
+.greentext {
+    color: green;
+}
+
+.bluetext {
+    color: blue;
+}
