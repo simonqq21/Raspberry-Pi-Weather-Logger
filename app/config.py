@@ -9,7 +9,7 @@ to access files from the webpage in the web browser.
 
 import os
 
-DEBUG = True
+DEBUG = False
 
 # path for the python scripts
 APP_PATH = os.path.abspath(os.path.dirname(__file__))

@@ -61,3 +61,47 @@ table, th, td {
     width:600px;
     flex-direction: column
 }
+
+/* navbar */
+#navbar {
+    text-align: left;
+    background-color: lavender;
+    margin: 0;
+    padding: 0;
+}
+
+#navbar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border: 2px solid gray;
+    overflow: hidden;
+}
+
+#navbar li {
+    padding: 0;
+    float: right;
+}
+
+#navbar a {
+    display: block;
+    padding: 10px;
+    margin: 0px;
+    width: 120px;
+    height: 30px;
+    color: black;
+    background-color: lavender;
+    border-left: 2px solid black;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+#navbar a:hover {
+    background-color: yellow;
+}
+
+#navbar .active {
+    color: floralwhite;
+    background-color: rebeccapurple;
+}

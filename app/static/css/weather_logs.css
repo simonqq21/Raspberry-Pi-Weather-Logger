@@ -85,6 +85,7 @@ table {
     outline:2px solid black;
     width: 205px;
     height: 25px;
+    font-size: 25px;
 }
 
 /* graph image display container */
