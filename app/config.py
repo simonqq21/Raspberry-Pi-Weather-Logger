@@ -16,7 +16,7 @@ APP_PATH = os.path.abspath(os.path.dirname(__file__))
 # used for building Flask URLs
 STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
-APP_DATA_PATH = APP_PATH + STATIC_PATH
+APP_DATA_PATH = '/media/data/files/'
 
 # folder names within the static path
 WEATHER_LOGS_FOLDER = 'weather_logs/'
