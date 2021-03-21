@@ -1,0 +1,21 @@
+.open weather_days.db
+CREATE TABLE dates (id INTEGER NOT NULL PRIMARY KEY,date TEXT NOT NULL);
+CREATE TABLE temperature (id INTEGER NOT NULL PRIMARY KEY, mean REAL, std REAL, min REAL, max REAL, FOREIGN KEY(id) REFERENCES dates(id));
+CREATE TABLE bmp_temperature (id INTEGER NOT NULL PRIMARY KEY, mean REAL, std REAL, min REAL, max REAL, FOREIGN KEY(id) REFERENCES dates(id));
+CREATE TABLE humidity (id INTEGER NOT NULL PRIMARY KEY, mean REAL, std REAL, min REAL, max REAL, FOREIGN KEY(id) REFERENCES dates(id));
+CREATE TABLE pressure (id INTEGER NOT NULL PRIMARY KEY, mean REAL, std REAL, min REAL, max REAL, FOREIGN KEY(id) REFERENCES dates(id));
+
+insert into dates(date) VALUES('2021-03-20');
+INSERT INTO temperature(id, mean, std, min, max) VALUES(2, 28.3333333333333, 1, 26, 30);
+
+.tables
+SELECT * FROM sqlite_master;
+SELECT * FROM dates;
+SELECT * FROM temperature;
+SELECT * FROM pressure;
+SELECT * FROM humidity;
+SELECT * FROM bmp_temperature;
+
+SELECT * FROM temperature WHERE temperature.id = (SELECT id FROM dates WHERE dates.date = '2021-02-13');
+
+delete from temperature; delete from pressure; delete from bmp_temperature; delete from humidity;delete from dates;

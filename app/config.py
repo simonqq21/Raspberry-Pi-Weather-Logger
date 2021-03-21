@@ -18,6 +18,9 @@ STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
 APP_DATA_PATH = '/media/data/files/'
 
+# sqlite3 database filename
+DB_FILENAME = 'days_weather.db'
+
 # folder names within the static path
 WEATHER_LOGS_FOLDER = 'weather_logs/'
 SUMMARIES_FOLDER = 'summaries/'
@@ -39,6 +42,11 @@ PLOT_PREFIX = 'plot_'
 # datalogging frequencies in minutes
 RAW_LOGGING_FREQ = 1
 PROCESSED_LOGGING_FREQ = 5
+
+# weather data columns
+WEATHER_DATA = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
+# statistics
+STATS = ('mean', 'std', 'min', 'max')
 
 # create path if it does not exist
 def create_path(path):
