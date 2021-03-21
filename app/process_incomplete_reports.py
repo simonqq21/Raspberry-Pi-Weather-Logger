@@ -24,11 +24,7 @@ def exists(filepath):
 # call the report generation script with the date parameters
 def generatereport(month, day, year):
     proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} -g'.format
-    (APP_PATH, month, day, year), stdout=subprocess.PIPE, shell=True)
-    if DEBUG:
-        output = proc1.communicate()[0]
-        output = str(output, 'UTF-8')
-        print(output)
+    (APP_PATH, month, day, year), shell=True)
 
 logs_file_path = APP_DATA_PATH + WEATHER_LOGS_FOLDER
 
@@ -79,3 +75,6 @@ for filename in filenames:
             else:
                 print('generation needed')
                 generatereport(date1.month, date1.day, date1.year)
+
+# add statistical data to the database
+subprocess.Popen('python3 {}/db_weather_logger.py'.format(APP_PATH), shell=True)
