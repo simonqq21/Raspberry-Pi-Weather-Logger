@@ -24,12 +24,14 @@ JOIN pressure p ON d.id = p.id')
 for row in results:
     dict_row = dict(row)
     print({key: dict_row[key] for key in dict_row if key in ('id', 'date')})
+    print({key: dict_row[key] for key in dict_row if key in ('h_mean', 'h_std', 'h_min', 'h_max')})
     print({key: dict_row[key] for key in dict_row if key in ('t_mean', 't_std', 't_min', 't_max')})
     print({key: dict_row[key] for key in dict_row if key in ('btp_mean', 'btp_std', 'btp_min', 'btp_max')})
-    print({key: dict_row[key] for key in dict_row if key in ('h_mean', 'h_std', 'h_min', 'h_max')})
     print({key: dict_row[key] for key in dict_row if key in ('p_mean', 'p_std', 'p_min', 'p_max')})
     print()
 
-
+results = cur.execute('SELECT * FROM dates')
+for row in results:
+    print(dict(row))
 
 con.close()

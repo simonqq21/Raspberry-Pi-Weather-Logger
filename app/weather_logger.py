@@ -6,7 +6,7 @@ import Adafruit_BMP.BMP085 as BMP085
 from time import sleep
 import csv
 import os
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, time, timedelta
 from threading import Thread, Event
 import signal
 import subprocess
@@ -129,8 +129,18 @@ temperature, humidity, bmp_temperature, pressure = -999, -999, -999, -999
 
 statusled.on()
 
+# create a datetime with the time every day when the db must be written/updated
+db_add_time = datetime.now().replace(hour=0, minute=15, second=0)
+
 # read sensor and write to log file indefinitely
 while True:
+    timenow = datetime.now()
+    # if 24 hours has elapsed since the last db write
+    if (timenow - db_add_time) >= timedelta(days=1):
+        db_add_time = timenow.replace(second=0)
+        # add statistical data to the database
+        subprocess.Popen('python3 {}/db_weather_logger.py'.format(APP_PATH), shell=True)
+
     # if a new day has started, create a new log file for the day
     if date.today() > newfiledate.date():
         if (date.today() - newfiledate.date()).days == 1:
@@ -145,18 +155,13 @@ while True:
         # call a process to average all unaveraged raw log files to 1 minute intervals
         proc1 = subprocess.Popen('python3 {}/average_raw_logs.py'.format(APP_PATH),
         stdout = subprocess.PIPE, shell=True)
-        if DEBUG:
-            output = proc1.communicate()[0]
-            output = str(output, 'UTF-8')
-            print(output)
 
         # call a process to (re)generate report data for days with incomplete or missing reports
         proc1 = subprocess.Popen('python3 {}/process_incomplete_reports.py'.format(APP_PATH),
         stdout = subprocess.PIPE, shell=True)
-        if DEBUG:
-            output = proc1.communicate()[0]
-            output = str(output, 'UTF-8')
-            print(output)
+
+        # add statistical data to the database
+        subprocess.Popen('python3 {}/db_weather_logger.py'.format(APP_PATH), shell=True)
 
     # read DHT11 sensor
     temperature, humidity = DHT11read()

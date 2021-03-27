@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib
 import os
 from datetime import datetime, date, time
 import argparse
@@ -238,57 +239,52 @@ if args.graph:
     print('Creating weather data graph')
     # Plotting the weather data into a graph
     # fonts
-    suptitlefont = {'family':'monospace','color':'black','size':150, 'weight': 100}
-    titlefont = {'family':'monospace','color':'black','size':12}
-    axisfont = {'family':'monospace','color':'black','size':8}
-    # set figure size
-    figure = plt.figure(figsize=(15,10))
-    # create list of axes, where each element is one graph.
-    axes = []
-    # set the time format
+    suptitlefont = {'family':'monospace','color':'black'}
+    titlefont = {'family':'monospace','color':'black','size':20}
+    axisfont = {'family':'monospace','color':'black','size':15}
+
+    # set the time format to HH:MM
     timeformat = mdates.DateFormatter('%H:%M')
 
-    # set the graph sizes and positions
-    axes.append(plt.subplot2grid((2,2), (0,0)))
-    axes.append(plt.subplot2grid((2,2), (0,1)))
-    axes.append(plt.subplot2grid((2,2), (1,0), colspan=2))
+    # set the subplots and figure size
+    figure, axes = plt.subplots(3,1, figsize=(22, 15), sharex=True)
+
+    # super title
+    figure.suptitle('Weather Data for {}'.format(day.strftime('%m%d%Y')), fontdict=suptitlefont, fontsize=40)
 
     # subgraph for humidity
     axes[0].set_title('Relative Humidity over Time', fontdict=titlefont)
-    axes[0].set_xlabel('Time', fontdict=axisfont)
     axes[0].set_ylabel('Relative Humidity (%)', fontdict=axisfont)
-    axes[0].tick_params(axis='x',rotation=60)
-    axes[0].plot(datetimeArr, dataArr[:,0], linestyle='-', color='slateblue', linewidth=1)
+    axes[0].plot(datetimeArr, dataArr[:,0], linestyle='-', color='slateblue', linewidth=2)
 
     # subgraph for barometric pressure
     axes[1].set_title('Barometric Pressure over Time', fontdict=titlefont)
-    axes[1].set_xlabel('Time', fontdict=axisfont)
     axes[1].set_ylabel('Barometric Pressure (Pa)', fontdict=axisfont)
-    axes[1].tick_params(axis='x',rotation=60)
-    axes[1].plot(datetimeArr, dataArr[:,3], linestyle='-', color='seagreen', linewidth=1)
+    axes[1].plot(datetimeArr, dataArr[:,3], linestyle='-', color='seagreen', linewidth=2)
 
     # subgraph for both temperature sensors
     axes[2].set_title('Temperature over Time', fontdict=titlefont)
-    axes[2].set_xlabel('Time', fontdict=axisfont)
     axes[2].set_ylabel('Temperature (°C)', fontdict=axisfont)
-    axes[2].tick_params(axis='x',rotation=60)
-    axes[2].plot(datetimeArr, dataArr[:,1], label='DHT11_Temperature', linestyle='-', color='red', linewidth=1)
+    axes[2].plot(datetimeArr, dataArr[:,1], label='DHT11_Temperature', linestyle='-', color='red', linewidth=2)
+    axes[2].legend(fontsize=20)
+    axes[2].plot(datetimeArr, dataArr[:,2], label='BMP180_temperature', linestyle='-', color='magenta', linewidth=2)
     axes[2].legend()
-    axes[2].plot(datetimeArr, dataArr[:,2], label='BMP180_temperature', linestyle='-', color='magenta', linewidth=1)
-    axes[2].legend()
+
+    # set tick font size and rotation for all subplots
+    for axis in axes:
+        axis.tick_params(labelsize=18)
+        axis.tick_params(axis='x',labelrotation=30)
 
     # specify time format of x-axis
     for axis in axes:
         axis.xaxis.set_major_formatter(timeformat)
         axis.xaxis_date()
 
-    # super title
-    plt.suptitle('Weather Data for {}'.format(day.strftime('%m%d%Y')), fontdict=suptitlefont)
-    # set tight layout to set proper spacing between elements
-    figure.set_tight_layout(True)
+    # adjust subplots to make room for the supertitle
+    figure.subplots_adjust(top=0.92)
     # save the graph to a file
     plt.savefig(APP_DATA_PATH + PLOTS_FOLDER + PLOT_PREFIX + '{}.png'.format(day.strftime('%m%d%Y')),
-    dpi=160, bbox_inches='tight')
+    dpi=200, bbox_inches='tight')
 
 # open a new file to save the summarized data
 summary_filename = SUMMARY_PREFIX + day.strftime('%m%d%Y') + '.txt'

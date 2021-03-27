@@ -75,6 +75,3 @@ for filename in filenames:
             else:
                 print('generation needed')
                 generatereport(date1.month, date1.day, date1.year)
-
-# add statistical data to the database
-subprocess.Popen('python3 {}/db_weather_logger.py'.format(APP_PATH), shell=True)
