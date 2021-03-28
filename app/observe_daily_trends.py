@@ -1,12 +1,27 @@
 '''
-get 2 input dates as arguments
-get aggregated weather data from the database of daily weather data ranging between the 2 input dates and
-place them in a numpy array
-save numpy array as CSV file for download
-get the mean, std, min, and max of the data
-get the days with the minimum and maximum data
+
+csv log file with mean, std, min, and max of each column of each day within the range
+- date, temp mean, temp std, temp min, temp max, humid mean, ...
 save aggregated data for the date range in a report file
-generate the plot of mean, std, min, and max per day with matplotlib
+file contents:
+- date range (start and end date)
+- overall mean value of the means per column
+- overall std value of the means per column
+- overall min value of the means per column
+- overall max value of the means per column
+- overall mean value of the min values per column
+- overall std value of the min values per column
+- overall min value of the min values per column
+- overall max value of the min values per column
+- overall mean value of the max values per column
+- overall std value of the max values per column
+- overall min value of the max values per column
+- overall max value of the max values per column
+- array of days with the lowest mean value per column
+- array of days with the highest mean value per column
+- array of days with the lowest minimum value per column
+- array of days with the highest maximum value per column
+image plot of mean, std, min, and max per column per day, if graph is selected
 '''
 
 import numpy as np
