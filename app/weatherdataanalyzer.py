@@ -42,7 +42,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-m', help='numeric month from 1-12', default=date.today().month, type=int)
 parser.add_argument('-d', help='numeric day from 1-31', default=date.today().day, type=int)
 parser.add_argument('-y', help='numeric four digit year', default=date.today().year, type=int)
-parser.add_argument('-g', '--graph', help='graph the data and save it to an image file', action='store_true')
+parser.add_argument('-g', '--graph', help='graph the data and save it to an image file if specified', action='store_true')
 group2 = parser.add_mutually_exclusive_group()
 group2.add_argument('-hr', '--hour', help='The new log interval in hours', type=float)
 group2.add_argument('-min', '--minute', help='The new log interval in minutes. Default value is {} minutes'.format(PROCESSED_LOGGING_FREQ),
