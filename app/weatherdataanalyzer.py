@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import matplotlib
 import os
 from datetime import datetime, date, time
 import argparse
@@ -236,6 +233,9 @@ for column_name in summary_dict.keys():
 
 
 if args.graph:
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+    import matplotlib
     print('Creating weather data graph')
     # Plotting the weather data into a graph
     # fonts
