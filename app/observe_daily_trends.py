@@ -1,5 +1,4 @@
 '''
-
 csv log file with mean, std, min, and max of each column of each day within the range
 - date, temp mean, temp std, temp min, temp max, humid mean, ...
 save aggregated data for the date range in a report file
@@ -32,6 +31,7 @@ import sqlite3
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import WEATHER_DATA, STATS
+from config import DAILY_TRENDS_CSV
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
@@ -55,12 +55,18 @@ np.set_printoptions(precision=3, suppress=True)
 # get the start and end date and format them as strings for sqlite to use
 # startdate = date(args.startyear, args.startmonth, args.startday)
 # enddate = date(args.endyear, args.endmonth, args.endday)
-# testing
+
+# testing code
 startdate = date(2021, 3, 12)
 enddate = date(2021, 3, 16)
+
 startdatestr = startdate.strftime("%Y-%m-%d")
 enddatestr = enddate.strftime("%Y-%m-%d")
 print(startdatestr, enddatestr)
+
+# create array of column headers and stat measures
+header = np.array(WEATHER_DATA)
+stats = np.array(STATS)
 
 # connect to sqlite db
 con = sqlite3.connect(APP_DATA_PATH + DB_FILENAME)
@@ -79,22 +85,34 @@ JOIN temperature t ON d.id = t.id \
 JOIN bmp_temperature btp ON d.id = btp.id \
 JOIN humidity h ON d.id = h.id \
 JOIN pressure p ON d.id = p.id \
-WHERE d.date BETWEEN ? AND ?', (startdatestr, enddatestr))
+WHERE d.date BETWEEN ? AND ? \
+ORDER BY d.date ASC', (startdatestr, enddatestr))
 
-# get overall results
+# save overall results to numpy array
 results_matrix = np.empty((18,))
-print(results_matrix.shape)
 results = list(dict(row) for row in results.fetchall())
 for dict_row in results:
-    # print(dict_row)
     temp_matrix_row = np.hstack(list(dict_row[key] for key in dict_row))
     results_matrix = np.vstack((results_matrix, temp_matrix_row))
 results_matrix = results_matrix[1:,:]
-
 print(results_matrix)
 
+# generate csv file header
+csv_header = 'date,'
+for h in range(len(header)):
+    for s in range(len(stats)):
+        csv_header += header[h] + '_' + stats[s]
+        if h < len(header) - 1 or s < len(stats) - 1:
+            csv_header += ','
+print(csv_header)
+
+# save the database results as a csv file for download
+np.savetxt(APP_DATA_PATH + DAILY_TRENDS_CSV, results_matrix[:,1:], delimiter=',', \
+fmt=['%s'] * 17, header=csv_header, comments='')
+
 # save the array of dates to numpy array
-dates_arr = 
+dates_arr = results_matrix[:,1].astype(np.datetime64)
+print(dates_arr)
 
 # save the numerical data to a numpy array
 numbers = np.hstack((results_matrix[:,2:6], results_matrix[:,6:10], \
@@ -105,23 +123,30 @@ print(numbers.shape)
 print(numbers.dtype)
 print()
 
-# create array of column headers and stat measures
-header = np.array(WEATHER_DATA)
-stats = np.array(STATS)
-print(header)
-print(stats)
-
 '''
 create a 3d numpy array with first dimension the number of statistical measures ie. (min, std,
 min, max) = 4, the second dimension the number of days in the date interval, and the third
 dimension the number of column headers ie. (humd, temp, bmptemp, pres) = 4
 '''
-stat_numbers = np.empty((len(stats),numbers.shape[0], len(header)))
+stat_numbers = np.empty((len(stats), numbers.shape[0], len(header)))
 for i in range(len(stats)):
     stat_numbers[i] = numbers[:,i::4]
 print(stat_numbers)
 
-# get the mean, std, min, and max of the means per day
-
+# get the mean, std, min, and max of the data per day
+for i in range(len(stats)):
+    for j in range(len(header)):
+        print(header[j] + ' ' + stats[i])
+        mean = stat_numbers[i,:,j].mean()
+        if stats[i] != 'std':
+            std = stat_numbers[i,:,j].std()
+        min = stat_numbers[i,:,j].min()
+        max = stat_numbers[i,:,j].max()
+        print("mean = {}".format(mean))
+        if stats[i] != 'std':
+            print("std = {}".format(std))
+        print("min = {}".format(min))
+        print("max = {}".format(max))
+        print()
 
 con.close()

@@ -160,9 +160,6 @@ while True:
         proc1 = subprocess.Popen('python3 {}/process_incomplete_reports.py'.format(APP_PATH),
         stdout = subprocess.PIPE, shell=True)
 
-        # add statistical data to the database
-        subprocess.Popen('python3 {}/db_weather_logger.py'.format(APP_PATH), shell=True)
-
     # read DHT11 sensor
     temperature, humidity = DHT11read()
 

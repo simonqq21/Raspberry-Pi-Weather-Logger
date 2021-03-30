@@ -48,6 +48,9 @@ WEATHER_DATA = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
 # statistics
 STATS = ('mean', 'std', 'min', 'max')
 
+# weather data daily trends csv output filename
+DAILY_TRENDS_CSV = 'dailyweathertrends.csv'
+
 # create path if it does not exist
 def create_path(path):
     if not os.path.exists(path):
