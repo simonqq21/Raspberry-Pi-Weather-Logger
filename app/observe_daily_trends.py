@@ -28,10 +28,12 @@ import numpy as np
 import argparse
 import csv
 import sqlite3
+import os
+import re
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import WEATHER_DATA, STATS
-from config import DAILY_TRENDS_CSV
+from config import DAILY_TRENDS_CSV_PREFIX
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
@@ -106,9 +108,16 @@ for h in range(len(header)):
             csv_header += ','
 print(csv_header)
 
+# delete any existing daily trends csv file before generating new csv file
+filenames = os.listdir(APP_DATA_PATH)
+for filename in filenames:
+    if re.search('^' + DAILY_TRENDS_CSV_PREFIX, filename) is not None:
+        print(filename)
+        os.remove(APP_DATA_PATH + filename)
+
 # save the database results as a csv file for download
-np.savetxt(APP_DATA_PATH + DAILY_TRENDS_CSV, results_matrix[:,1:], delimiter=',', \
-fmt=['%s'] * 17, header=csv_header, comments='')
+np.savetxt(APP_DATA_PATH + DAILY_TRENDS_CSV_PREFIX + '{}_{}.csv'.format(startdatestr, enddatestr), \
+results_matrix[:,1:], delimiter=',', fmt=['%s'] * 17, header=csv_header, comments='')
 
 # save the array of dates to numpy array
 dates_arr = results_matrix[:,1].astype(np.datetime64)
@@ -131,22 +140,22 @@ dimension the number of column headers ie. (humd, temp, bmptemp, pres) = 4
 stat_numbers = np.empty((len(stats), numbers.shape[0], len(header)))
 for i in range(len(stats)):
     stat_numbers[i] = numbers[:,i::4]
+stat_numbers = stat_numbers.transpose()
 print(stat_numbers)
+aggregated_results = {}
 
 # get the mean, std, min, and max of the data per day
-for i in range(len(stats)):
-    for j in range(len(header)):
-        print(header[j] + ' ' + stats[i])
-        mean = stat_numbers[i,:,j].mean()
-        if stats[i] != 'std':
-            std = stat_numbers[i,:,j].std()
-        min = stat_numbers[i,:,j].min()
-        max = stat_numbers[i,:,j].max()
-        print("mean = {}".format(mean))
-        if stats[i] != 'std':
-            print("std = {}".format(std))
-        print("min = {}".format(min))
-        print("max = {}".format(max))
+for i in range(len(header)):
+    aggregated_results[header[i]] = {}
+    for j in range(len(stats)):
+        aggregated_results[header[i]][stats[j]] = {}
+        # get the mean, std, min, and max of each stat
+        aggregated_results[header[i]][stats[j]]['mean'] = stat_numbers[i,:,j].mean(axis=0)
+        if stats[j] != 'std':
+            aggregated_results[header[i]][stats[j]]['std'] = stat_numbers[i,:,j].std(axis=0)
+        aggregated_results[header[i]][stats[j]]['min'] = stat_numbers[i,:,j].min(axis=0)
+        aggregated_results[header[i]][stats[j]]['max'] = stat_numbers[i,:,j].max(axis=0)
         print()
 
+print(aggregated_results)
 con.close()
