@@ -24,7 +24,6 @@ image plot of mean, std, min, and max per column per day, if graph is selected
 '''
 
 import numpy as np
-# import matplotlib.pyplot as plt
 import argparse
 import csv
 import sqlite3
@@ -40,7 +39,7 @@ np.set_printoptions(precision=3, suppress=True)
 
 # get the two dates
 # argument specs: date1 (-y year -m month -d day) date2 (-y year -m month -d day) -g
-# parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser()
 # date1 = parser.add_argument_group('date1')
 # date2 = parser.add_argument_group('date2')
 # date1.add_argument('startyear', type=int, help='year of starting date')
@@ -49,10 +48,10 @@ np.set_printoptions(precision=3, suppress=True)
 # date2.add_argument('endyear', type=int, help='year of ending date')
 # date2.add_argument('endmonth', type=int, help='month of ending date')
 # date2.add_argument('endday', type=int, help='day of ending date')
-# parser.add_argument('-g', '--graph', help="graph the data and save it to an image file if \
-# specified", action='store_true')
-# args = parser.parse_args()
-# print(args)
+parser.add_argument('-g', '--graph', help="graph the data and save it to an image file if \
+specified", action='store_true')
+args = parser.parse_args()
+print(args)
 
 # get the start and end date and format them as strings for sqlite to use
 # startdate = date(args.startyear, args.startmonth, args.startday)
@@ -133,9 +132,7 @@ print(numbers.dtype)
 print()
 
 '''
-create a 3d numpy array with first dimension the number of statistical measures ie. (min, std,
-min, max) = 4, the second dimension the number of days in the date interval, and the third
-dimension the number of column headers ie. (humd, temp, bmptemp, pres) = 4
+create a 3d numpy array
 '''
 stat_numbers = np.empty((len(stats), numbers.shape[0], len(header)))
 for i in range(len(stats)):
@@ -155,7 +152,27 @@ for i in range(len(header)):
             aggregated_results[header[i]][stats[j]]['std'] = stat_numbers[i,:,j].std(axis=0)
         aggregated_results[header[i]][stats[j]]['min'] = stat_numbers[i,:,j].min(axis=0)
         aggregated_results[header[i]][stats[j]]['max'] = stat_numbers[i,:,j].max(axis=0)
-        print()
+        # get the days when a value is min and max
+        aggregated_results[header[i]][stats[j]]['min_days'] = \
+        dates_arr[np.where(stat_numbers == stat_numbers[i,:,j].min(axis=0))[1]]
+        aggregated_results[header[i]][stats[j]]['max_days'] = \
+        dates_arr[np.where(stat_numbers == stat_numbers[i,:,j].max(axis=0))[1]]
+# print(aggregated_results)
 
-print(aggregated_results)
+# generate reports
+print('start date: {}'.format(startdatestr))
+print('end date: {}'.format(enddatestr))
+for h in header:
+    for s in stats:
+        for s2 in aggregated_results[h][s]:
+            print("{} {} {}: {}".format(h, s, s2, aggregated_results[h][s][s2]))
+        print()
+    print()
+print()
+
+# generate graph if graph option is set
+if args.graph:
+    import matplotlib.pyplot as plt
+
+
 con.close()
