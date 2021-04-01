@@ -31,7 +31,7 @@ import os
 import re
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
-from config import WEATHER_DATA, STATS
+from config import WEATHER_DATA, STATS, DB_WEATHER_TABLES, UNITS
 from config import DAILY_TRENDS_CSV_PREFIX
 
 # set float print precision
@@ -162,24 +162,34 @@ for i in range(len(header)):
 print('start date: {}'.format(startdatestr))
 print('end date: {}'.format(enddatestr))
 
-print('---------- Main Description -----------')
+print('---------- Key Data -----------')
 
-# for
-print('Mean mean of daily temperatures: ')
-print('Day/s with the lowest mean temperatures: temp day1 day2 day3 ...')
-print('Day/s with the highest mean temperatures: ')
-print('Mean low of daily temperatures: ')
-print('Day/s with the lowest low temperatures: ')
-print('Day/s with the lowest high temperatures: ')
-print('Mean high of daily temperatures: ')
-print('Day/s with the lowest high temperatures: ')
-print('Day/s with the highest high temperatures: ')
-
+for t in range(len(DB_WEATHER_TABLES)):
+    print('{} mean mean: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['mean']['mean'], UNITS[t]))
+    print('{} mean min: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['mean']['min'], UNITS[t]))
+    print('{} mean min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['mean']['min_days']))
+    print('{} mean max: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['mean']['max'], UNITS[t]))
+    print('{} mean max_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['mean']['max_days']))
+    print('{} min min: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['min']['min'], UNITS[t]))
+    print('{} min min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['min']['min_days']))
+    print('{} max max: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+    aggregated_results[header[t]]['max']['max'], UNITS[t]))
+    print('{} max max_days: {}'.format(DB_WEATHER_TABLES[t].lower(),
+    aggregated_results[header[t]]['max']['max_days']))
+    print()
+print()
 print('---------- Complete aggregated data ----------')
-for h in header:
+for h in range(len(header)):
     for s in stats:
-        for s2 in aggregated_results[h][s]:
-            print("{} {} {}: {}".format(h, s, s2, aggregated_results[h][s][s2]))
+        for s2 in aggregated_results[header[h]][s]:
+            print("{} {} {}: {}{}".format(header[h], s, s2, aggregated_results[header[h]][s][s2], UNITS[h]))
         print()
     print()
 print()
