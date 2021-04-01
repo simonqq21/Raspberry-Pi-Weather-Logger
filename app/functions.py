@@ -3,7 +3,7 @@ import datetime
 from datetime import datetime, date, timedelta
 import csv
 import subprocess
-from config import WEATHER_DATA
+from config import WEATHER_DATA, STATS
 from config import APP_DATA_PATH, APP_PATH, SUMMARIES_FOLDER
 from config import DEBUG
 
@@ -75,10 +75,16 @@ def read_summary(filename):
         weather_data_dict[curr_header] = {}
         data = line.strip('\n').split(':', maxsplit=1)[1].split(',',maxsplit=4)
         # convert data to float so it can be compared to the data from the db
-        weather_data_dict[curr_header]['mean'] = float(data[0])
-        weather_data_dict[curr_header]['std'] = float(data[1])
-        weather_data_dict[curr_header]['min'] = float(data[2])
-        weather_data_dict[curr_header]['max'] = float(data[3])
+        for i in range(len(STATS)):
+            weather_data_dict[curr_header][STATS[i]] = float(data[i])
+    # fill in the data that does not exist with None values
+    # used so that it will be easy to add more sensors and weather data columns in the future
+    for d in WEATHER_DATA:
+        if d not in weather_data_dict:
+            weather_data_dict[d] = {}
+            for i in range(len(STATS)):
+                weather_data_dict[d][STATS[i]] = None
+    # print(weather_data_dict)
     return weather_data_dict
 
 # call the report generation script with the date parameters

@@ -49,11 +49,11 @@ RAW_LOGGING_FREQ = 1
 PROCESSED_LOGGING_FREQ = 5
 
 # database table names
-DB_WEATHER_TABLES = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
+DB_WEATHER_TABLES = ["Humidity", "Temperature", "BMP_temperature", "Pressure", "windspeed"]
 # database table abbreviations
-DB_WEATHER_TABLES_ABBREVS = ['h', 't', 'btp', 'p']
+DB_WEATHER_TABLES_ABBREVS = ['h', 't', 'btp', 'p', 'w']
 # weather data units
-UNITS = ['%', '°C', '°C', 'HPa']
+UNITS = ['%', '°C', '°C', 'HPa', 'm/s']
 # weather data columns
 WEATHER_DATA = list('{} ({})'.format(DB_WEATHER_TABLES[w], UNITS[w]) for w in range(len(DB_WEATHER_TABLES_ABBREVS)))
 # print(WEATHER_DATA)

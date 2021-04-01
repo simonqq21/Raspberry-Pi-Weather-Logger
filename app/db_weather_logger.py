@@ -65,16 +65,17 @@ for filename in filenames:
             '{}')".format(data, data, date1str)
             cur.execute(sql)
             r = cur.fetchone()
-            
+
             # convert query results into dictionary format
             if r is not None:
                 data2 = dict(zip(r.keys(), tuple(r)))
                 # remove the id value to test for equality with the database data
                 data2 = {key: data2[key] for key in data2.keys() if key != 'id'}
-
+            
             # if there are any differences between the data from the summary file and the
             # data from the db file or if the data for a certain date does not exist, update it.
             i = WEATHER_DATA[DB_WEATHER_TABLES.index(data)]
+            # print(i)
             if data1[i] != data2:
                 if debug:
                     print(data1[i])
