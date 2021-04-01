@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 
 '''
 This is the global configuration file for this application. It contains file paths and file prefixes
@@ -7,9 +8,12 @@ absolute paths are used to access files from Python scripts, while Flask static 
 to access files from the webpage in the web browser.
 '''
 
-import os
+# create path if it does not exist
+def create_path(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-DEBUG = False
+DEBUG = True
 
 # path for the python scripts
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -17,6 +21,7 @@ APP_PATH = os.path.abspath(os.path.dirname(__file__))
 STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
 APP_DATA_PATH = '/media/data/files/'
+# APP_DATA_PATH = APP_PATH + '/files/'
 
 # sqlite3 database filename
 DB_FILENAME = 'days_weather.db'
@@ -43,18 +48,19 @@ PLOT_PREFIX = 'plot_'
 RAW_LOGGING_FREQ = 1
 PROCESSED_LOGGING_FREQ = 5
 
+# database table names
+DB_WEATHER_TABLES = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
+# database table abbreviations
+DB_WEATHER_TABLES_ABBREVS = ['h', 't', 'btp', 'p']
 # weather data columns
 WEATHER_DATA = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
+# weather data units
+UNITS = ['%', '°C', '°C', 'HPa']
 # statistics
 STATS = ('mean', 'std', 'min', 'max')
 
 # weather data daily trends csv output filename
 DAILY_TRENDS_CSV_PREFIX = 'dailyweathertrends'
-
-# create path if it does not exist
-def create_path(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
 
 create_path(APP_PATH)
 create_path(APP_DATA_PATH)

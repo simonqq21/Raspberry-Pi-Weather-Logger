@@ -10,6 +10,7 @@ WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX, REPORT_PREFIX
 from config import DEBUG
 from config import PROCESSED_LOGGING_FREQ
+from functions import exists, appendNewline
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
@@ -20,19 +21,6 @@ This program calls the datalog averager program to process the raw datalog file,
 for the mean, standard deviation, maximum value and minimum value for temperature, pressure,
 and humidity of a particular day. The data will be graphed and saved as an image file.
 '''
-
-# check if a file exists
-def exists(filename):
-    try:
-        f = open(filename, 'r')
-    except IOError:
-        return 0
-    f.close()
-    return 1
-
-# append newline to string
-def appendNewline(str):
-    return str + '\n'
 
 # parse arguments from the command line
 parser = argparse.ArgumentParser()

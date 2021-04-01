@@ -131,14 +131,12 @@ print(numbers.shape)
 print(numbers.dtype)
 print()
 
-'''
-create a 3d numpy array
-'''
+# create a 3d numpy array to hold the data for processing
 stat_numbers = np.empty((len(stats), numbers.shape[0], len(header)))
 for i in range(len(stats)):
     stat_numbers[i] = numbers[:,i::4]
 stat_numbers = stat_numbers.transpose()
-print(stat_numbers)
+# print(stat_numbers)
 aggregated_results = {}
 
 # get the mean, std, min, and max of the data per day
@@ -160,8 +158,24 @@ for i in range(len(header)):
 # print(aggregated_results)
 
 # generate reports
+
 print('start date: {}'.format(startdatestr))
 print('end date: {}'.format(enddatestr))
+
+print('---------- Main Description -----------')
+
+# for 
+print('Mean mean of daily temperatures: ')
+print('Day/s with the lowest mean temperatures: temp day1 day2 day3 ...')
+print('Day/s with the highest mean temperatures: ')
+print('Mean low of daily temperatures: ')
+print('Day/s with the lowest low temperatures: ')
+print('Day/s with the lowest high temperatures: ')
+print('Mean high of daily temperatures: ')
+print('Day/s with the lowest high temperatures: ')
+print('Day/s with the highest high temperatures: ')
+
+print('---------- Complete aggregated data ----------')
 for h in header:
     for s in stats:
         for s2 in aggregated_results[h][s]:

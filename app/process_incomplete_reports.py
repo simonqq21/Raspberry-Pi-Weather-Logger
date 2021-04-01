@@ -8,24 +8,10 @@ from datetime import datetime, date
 import re
 import subprocess
 import os
+from functions import exists, generatereport
 
 # algorithm to decide whether to generate summarized data
 # or if the summarized data is already complete and does not need regenerating.
-
-# check if file exists
-def exists(filepath):
-    try:
-        f = open(filepath)
-    except IOError:
-        return False
-    f.close()
-    return True
-
-# call the report generation script with the date parameters
-def generatereport(month, day, year):
-    proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} -g'.format
-    (APP_PATH, month, day, year), shell=True)
-    proc1.wait()
 
 logs_path = APP_DATA_PATH + WEATHER_LOGS_FOLDER
 plots_path = APP_DATA_PATH + PLOTS_FOLDER
@@ -55,8 +41,6 @@ for filename in filenames:
             summary_path = summaries_path + SUMMARY_PREFIX + strdate + '.txt'
             report_path = reports_path + REPORT_PREFIX + strdate + '.txt'
 
-
-
             # if the processed log file exists,
             if exists(processed_log_path) and exists(plot_path) and exists(summary_path) \
             and exists(report_path):
@@ -84,3 +68,6 @@ for filename in filenames:
             else:
                 print('generation needed')
                 generatereport(date1.month, date1.day, date1.year)
+
+# add statistical data to the database
+subprocess.Popen('python3 {}/db_weather_logger.py'.format(APP_PATH), shell=True)

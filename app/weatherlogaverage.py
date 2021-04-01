@@ -7,6 +7,7 @@ import argparse
 from config import APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX
 from config import DEBUG
 from config import RAW_LOGGING_FREQ
+from functions import exists, isEmpty, subtract_time
 
 '''
 This script converts a raw CSV file from the logger into a new CSV file with
@@ -16,28 +17,6 @@ eg. convert the RAW CSV script from the Pi logger into weather data logged every
 Usage: python3 weatherlogreader.py -m <month> -d <day> -y <year> (-m <minutes> | -h <hours>)
 The default interval is 1 minute.
 '''
-
-# check if a file exists
-def exists(filename):
-    try:
-        f = open(filename, 'r')
-    except IOError:
-        return 0
-    f.close()
-    return 1
-
-# return True if file is empty, return False otherwise
-def isEmpty(filename):
-    if DEBUG:
-        print(os.stat(filename).st_size)
-    if os.stat(filename).st_size <= 52:
-        return True
-    return False
-
-# subtracts two datetime.time objects, assuming they are from the same day
-# returns time1 - time2
-def subtract_time(time1, time2):
-    return (datetime.combine(date.min, time1) - datetime.combine(date.min, time2))
 
 # obtain and parse arguments from the command line
 parser = argparse.ArgumentParser()
@@ -66,7 +45,7 @@ filepath = APP_DATA_PATH + WEATHER_LOGS_FOLDER + filename
 file = open(filepath, 'r', newline='')
 filereader = csv.reader(file, delimiter=',')
 
-if isEmpty(filepath):
+if isEmpty(filepath, 52):
     print("input file is empty, exiting")
     exit(0)
 else:

@@ -5,6 +5,7 @@ from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import SUMMARIES_FOLDER, SUMMARY_PREFIX
 from config import WEATHER_DATA, STATS
+from functions import read_summary
 
 debug = True
 
@@ -15,29 +16,6 @@ exists in the db. It reads the data per day from summary files, then inserts all
 days into the db. This program is automatically executed by the weather logger, which is started
 on boot.
 '''
-
-# process a summary file and return the data as a dictionary
-def read_summary(filename):
-    summary_path = APP_DATA_PATH + SUMMARIES_FOLDER + filename
-    # read file
-    with open(summary_path, 'r') as summaryfile:
-        summarydata = summaryfile.readlines()
-
-    # data dictionary
-    weather_data_dict = {}
-
-    # extract data
-    for line in summarydata:
-        curr_header = line.split(':')[0]
-        weather_data_dict[curr_header] = {}
-        data = line.strip('\n').split(':', maxsplit=1)[1].split(',',maxsplit=4)
-        # convert data to float so it can be compared to the data from the db
-        weather_data_dict[curr_header]['mean'] = float(data[0])
-        weather_data_dict[curr_header]['std'] = float(data[1])
-        weather_data_dict[curr_header]['min'] = float(data[2])
-        weather_data_dict[curr_header]['max'] = float(data[3])
-
-    return weather_data_dict
 
 # connect to sqlite db
 con = sqlite3.connect(APP_DATA_PATH + DB_FILENAME)
