@@ -8,6 +8,7 @@ import subprocess
 from config import APP_PATH, APP_DATA_PATH, \
 WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
 RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX, REPORT_PREFIX
+from config import WEATHER_DATA, STATS
 from config import DEBUG
 from config import PROCESSED_LOGGING_FREQ
 from functions import exists, appendNewline
@@ -71,9 +72,7 @@ except:
     print("Read error")
     exit()
 # get the CSV file header
-header = filearr[0]
-# remove 'Time' from the header array
-header = header[1:]
+header = WEATHER_DATA
 # print(header)
 
 # create date object from parameters
@@ -155,16 +154,12 @@ for i in range(len(header)):
 summary_dict = {}
 for i in range(len(header)):
     sub_dict1 = {}
-    sub_dict1['mean'] =  mean_std_min_max[0][i]
-    sub_dict1['std'] =  mean_std_min_max[1][i]
-    sub_dict1['min'] =  mean_std_min_max[2][i]
-    sub_dict1['max'] =  mean_std_min_max[3][i]
+    for j in range(len(STATS)):
+        sub_dict1[STATS[j]] =  mean_std_min_max[j][i]
     sub_dict1['min_times'] = minTimeList[i]
     sub_dict1['max_times'] = maxTimeList[i]
     summary_dict[header[i]] = sub_dict1
 # print(summary_dict)
-
-stats = ['mean', 'std', 'min', 'max']
 
 # generate report file
 report_filepath = APP_DATA_PATH + REPORTS_FOLDER + REPORT_PREFIX + day.strftime('%m%d%Y') + '.txt'
@@ -183,7 +178,7 @@ report_file.write(appendNewline(str))
 # to the report file
 for column_name in summary_dict.keys():
 
-    for st in stats:
+    for st in STATS:
         str = '{} {}: {:.3f}'.format(column_name, st, summary_dict[column_name][st])
         if DEBUG:
             print(str)
@@ -287,10 +282,8 @@ except:
 # write mean, std, min, max, min times, and max times for each value column from the dictionary
 for column_name in summary_dict.keys():
     str1 = column_name + ':'
-    str1 += '{:.3f}'.format(summary_dict[column_name]['mean']) + ','
-    str1 += '{:.3f}'.format(summary_dict[column_name]['std']) + ','
-    str1 += '{:.3f}'.format(summary_dict[column_name]['min']) + ','
-    str1 += '{:.3f}'.format(summary_dict[column_name]['max']) + ','
+    for s in range(len(STATS)):
+        str1 += '{:.3f}'.format(summary_dict[column_name][STATS[s]]) + ','
 
     str1 += '['
     for date in summary_dict[column_name]['min_times']:

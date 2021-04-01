@@ -2,8 +2,9 @@ import os
 import datetime
 from datetime import datetime, date, timedelta
 import csv
+import subprocess
 from config import WEATHER_DATA
-from config import APP_DATA_PATH, SUMMARIES_FOLDER
+from config import APP_DATA_PATH, APP_PATH, SUMMARIES_FOLDER
 from config import DEBUG
 
 # check if a file exists

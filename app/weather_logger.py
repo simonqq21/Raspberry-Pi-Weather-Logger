@@ -7,7 +7,6 @@ from threading import Thread, Event
 import signal
 import subprocess
 from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX
-from config import WEATHER_DATA
 from config import DEBUG
 from functions import exists, generateFileName, generateFilePath, createOpenLogFile
 from rpi_functions import statusled, BMP180read, DHT11read, flashStatusLED, statusLedEvent, terminateEvent

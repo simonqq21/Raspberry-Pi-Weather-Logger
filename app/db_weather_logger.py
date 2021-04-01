@@ -4,7 +4,7 @@ import re
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import SUMMARIES_FOLDER, SUMMARY_PREFIX
-from config import WEATHER_DATA, STATS
+from config import WEATHER_DATA, DB_WEATHER_TABLES, STATS
 from functions import read_summary
 
 debug = True
@@ -26,7 +26,7 @@ cur = con.cursor()
 #create dates table if not exists
 cur.execute('CREATE TABLE IF NOT EXISTS dates (id INTEGER NOT NULL PRIMARY KEY,date TEXT NOT NULL)')
 # create weather data tables if not exists
-for data in WEATHER_DATA:
+for data in DB_WEATHER_TABLES:
     sql = ('CREATE TABLE IF NOT EXISTS {} (id INTEGER NOT NULL PRIMARY KEY, {} REAL, \
     {} REAL, {} REAL, {} REAL, FOREIGN KEY(id) REFERENCES dates(id))'.format(data, *STATS))
     cur.execute(sql)
@@ -58,15 +58,15 @@ for filename in filenames:
             cur.execute('INSERT INTO dates(date) VALUES(?)', (date1str,))
 
         # for each weather data table
-        for data in WEATHER_DATA:
+        for data in DB_WEATHER_TABLES:
             data2 = {}
             # get the weather data from the db that is associated with the date
             sql = "SELECT * FROM {} WHERE {}.id = (SELECT id FROM dates WHERE dates.date = \
             '{}')".format(data, data, date1str)
             cur.execute(sql)
             r = cur.fetchone()
+            
             # convert query results into dictionary format
-
             if r is not None:
                 data2 = dict(zip(r.keys(), tuple(r)))
                 # remove the id value to test for equality with the database data
@@ -74,9 +74,10 @@ for filename in filenames:
 
             # if there are any differences between the data from the summary file and the
             # data from the db file or if the data for a certain date does not exist, update it.
-            if data1[data] != data2:
+            i = WEATHER_DATA[DB_WEATHER_TABLES.index(data)]
+            if data1[i] != data2:
                 if debug:
-                    print(data1[data])
+                    print(data1[i])
                     print(data2)
                     print()
 
@@ -84,12 +85,12 @@ for filename in filenames:
                 if data2 == {}:
                     sql = "INSERT INTO {}(id, {}, {}, {}, {}) VALUES ((SELECT id FROM dates \
                     where dates.date = '{}'), ?, ?, ?, ?)".format(data, *STATS, date1str)
-                    cur.execute(sql, tuple(data1[data][stat] for stat in STATS))
+                    cur.execute(sql, tuple(data1[i][stat] for stat in STATS))
                 # update data on receiving different nonempty result
                 else:
                     sql = "UPDATE {} SET {}=?, {}=?, {}=?, {}=? WHERE id=(SELECT id FROM dates \
                     where dates.date = '{}')".format(data, *STATS, date1str)
-                    cur.execute(sql, tuple(data1[data][stat] for stat in STATS))
+                    cur.execute(sql, tuple(data1[i][stat] for stat in STATS))
 
 con.commit()
 con.close()

@@ -10,6 +10,11 @@ con = sqlite3.connect(APP_DATA_PATH + DB_FILENAME)
 con.row_factory = sqlite3.Row
 cur = con.cursor()
 
+# list all tables in the db
+tables = cur.execute('SELECT name FROM sqlite_master WHERE type="table" AND name NOT LIKE "sqlite_%"')
+for t in tables:
+    print(list(t))
+
 results = cur.execute('SELECT d.id, d.date, \
 t.mean AS t_mean, t.std AS t_std, t.min AS t_min, t.max AS t_max, \
 btp.mean AS btp_mean, btp.std AS btp_std, btp.min AS btp_min, btp.max AS btp_max, \

@@ -20,8 +20,8 @@ APP_PATH = os.path.abspath(os.path.dirname(__file__))
 # used for building Flask URLs
 STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
-APP_DATA_PATH = '/media/data/files/'
-# APP_DATA_PATH = APP_PATH + '/files/'
+# APP_DATA_PATH = '/media/data/files/'
+APP_DATA_PATH = APP_PATH + '/files/'
 
 # sqlite3 database filename
 DB_FILENAME = 'days_weather.db'
@@ -52,10 +52,11 @@ PROCESSED_LOGGING_FREQ = 5
 DB_WEATHER_TABLES = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
 # database table abbreviations
 DB_WEATHER_TABLES_ABBREVS = ['h', 't', 'btp', 'p']
-# weather data columns
-WEATHER_DATA = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
 # weather data units
 UNITS = ['%', '°C', '°C', 'HPa']
+# weather data columns
+WEATHER_DATA = list('{} ({})'.format(DB_WEATHER_TABLES[w], UNITS[w]) for w in range(len(DB_WEATHER_TABLES_ABBREVS)))
+# print(WEATHER_DATA)
 # statistics
 STATS = ('mean', 'std', 'min', 'max')
 

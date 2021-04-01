@@ -58,8 +58,8 @@ print(args)
 # enddate = date(args.endyear, args.endmonth, args.endday)
 
 # testing code
-startdate = date(2021, 3, 12)
-enddate = date(2021, 3, 16)
+startdate = date(2021, 3, 20)
+enddate = date(2021, 3, 31)
 
 startdatestr = startdate.strftime("%Y-%m-%d")
 enddatestr = enddate.strftime("%Y-%m-%d")
@@ -164,7 +164,7 @@ print('end date: {}'.format(enddatestr))
 
 print('---------- Main Description -----------')
 
-# for 
+# for
 print('Mean mean of daily temperatures: ')
 print('Day/s with the lowest mean temperatures: temp day1 day2 day3 ...')
 print('Day/s with the highest mean temperatures: ')

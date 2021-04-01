@@ -5,8 +5,9 @@ import csv
 from datetime import datetime, date, time, timedelta
 import argparse
 from config import APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX
-from config import DEBUG
+from config import DB_WEATHER_TABLES
 from config import RAW_LOGGING_FREQ
+from config import DEBUG
 from functions import exists, isEmpty, subtract_time
 
 '''
@@ -81,7 +82,7 @@ else:
         print(records[0])
     outputTime = datetime.strptime(records[0][0], "%H:%M:%S").time().replace(second=0)
     inputTime = datetime.strptime(records[0][0], "%H:%M:%S").time().replace(second=0)
-    temperature, humidity, bmp_temperature, pressure = 0, 0, 0, 0
+    data = [0] * len(DB_WEATHER_TABLES)
     n = 0
 
     for row in records[1:]:
@@ -93,39 +94,33 @@ else:
         inputTime = time(hms[0], hms[1], hms[2])
 
         # get the sum of the data
-        humidity += float(row[1])
-        temperature += float(row[2])
-        bmp_temperature += float(row[3])
-        pressure += float(row[4])
+        for i in range(len(data)):
+            data[i] += float(row[i+1])
         n += 1
 
         # log the mean of the data for every division
         if subtract_time(inputTime, outputTime).seconds >= interval_minutes * 60:
             # get the average
-            temperature /= n
-            humidity /= n
-            bmp_temperature /= n
-            pressure /= n
+            for i in range(len(data)):
+                data[i] /= n
             # write the data to the csv file
-            filewriter.writerow([outputTime, '{:.3f}'.format(humidity),
-            '{:.3f}'.format(temperature),
-            '{:.3f}'.format(bmp_temperature),
-            '{:.3f}'.format(pressure)])
+            newrow = [outputTime]
+            for i in range(len(data)):
+                newrow += ['{:.3f}'.format(data[i])]
+            filewriter.writerow(newrow)
             outputTime = inputTime
             outputTime = outputTime.replace(second=0)
             # reset the average
-            temperature, humidity, bmp_temperature, pressure = 0, 0, 0, 0
+            data = [0] * len(DB_WEATHER_TABLES)
             n = 0
 
     # average the remaining values
     if n > 0:
-        temperature /= n
-        humidity /= n
-        bmp_temperature /= n
-        pressure /= n
-        filewriter.writerow([outputTime, '{:.3f}'.format(humidity),
-        '{:.3f}'.format(temperature),
-        '{:.3f}'.format(bmp_temperature),
-        '{:.3f}'.format(pressure)])
+        for i in range(len(data)):
+            data[i] /= n
+        newrow = [outputTime]
+        for i in range(len(data)):
+            newrow += ['{:.3f}'.format(data[i])]
+        filewriter.writerow(newrow)
 
     file.close()
