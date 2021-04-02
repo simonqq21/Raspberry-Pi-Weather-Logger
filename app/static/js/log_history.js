@@ -26,7 +26,7 @@ function get_statistics(data)
 {
     for (x of weathervalues) {
         for (sd of statistical_data) {
-            $('#'+x+sd).text(data[x][sd]);
+            $('#'+x+sd).text(data[jsoncolumns[weathervalues.indexOf(x)]][sd]);
     }}
 }
 
@@ -42,7 +42,7 @@ function get_times(data)
     for (x of weathervalues) {
         for (m of ['min_times', 'max_times']) {
             // console.log(data[x][m].toString().replace(/,/g, "\n"));
-            $("#"+m+x+"time").text(data[x][m].toString().replace(/,/g, "\n"));
+            $("#"+m+x+"time").text(data[jsoncolumns[weathervalues.indexOf(x)]][m].toString().replace(/,/g, "\n"));
         }}
 }
 
@@ -204,6 +204,7 @@ $(document).ready(function() {
 
     // define weather data columns and statistical values
     weathervalues = ['Humidity', 'Temperature', 'BMP_temperature', 'Pressure'];
+    jsoncolumns = ['Humidity (%)', 'Temperature (°C)', 'BMP_temperature (°C)', 'Pressure (HPa)'];
     statistical_data = ['mean', 'std', 'min', 'max'];
 
     // create blank tables that will contain weather data statistics for each weather data column

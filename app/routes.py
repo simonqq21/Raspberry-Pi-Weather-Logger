@@ -130,13 +130,12 @@ def log_history():
             weather_data_dict[curr_header]['min_times'] = data[4].strip('[').strip(']').split('][')[0].split(',')[:-1]
             weather_data_dict[curr_header]['max_times'] = data[4].strip('[').strip(']').split('][')[1].split(',')[:-1]
 
-        if DEBUG:
-            print(weather_data_dict)
-            print(rawdatadate)
-            print(summary_path)
-            print(plot_url)
-            print(report_path)
-            print(processed_data_path)
+        print(weather_data_dict)
+        print(rawdatadate)
+            # print(summary_path)
+            # print(plot_url)
+            # print(report_path)
+            # print(processed_data_path)
 
         return jsonify(data=weather_data_dict, plot_url=plot_url, report_path=report_path,
         data_path=processed_data_path)

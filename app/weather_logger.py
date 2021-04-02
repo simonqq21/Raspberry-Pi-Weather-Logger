@@ -7,12 +7,11 @@ from threading import Thread, Event
 import signal
 import subprocess
 from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX
+from config import logging_duration
 from config import DEBUG
 from functions import exists, generateFileName, generateFilePath, createOpenLogFile
 from rpi_functions import statusled, BMP180read, DHT11read, flashStatusLED, statusLedEvent, terminateEvent
 
-DEBUG=True
-delay = 5 # logging delay
 flash_duration = 0.5 # status LED flash duration
 
 # Ctrl-C KeyboardInterrupt signal handler
@@ -75,7 +74,7 @@ while True:
         # set the Event to flash the status LED
         statusLedEvent.set()
     # delay per reading that also checks for the terminating event triggered by Ctrl-C
-    terminateEvent.wait(delay)
+    terminateEvent.wait(logging_duration)
 
     # terminate main thread when Ctrl-C is entered
     if terminateEvent.is_set():

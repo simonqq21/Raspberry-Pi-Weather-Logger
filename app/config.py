@@ -13,15 +13,16 @@ def create_path(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-DEBUG = True
+logging_duration = 30 # logging delay
+DEBUG = False
 
 # path for the python scripts
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
 # used for building Flask URLs
 STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
-# APP_DATA_PATH = '/media/data/files/'
-APP_DATA_PATH = APP_PATH + '/files/'
+APP_DATA_PATH = '/media/data/files/'
+# APP_DATA_PATH = APP_PATH + '/files/'
 
 # sqlite3 database filename
 DB_FILENAME = 'days_weather.db'
