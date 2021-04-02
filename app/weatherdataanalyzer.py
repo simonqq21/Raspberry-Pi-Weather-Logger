@@ -257,9 +257,7 @@ if args.graph:
     for axis in axes:
         axis.tick_params(labelsize=18)
         axis.tick_params(axis='x',labelrotation=30)
-
-    # specify time format of x-axis
-    for axis in axes:
+        # specify time format of x-axis
         axis.xaxis.set_major_formatter(timeformat)
         axis.xaxis_date()
 

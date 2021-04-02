@@ -3,6 +3,7 @@ import datetime
 from datetime import datetime, date, timedelta
 import csv
 import subprocess
+import re
 from config import WEATHER_DATA, STATS
 from config import APP_DATA_PATH, APP_PATH, SUMMARIES_FOLDER
 from config import DEBUG
@@ -92,3 +93,10 @@ def generatereport(month, day, year):
     proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} -g'.format
     (APP_PATH, month, day, year), shell=True)
     proc1.wait()
+
+# delete any matching files in a given path
+def deleteAllSimilar(path, prefix):
+    filenames = os.listdir(path)
+    for filename in filenames:
+        if re.search('^' + prefix, filename) is not None:
+            os.remove(path + filename)

@@ -29,10 +29,12 @@ import csv
 import sqlite3
 import os
 import re
+import sys
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import WEATHER_DATA, STATS, DB_WEATHER_TABLES, UNITS
-from config import DAILY_TRENDS_CSV_PREFIX
+from config import DAILY_TRENDS_PREFIX
+from functions import deleteAllSimilar, appendNewline
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
@@ -51,19 +53,21 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-g', '--graph', help="graph the data and save it to an image file if \
 specified", action='store_true')
 args = parser.parse_args()
-print(args)
+# print(args)
 
 # get the start and end date and format them as strings for sqlite to use
 # startdate = date(args.startyear, args.startmonth, args.startday)
 # enddate = date(args.endyear, args.endmonth, args.endday)
 
 # testing code
-startdate = date(2021, 3, 20)
+startdate = date(2021, 2, 13)
 enddate = date(2021, 3, 31)
+# startdate = date(2021, 3, 31)
+# enddate = date(2021, 4, 1)
 
 startdatestr = startdate.strftime("%Y-%m-%d")
 enddatestr = enddate.strftime("%Y-%m-%d")
-print(startdatestr, enddatestr)
+# print(startdatestr, enddatestr)
 
 # create array of column headers and stat measures
 header = np.array(WEATHER_DATA)
@@ -90,13 +94,18 @@ WHERE d.date BETWEEN ? AND ? \
 ORDER BY d.date ASC', (startdatestr, enddatestr))
 
 # save overall results to numpy array
-results_matrix = np.empty((18,))
+results_matrix = np.empty((1,18))
 results = list(dict(row) for row in results.fetchall())
 for dict_row in results:
     temp_matrix_row = np.hstack(list(dict_row[key] for key in dict_row))
     results_matrix = np.vstack((results_matrix, temp_matrix_row))
-results_matrix = results_matrix[1:,:]
-print(results_matrix)
+# print(results_matrix.shape)
+if results_matrix.shape[0] > 1:
+    results_matrix = results_matrix[1:,:]
+else:
+    print('No results in those dates.')
+    sys.exit(0)
+# print(results_matrix)
 
 # generate csv file header
 csv_header = 'date,'
@@ -105,38 +114,34 @@ for h in range(len(header)):
         csv_header += header[h] + '_' + stats[s]
         if h < len(header) - 1 or s < len(stats) - 1:
             csv_header += ','
-print(csv_header)
+# print(csv_header)
 
 # delete any existing daily trends csv file before generating new csv file
-filenames = os.listdir(APP_DATA_PATH)
-for filename in filenames:
-    if re.search('^' + DAILY_TRENDS_CSV_PREFIX, filename) is not None:
-        print(filename)
-        os.remove(APP_DATA_PATH + filename)
+deleteAllSimilar(APP_DATA_PATH, DAILY_TRENDS_PREFIX)
 
 # save the database results as a csv file for download
-np.savetxt(APP_DATA_PATH + DAILY_TRENDS_CSV_PREFIX + '{}_{}.csv'.format(startdatestr, enddatestr), \
+np.savetxt(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.csv'.format(startdatestr, enddatestr), \
 results_matrix[:,1:], delimiter=',', fmt=['%s'] * 17, header=csv_header, comments='')
 
 # save the array of dates to numpy array
 dates_arr = results_matrix[:,1].astype(np.datetime64)
-print(dates_arr)
+# print(dates_arr)
 
 # save the numerical data to a numpy array
 numbers = np.hstack((results_matrix[:,2:6], results_matrix[:,6:10], \
                     results_matrix[:,10:14], results_matrix[:,14:18]))
 numbers = numbers.astype(np.float64)
-print(numbers)
-print(numbers.shape)
-print(numbers.dtype)
-print()
+# print(numbers)
+# print(numbers.shape)
+# print(numbers.dtype)
+# print()
 
 # create a 3d numpy array to hold the data for processing
 stat_numbers = np.empty((len(stats), numbers.shape[0], len(header)))
 for i in range(len(stats)):
     stat_numbers[i] = numbers[:,i::4]
 stat_numbers = stat_numbers.transpose()
-# print(stat_numbers)
+print(stat_numbers)
 aggregated_results = {}
 
 # get the mean, std, min, and max of the data per day
@@ -157,46 +162,119 @@ for i in range(len(header)):
         dates_arr[np.where(stat_numbers == stat_numbers[i,:,j].max(axis=0))[1]]
 # print(aggregated_results)
 
-# generate reports
-
-print('start date: {}'.format(startdatestr))
-print('end date: {}'.format(enddatestr))
-
-print('---------- Key Data -----------')
-
-for t in range(len(DB_WEATHER_TABLES)):
-    print('{} mean mean: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['mean']['mean'], UNITS[t]))
-    print('{} mean min: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['mean']['min'], UNITS[t]))
-    print('{} mean min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['mean']['min_days']))
-    print('{} mean max: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['mean']['max'], UNITS[t]))
-    print('{} mean max_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['mean']['max_days']))
-    print('{} min min: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['min']['min'], UNITS[t]))
-    print('{} min min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['min']['min_days']))
-    print('{} max max: {}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-    aggregated_results[header[t]]['max']['max'], UNITS[t]))
-    print('{} max max_days: {}'.format(DB_WEATHER_TABLES[t].lower(),
-    aggregated_results[header[t]]['max']['max_days']))
-    print()
-print()
-print('---------- Complete aggregated data ----------')
-for h in range(len(header)):
-    for s in stats:
-        for s2 in aggregated_results[header[h]][s]:
-            print("{} {} {}: {}{}".format(header[h], s, s2, aggregated_results[header[h]][s][s2], UNITS[h]))
-        print()
-    print()
-print()
+# generate a report text file
+with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
+    file.write(appendNewline('---------- Weather Data Daily Trends Report ----------'))
+    file.write(appendNewline('start date: {}'.format(startdatestr)))
+    file.write(appendNewline('end date: {}'.format(enddatestr)))
+    file.write(appendNewline(''))
+    file.write(appendNewline('---------- Key Data -----------'))
+    file.write(appendNewline(''))
+    for t in range(len(DB_WEATHER_TABLES)):
+        file.write(appendNewline('{} mean mean: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['mean']['mean'], UNITS[t])))
+        file.write(appendNewline('{} mean min: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['mean']['min'], UNITS[t])))
+        file.write(appendNewline('{} mean min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['mean']['min_days'])))
+        file.write(appendNewline('{} mean max: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['mean']['max'], UNITS[t])))
+        file.write(appendNewline('{} mean max_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['mean']['max_days'])))
+        file.write(appendNewline('{} min min: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['min']['min'], UNITS[t])))
+        file.write(appendNewline('{} min min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['min']['min_days'])))
+        file.write(appendNewline('{} max max: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
+        aggregated_results[header[t]]['max']['max'], UNITS[t])))
+        file.write(appendNewline('{} max max_days: {}'.format(DB_WEATHER_TABLES[t].lower(),
+        aggregated_results[header[t]]['max']['max_days'])))
+        file.write(appendNewline(''))
+    file.write(appendNewline(''))
+    file.write(appendNewline('---------- Complete aggregated data ----------'))
+    file.write(appendNewline(''))
+    for h in range(len(header)):
+        for s in stats:
+            for s2 in aggregated_results[header[h]][s]:
+                file.write(appendNewline("{} {} {}: {}".format(header[h], s, s2, \
+                aggregated_results[header[h]][s][s2])))
+            file.write(appendNewline(''))
+        file.write(appendNewline(''))
+    file.write(appendNewline(''))
 
 # generate graph if graph option is set
 if args.graph:
     import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+    import matplotlib
 
+    # save the data to graph
+    graph_data = {}
+    for h in range(len(header)):
+        graph_data[header[h]] = {}
+        for s in range(len(stats)):
+            if stats[s] != 'std':
+                graph_data[header[h]][stats[s]] = stat_numbers[h,:,s]
+    # print(graph_data)
+
+    # fonts
+    suptitlefont = {'family':'monospace','color':'black'}
+    titlefont = {'family':'monospace','color':'black','size':20}
+    axisfont = {'family':'monospace','color':'black','size':20}
+    plt.rc('legend', fontsize=20)
+
+    # set the time format to HH:MM
+    timeformat = mdates.DateFormatter('%Y/%m/%d')
+
+    # set the subplots and figure size
+    figure, axes = plt.subplots(4,1, figsize=(22, 15), sharex=True)
+
+    # super title
+    figure.suptitle('Weather Data Trends from {} to {}'.format(startdate.strftime('%m%d%Y'), \
+    enddate.strftime('%m%d%Y')), fontdict=suptitlefont, fontsize=40)
+
+    # subgraph for humidity
+    axes[0].set_title(WEATHER_DATA[0], fontdict=titlefont)
+    axes[0].set_ylabel(WEATHER_DATA[0], fontdict=axisfont)
+    axes[0].plot(dates_arr, graph_data[WEATHER_DATA[0]]['mean'], label="humidity_mean", linestyle='-', color='#0000ff', linewidth=4)
+    axes[0].plot(dates_arr, graph_data[WEATHER_DATA[0]]['min'], label="humidity_min", linestyle='-', color='#000099', linewidth=4)
+    axes[0].plot(dates_arr, graph_data[WEATHER_DATA[0]]['max'], label="humidity_max", linestyle='-', color='#9999ff', linewidth=4)
+    axes[0].legend()
+
+    # subgraph for temperature
+    axes[1].set_title(WEATHER_DATA[1], fontdict=titlefont)
+    axes[1].set_ylabel(WEATHER_DATA[1], fontdict=axisfont)
+    axes[1].plot(dates_arr, graph_data[WEATHER_DATA[1]]['mean'], label="temperature_mean", linestyle='-', color='#cd3299', linewidth=4)
+    axes[1].plot(dates_arr, graph_data[WEATHER_DATA[1]]['min'], label="temperature_min", linestyle='-', color='#90236b', linewidth=4)
+    axes[1].plot(dates_arr, graph_data[WEATHER_DATA[1]]['max'], label="temperature_max", linestyle='-', color='#ebadd6', linewidth=4)
+    axes[1].legend()
+
+    # subgraph for bmp_temperature
+    axes[2].set_title(WEATHER_DATA[2], fontdict=titlefont)
+    axes[2].set_ylabel(WEATHER_DATA[2], fontdict=axisfont)
+    axes[2].plot(dates_arr, graph_data[WEATHER_DATA[2]]['mean'], label="bmp_temperature_mean", linestyle='-', color='#ff0000', linewidth=4)
+    axes[2].plot(dates_arr, graph_data[WEATHER_DATA[2]]['min'], label="bmp_temperature_min", linestyle='-', color='#990000', linewidth=4)
+    axes[2].plot(dates_arr, graph_data[WEATHER_DATA[2]]['max'], label="bmp_temperature_max", linestyle='-', color='#ff8080', linewidth=4)
+    axes[2].legend()
+
+    # subgraph for pressure
+    axes[3].set_title(WEATHER_DATA[3], fontdict=titlefont)
+    axes[3].set_ylabel(WEATHER_DATA[3], fontdict=axisfont)
+    axes[3].plot(dates_arr, graph_data[WEATHER_DATA[3]]['mean'], label="pressure_mean", linestyle='-', color='#00b300', linewidth=4)
+    axes[3].plot(dates_arr, graph_data[WEATHER_DATA[3]]['min'], label="pressure_min", linestyle='-', color='#003300', linewidth=4)
+    axes[3].plot(dates_arr, graph_data[WEATHER_DATA[3]]['max'], label="pressure_max", linestyle='-', color='#1aff1a', linewidth=4)
+    axes[3].legend()
+
+    # specify time format of x-axis
+    for axis in axes:
+        axis.xaxis.set_major_formatter(timeformat)
+        axis.xaxis_date()
+        # set tick font size and rotation for all subplots
+        axis.tick_params(labelsize=18)
+        axis.tick_params(axis='x',labelrotation=30)
+
+    figure.subplots_adjust(top=0.92)
+    # plt.tight_layout()
+    plt.savefig(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.png'.format(startdatestr, enddatestr), dpi=200, bbox_inches='tight')
 
 con.close()
