@@ -1,0 +1,37 @@
+.
+├── app
+│   ├── average_raw_logs.py
+│   ├── config.py
+│   ├── __init__.py
+│   ├── line_count_test.py
+│   ├── process_incomplete_reports.py
+│   ├── routes.py
+│   ├── static
+│   │   ├── css
+│   │   │   ├── base.css
+│   │   │   ├── index.css
+│   │   │   ├── style1.css
+│   │   │   └── weather_logs.css
+│   │   ├── files
+│   │   │   ├── plots
+│   │   │   ├── reports
+│   │   │   ├── summaries
+│   │   │   └── weather_logs
+│   │   └── js
+│   │       ├── index.js
+│   │       ├── jquery.js
+│   │       └── log_history.js
+│   ├── templates
+│   │   ├── index.html
+│   │   ├── index_template.html
+│   │   ├── weather_logs.html
+│   │   └── weather_logs_template.html
+│   ├── weatherdataanalyzer.py
+│   ├── weatherlogaverage.py
+│   └── weather_logger.py
+├── app.py
+├── README.md
+├── start.sh
+└── venv
+
+286 directories, 2129 files
