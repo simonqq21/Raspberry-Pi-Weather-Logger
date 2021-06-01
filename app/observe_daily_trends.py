@@ -60,8 +60,8 @@ args = parser.parse_args()
 # enddate = date(args.endyear, args.endmonth, args.endday)
 
 # testing code
-startdate = date(2021, 2, 13)
-enddate = date(2021, 3, 31)
+startdate = date(2021, 2, 12)
+enddate = date(2021, 4, 17)
 # startdate = date(2021, 3, 31)
 # enddate = date(2021, 4, 1)
 
@@ -276,5 +276,5 @@ if args.graph:
     figure.subplots_adjust(top=0.92)
     # plt.tight_layout()
     plt.savefig(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.png'.format(startdatestr, enddatestr), dpi=200, bbox_inches='tight')
-
+    print('saved')
 con.close()
