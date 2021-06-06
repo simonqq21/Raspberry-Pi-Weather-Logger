@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 from time import sleep
-import csv
 import os
 from datetime import datetime, date, time, timedelta
 from threading import Thread, Event
