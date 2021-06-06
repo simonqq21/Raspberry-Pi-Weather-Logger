@@ -15,62 +15,62 @@ Base = declarative_base()
 # log timestamp class
 class DateTimeRow(Base):
     __tablename__ = 'log_time'
-    
+
     id = Column(Integer, primary_key=True)
     datetime = Column(DateTime)
     dht_temperature = relationship("DHTTemperature", uselist=False, back_populates="datetimerow")
     dht_humidity = relationship("DHTHumidity", uselist=False, back_populates="datetimerow")
     bmp_temperature = relationship("BMPTemperature", uselist=False, back_populates="datetimerow")
     bmp_pressure = relationship("BMPPressure", uselist=False, back_populates="datetimerow")
-    
+
     def __repr__(self):
         return f"DateTimeRow(id={self.id!r}, datetime={self.datetime!r})"
 
 # DHT temperature table
 class DHTTemperature(Base):
     __tablename__ = 'dht_temperature'
-    
+
     id = Column(Integer, primary_key=True)
     datetime_id = Column(ForeignKey('log_time.id'))
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="dht_temperature")
-    
+
     def __repr__(self):
         return f"DHTTemperature(id={self.id!r}, datetime_id={self.datetime_id!r}, value={self.value!r})"
-    
-# DHT humidity table 
+
+# DHT humidity table
 class DHTHumidity(Base):
     __tablename__ = 'dht_humidity'
-    
+
     id = Column(Integer, primary_key=True)
     datetime_id = Column(ForeignKey('log_time.id'))
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="dht_humidity")
-    
+
     def __repr__(self):
         return f"DHTHumidity(id={self.id!r}, datetime_id={self.datetime_id!r}, value={self.value!r})"
 
-# BMP temperature table 
+# BMP temperature table
 class BMPTemperature(Base):
     __tablename__ = 'bmp_temperature'
-    
+
     id = Column(Integer, primary_key=True)
     datetime_id = Column(ForeignKey('log_time.id'))
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="bmp_temperature")
-    
+
     def __repr__(self):
         return f"BMPTemperature(id={self.id!r}, datetime_id={self.datetime_id!r}, value={self.value!r})"
 
 # BMP pressure table
 class BMPPressure(Base):
     __tablename__ = 'bmp_pressure'
-    
+
     id = Column(Integer, primary_key=True)
     datetime_id = Column(ForeignKey('log_time.id'))
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="bmp_pressure")
-    
+
     def __repr__(self):
         return f"BMPPressure(id={self.id!r}, datetime_id={self.datetime_id!r}, value={self.value!r})"
 
@@ -89,18 +89,18 @@ class WeatherLog():
         self.datetime.dht_humidity = self.dhthumd
         self.datetime.bmp_temperature = self.bmptemp
         self.datetime.bmp_pressure = self.bmppres
-        
+
     def __repr__(self):
         return f"WeatherLog(time={self.datetime}," \
             f"dhttemp={self.dhttemp}," \
             f"dhthumd={self.dhthumd}," \
             f"bmptemp={self.bmptemp}," \
             f"bmppres={self.bmppres})"
-    
+
     def insert(self):
         session.add(self.datetime)
         session.commit()
-    
+
     @staticmethod
     def select(datetime):
         dt = aliased(DateTimeRow, name='dt')
@@ -111,7 +111,7 @@ class WeatherLog():
                               row.dt.dht_humidity, \
                               row.dt.bmp_temperature, \
                               row.dt.bmp_pressure)
-    
+
     @staticmethod
     def selectMultiple(date):
         datetimelow = datetime.combine(date, time(0,0,0))
@@ -126,7 +126,16 @@ class WeatherLog():
                               row.dt.bmp_pressure)
             weatherlogs.append(weatherlog)
         return weatherlogs
-        
+
+    @staticmethod
+    def createNew(datetime, dhttemp, dhthumd, bmptemp, bmppres):
+        dt = DateTimeRow(datetime=datetime)
+        dhttemp = DHTTemperature(value=dhttemp)
+        dhthumd = DHTHumidity(value=dhthumd)
+        bmptemp = BMPTemperature(value=bmptemp)
+        bmppres = BMPPressure(value=bmppres)
+        return WeatherLog(dt, dhttemp, dhthumd, bmptemp, bmppres)
+
     def update(self, dhttemp=None, dhthumd=None, bmptemp=None, bmppres=None):
         self.dhttemp.value = self.dhttemp.value if dhttemp is None else dhttemp
         self.dhthumd.value = self.dhthumd.value if dhthumd is None else dhthumd
@@ -137,30 +146,30 @@ class WeatherLog():
     def delete(self):
         session.delete(self.datetime)
         session.commit()
-    
+
 # db operations:
 # insert one row of weather data with the time and date
 # insert many rows of weather data given the date
 # select one row of weather data given the time and date
-# select many rows of weather data given the date 
+# select many rows of weather data given the date
 # update values of one row of weather data given the time, date, and update values
 # delete one row of weather data given the time and date
 # delete many rows of weather data given the date
 
-# insert one row of weather data with the time and date
+###### DRIVER CODE #######
+# insert one new row of weather data with the time and date
 print('# insert one row of weather data with the time and date')
 dt1 = datetime(2021,6,1,12,0)
-time0 = DateTimeRow(datetime=dt1)
-dhttemp = DHTTemperature(value=28.0)
-dhthumd = DHTHumidity(value=79)
-bmptemp = BMPTemperature(value=28.2)
-bmppres = BMPPressure(value=100125)
-weather_data0 = WeatherLog(time0, dhttemp, dhthumd, bmptemp, bmppres)
+dhttemp = 28.0
+dhthumd = value=79
+bmptemp = 28.2
+bmppres = 100125
+weather_data0 = WeatherLog.createNew(dt1, dhttemp, dhthumd, bmptemp, bmppres)
 print('weather_data0 = '+ str(weather_data0))
 weather_data0.insert()
 print('\n')
 
-# insert many rows of weather data given the date
+# insert many new rows of weather data given the date
 print('# insert many rows of weather data given the date')
 dt2 = datetime(2021,6,4,12,0)
 weatherdataarr = [{dhttemp:26, dhthumd:10, bmptemp:25.4, bmppres:100110},
@@ -191,7 +200,7 @@ weather_data3 = WeatherLog.selectMultiple(dt2)
 for i in range(len(weather_data3)):
     print(weather_data3[i])
 print('\n')
-               
+
 # update values of one row of weather data given the time, date, and update values
 print('# update values of one row of weather data given the time, date, and update values')
 weather_data2 = WeatherLog.select(dt1)
