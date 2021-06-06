@@ -10,10 +10,6 @@ Python file containing code that only runs on raspberry pi hardware
 # status LED
 statusled = LED(18)
 statusled.on()
-# status LED trigger event
-statusLedEvent = Event()
-# thread termination event
-terminateEvent = Event()
 
 # initialize BMP180 sensor
 # loop until the sensor is properly connected and detected
