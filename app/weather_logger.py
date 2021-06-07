@@ -1,16 +1,15 @@
 #!/usr/bin/python3
 from time import sleep
-import csv
 import os
 from datetime import datetime, date, time, timedelta
 from threading import Thread, Event
 import signal
 import subprocess
-from config import APP_PATH, APP_DATA_PATH, WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX
+from config import APP_PATH, APP_DATA_PATH
 from config import logging_duration
 from config import DEBUG
-from functions import exists, generateFileName, generateFilePath, createOpenLogFile
-from rpi_functions import statusled, BMP180read, DHT11read, flashStatusLED, statusLedEvent, terminateEvent
+from functions import exists
+from rpi_functions import statusled, BMP180read, DHT11read, flashStatusLED
 
 flash_duration = 0.5 # status LED flash duration
 
@@ -18,10 +17,6 @@ flash_duration = 0.5 # status LED flash duration
 # set the Event to terminate all threads
 def signal_handler(signum, frame):
     terminateEvent.set()
-
-filepath = ""
-newfiledate = datetime.min # initial value
-
 # KeyboardInterrupt signal
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -29,20 +24,25 @@ signal.signal(signal.SIGINT, signal_handler)
 statusLedThread = Thread(target=flashStatusLED, name="statusledthread", args=(statusled, flash_duration))
 statusLedThread.start()
 
+# status LED trigger event
+statusLedEvent = Event()
+# thread termination event
+terminateEvent = Event()
+
 # weather condition variables
 temperature, humidity, bmp_temperature, pressure = -999, -999, -999, -999
 
+newfiledate = date.min()
 # read sensor and write to log file indefinitely
 while True:
     # if a new day has started, create a new log file for the day
     if date.today() > newfiledate.date():
         if (date.today() - newfiledate.date()).days == 1:
             if DEBUG:
-                print("closing current file and opening a new file")
+                pass
         else:
             if DEBUG:
-                print("Opening file initially")
-        filepath = createOpenLogFile(APP_DATA_PATH + WEATHER_LOGS_FOLDER, RAW_LOG_PREFIX)
+                pass
         newfiledate = datetime.now()
 
         # call a process to average all unaveraged raw log files to 1 minute intervals
@@ -61,16 +61,13 @@ while True:
 
     # errors may occur due to the precise timing required by the DHT11 sensor
     if temperature > -999 and humidity > -999 and bmp_temperature > -999 and pressure > -999:
-        csvfile = open(filepath, 'a', newline='')
-        writer = csv.writer(csvfile, delimiter=',')
         dtnow = datetime.now()
         timeStr = dtnow.strftime('%H:%M:%S')
         if DEBUG:
             print("{} {:0.3f}% {:0.3f}C {:0.3f}C {:0.3f}Pa".format(timeStr, humidity, \
             temperature, bmp_temperature, pressure))
         # write csv data to file
-        writer.writerow([timeStr, humidity, temperature, bmp_temperature, pressure])
-        csvfile.close()
+
 
         # set the Event to flash the status LED
         statusLedEvent.set()
