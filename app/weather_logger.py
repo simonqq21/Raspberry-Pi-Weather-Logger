@@ -10,7 +10,9 @@ from config import logging_duration
 from config import DEBUG
 from functions import exists
 from rpi_functions import statusled, BMP180read, DHT11read, flashStatusLED
-
+from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
+from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
+from db_module import WeatherLog, AggDayWeather
 flash_duration = 0.5 # status LED flash duration
 
 # Ctrl-C KeyboardInterrupt signal handler
@@ -30,7 +32,7 @@ statusLedEvent = Event()
 terminateEvent = Event()
 
 # weather condition variables
-temperature, humidity, bmp_temperature, pressure = -999, -999, -999, -999
+temperature, humidity, bmp_temperature, pressure = None, None, None, None
 
 newfiledate = date.min()
 # read sensor and write to log file indefinitely

@@ -1,0 +1,1 @@
+pip3 download sqlalchemy==1.4.17 --platform linux_armv7l --only-binary=:all:

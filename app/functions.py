@@ -5,7 +5,7 @@ import csv
 import subprocess
 import re
 from config import WEATHER_DATA, STATS
-from config import APP_DATA_PATH, APP_PATH, SUMMARIES_FOLDER
+from config import APP_DATA_PATH, APP_PATH
 from config import DEBUG
 
 # check if a file exists
