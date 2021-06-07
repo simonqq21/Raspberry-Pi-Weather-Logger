@@ -24,6 +24,7 @@ newfiledate = datetime.min # initial value
 
 # KeyboardInterrupt signal
 signal.signal(signal.SIGINT, signal_handler)
+
 # status LED thread
 statusLedThread = Thread(target=flashStatusLED, name="statusledthread", args=(statusled, flash_duration))
 statusLedThread.start()
