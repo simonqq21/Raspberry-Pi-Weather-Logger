@@ -18,6 +18,7 @@ class DateTimeRow(Base):
 
     id = Column(Integer, primary_key=True)
     datetime = Column(DateTime)
+    
     dht_temperature = relationship("DHTTemperature", uselist=False, back_populates="datetimerow")
     dht_humidity = relationship("DHTHumidity", uselist=False, back_populates="datetimerow")
     bmp_temperature = relationship("BMPTemperature", uselist=False, back_populates="datetimerow")
@@ -78,24 +79,24 @@ class BMPPressure(Base):
 Base.metadata.create_all(engine)
 
 # class that represents a single weather log
+# datetime_ is the DateTimeRow object
+# log is a dictionary containing the weather logs
 class WeatherLog():
-    def __init__(self, datetime_, dhttemp, dhthumd, bmptemp, bmppres):
+    def __init__(self, datetime_, log):
         self.datetime = datetime_
-        self.dhttemp = dhttemp
-        self.dhthumd = dhthumd
-        self.bmptemp = bmptemp
-        self.bmppres = bmppres
-        self.datetime.dht_temperature = self.dhttemp
-        self.datetime.dht_humidity = self.dhthumd
-        self.datetime.bmp_temperature = self.bmptemp
-        self.datetime.bmp_pressure = self.bmppres
+        self.log = log
+        
+        self.datetime.dht_temperature = self.log['dhttemp']
+        self.datetime.dht_humidity = self.log['dhthumd']
+        self.datetime.bmp_temperature = self.log['bmptemp']
+        self.datetime.bmp_pressure = self.log['bmppres']
 
     def __repr__(self):
-        return f"WeatherLog(time={self.datetime}," \
-            f"dhttemp={self.dhttemp}," \
-            f"dhthumd={self.dhthumd}," \
-            f"bmptemp={self.bmptemp}," \
-            f"bmppres={self.bmppres})"
+        str= f"WeatherLog(datetime={self.datetime}, "
+        for key in self.log.keys():
+            str += f"{key}={self.log[key]}, "
+        str += ")"
+        return str
 
     def insert(self):
         session.add(self.datetime)
@@ -107,10 +108,9 @@ class WeatherLog():
         stmt = select(dt).where(dt.datetime == datetime)
         row = session.execute(stmt).first()
         if row is not None:
-            return WeatherLog(row.dt, row.dt.dht_temperature, \
-                              row.dt.dht_humidity, \
-                              row.dt.bmp_temperature, \
-                              row.dt.bmp_pressure)
+            log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
+                   'bmptemp': row.dt.bmp_temperature, 'bmppres': row.dt.bmp_pressure}
+            return WeatherLog(row.dt, log)
 
     @staticmethod
     def selectMultiple(date):
@@ -120,28 +120,31 @@ class WeatherLog():
         stmt = select(dt).where(and_((dt.datetime >= datetimelow), (dt.datetime <= datetimehigh)))
         weatherlogs = []
         for row in session.execute(stmt):
-            weatherlog = WeatherLog(row.dt, row.dt.dht_temperature, \
-                              row.dt.dht_humidity, \
-                              row.dt.bmp_temperature, \
-                              row.dt.bmp_pressure)
+            log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
+                   'bmptemp': row.dt.bmp_temperature, 'bmppres': row.dt.bmp_pressure}
+            weatherlog = WeatherLog(row.dt, log)
             weatherlogs.append(weatherlog)
         return weatherlogs
 
     @staticmethod
-    def createNew(datetime, dhttemp, dhthumd, bmptemp, bmppres):
+    def createNew(datetime, data):
         dt = DateTimeRow(datetime=datetime)
-        dhttemp = DHTTemperature(value=dhttemp)
-        dhthumd = DHTHumidity(value=dhthumd)
-        bmptemp = BMPTemperature(value=bmptemp)
-        bmppres = BMPPressure(value=bmppres)
-        return WeatherLog(dt, dhttemp, dhthumd, bmptemp, bmppres)
+        log = {'dhttemp' : DHTTemperature(value=data['dhttemp']), \
+        'dhthumd' : DHTHumidity(value=data['dhthumd']), \
+        'bmptemp' : BMPTemperature(value=data['bmptemp']), \
+        'bmppres' : BMPPressure(value=data['bmppres'])}
+        
+        return WeatherLog(dt, log)
 
-    def update(self, dhttemp=None, dhthumd=None, bmptemp=None, bmppres=None):
-        self.dhttemp.value = self.dhttemp.value if dhttemp is None else dhttemp
-        self.dhthumd.value = self.dhthumd.value if dhthumd is None else dhthumd
-        self.bmptemp.value = self.bmptemp.value if bmptemp is None else bmptemp
-        self.bmppres.value = self.bmppres.value if bmppres is None else bmppres
-        session.commit()
+    def update(self, data=None):
+        if data is not None:
+            for key in data.keys():
+                self.log[key].value = data[key].value
+            self.datetime.dht_temperature = self.log['dhttemp']
+            self.datetime.dht_humidity = self.log['dhthumd']
+            self.datetime.bmp_temperature = self.log['bmptemp']
+            self.datetime.bmp_pressure = self.log['bmppres']
+            session.commit()
 
     def delete(self):
         session.delete(self.datetime)
@@ -160,30 +163,22 @@ class WeatherLog():
 # insert one new row of weather data with the time and date
 print('# insert one row of weather data with the time and date')
 dt1 = datetime(2021,6,1,12,0)
-dhttemp = 28.0
-dhthumd = value=79
-bmptemp = 28.2
-bmppres = 100125
-weather_data0 = WeatherLog.createNew(dt1, dhttemp, dhthumd, bmptemp, bmppres)
-print('weather_data0 = '+ str(weather_data0))
+data = {'dhttemp': 28.0, 'dhthumd': 79, 'bmptemp': 28.2, 'bmppres': 100125}
+weather_data0 = WeatherLog.createNew(dt1, data)
 weather_data0.insert()
+print('weather_data0 = '+ str(weather_data0))
 print('\n')
 
 # insert many new rows of weather data given the date
 print('# insert many rows of weather data given the date')
 dt2 = datetime(2021,6,4,12,0)
-weatherdataarr = [{dhttemp:26, dhthumd:10, bmptemp:25.4, bmppres:100110},
-                  {dhttemp:27, dhthumd:30, bmptemp:26.0, bmppres:100150},
-                  {dhttemp:28, dhthumd:50, bmptemp:27.8, bmppres:100200},
-                  {dhttemp:29, dhthumd:70, bmptemp:28.9, bmppres:100250},
-                  {dhttemp:30, dhthumd:90, bmptemp:29.3, bmppres:100300}]
+weatherdataarr = [{'dhttemp':26, 'dhthumd':10, 'bmptemp':25.4, 'bmppres':100110},
+                  {'dhttemp':27, 'dhthumd':30, 'bmptemp':26.0, 'bmppres':100150},
+                  {'dhttemp':28, 'dhthumd':50, 'bmptemp':27.8, 'bmppres':100200},
+                  {'dhttemp':29, 'dhthumd':70, 'bmptemp':28.9, 'bmppres':100250},
+                  {'dhttemp':30, 'dhthumd':90, 'bmptemp':29.3, 'bmppres':100300}]
 for i in range(len(weatherdataarr)):
-    dtORM = DateTimeRow(datetime=dt2)
-    dhttempORM = DHTTemperature(value=weatherdataarr[i][dhttemp])
-    dhthumdORM = DHTHumidity(value=weatherdataarr[i][dhthumd])
-    bmptempORM = BMPTemperature(value=weatherdataarr[i][bmptemp])
-    bmppresORM = BMPPressure(value=weatherdataarr[i][bmppres])
-    weather_data = WeatherLog(dtORM, dhttempORM, dhthumdORM, bmptempORM, bmppresORM)
+    weather_data = WeatherLog.createNew(dt2, weatherdataarr[i])
     weather_data.insert()
     dt2 = dt2.replace(minute=dt2.minute+5)
 print('\n')
@@ -205,12 +200,18 @@ print('\n')
 print('# update values of one row of weather data given the time, date, and update values')
 weather_data2 = WeatherLog.select(dt1)
 weather_data2.update()
+print('# update with no update values')
 print('weather_data2 = ' + str(weather_data2))
-weather_data2.update(dhttemp=27, bmptemp=26.6)
+weather_data2.update(data={'dhttemp': DHTTemperature(value=27), 'bmptemp': BMPTemperature(value=26.6)})
+print('# update with two update values')
 print('weather_data2 = ' + str(weather_data2))
-weather_data2.update(dhttemp=28, dhthumd=32, bmptemp=27.4, bmppres=100200)
+weather_data2.update(data={'dhttemp':DHTTemperature(value=28), 'dhthumd':DHTHumidity(value=32), \
+                     'bmptemp':BMPTemperature(value=27.4), 'bmppres':BMPPressure(value=100200)})
+print('# update with four update values')
 print('weather_data2 = ' + str(weather_data2))
-print('weather_data0 = '+ str(weather_data0))
+print('check if update was applied by selecting the data back from db')
+weather_data1 = WeatherLog.select(dt1)
+print('weather_data1 = ' + str(weather_data1))
 print('\n')
 
 # delete one row of weather data given the time and date

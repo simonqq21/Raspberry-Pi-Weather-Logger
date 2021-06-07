@@ -154,26 +154,23 @@ Base.metadata.create_all(engine)
 
 # class that represents a single weather log
 class WeatherLog():
-    def __init__(self, datetime_, dhttemp, dhthumd, bmptemp, bmppres):
-        self.datetimerow = datetime_
-        self.dhttemp = dhttemp
-        self.dhthumd = dhthumd
-        self.bmptemp = bmptemp
-        self.bmppres = bmppres
-        self.datetimerow.dht_temperature = self.dhttemp
-        self.datetimerow.dht_humidity = self.dhthumd
-        self.datetimerow.bmp_temperature = self.bmptemp
-        self.datetimerow.bmp_pressure = self.bmppres
+    def __init__(self, datetime_, log):
+        self.datetime = datetime_
+        self.log = log
+        
+        self.datetime.dht_temperature = self.log['dhttemp']
+        self.datetime.dht_humidity = self.log['dhthumd']
+        self.datetime.bmp_temperature = self.log['bmptemp']
+        self.datetime.bmp_pressure = self.log['bmppres']
 
     def __repr__(self):
-        return f"WeatherLog(time={self.datetimerow}," \
-            f"dhttemp={self.dhttemp}," \
-            f"dhthumd={self.dhthumd}," \
-            f"bmptemp={self.bmptemp}," \
-            f"bmppres={self.bmppres})"
+        str= f"WeatherLog(time={self.datetime}, "
+        for key in self.log.keys():
+            str += f"{key}={self.log[key]}"
+        return str
 
     def insert(self):
-        session.add(self.datetimerow)
+        session.add(self.datetime)
         session.commit()
 
     @staticmethod
@@ -182,10 +179,9 @@ class WeatherLog():
         stmt = select(dt).where(dt.datetime == datetime)
         row = session.execute(stmt).first()
         if row is not None:
-            return WeatherLog(row.dt, row.dt.dht_temperature, \
-                              row.dt.dht_humidity, \
-                              row.dt.bmp_temperature, \
-                              row.dt.bmp_pressure)
+            log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
+                   'bmptemp': row.dt.bmp_temperature, 'bmppres': row.dt.bmp_pressure}
+            return WeatherLog(row.dt, log)
 
     @staticmethod
     def selectMultiple(date):
@@ -195,43 +191,53 @@ class WeatherLog():
         stmt = select(dt).where(and_((dt.datetime >= datetimelow), (dt.datetime <= datetimehigh)))
         weatherlogs = []
         for row in session.execute(stmt):
-            weatherlog = WeatherLog(row.dt, row.dt.dht_temperature, \
-                              row.dt.dht_humidity, \
-                              row.dt.bmp_temperature, \
-                              row.dt.bmp_pressure)
+            log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
+                   'bmptemp': row.dt.bmp_temperature, 'bmppres': row.dt.bmp_pressure}
+            weatherlog = WeatherLog(row.dt, log)
             weatherlogs.append(weatherlog)
         return weatherlogs
 
-    def update(self, dhttemp=None, dhthumd=None, bmptemp=None, bmppres=None):
-        self.dhttemp.value = self.dhttemp.value if dhttemp is None else dhttemp
-        self.dhthumd.value = self.dhthumd.value if dhthumd is None else dhthumd
-        self.bmptemp.value = self.bmptemp.value if bmptemp is None else bmptemp
-        self.bmppres.value = self.bmppres.value if bmppres is None else bmppres
-        session.commit()
+    @staticmethod
+    def createNew(datetime, data):
+        dt = DateTimeRow(datetime=datetime)
+        log = {'dhttemp' : DHTTemperature(value=data['dhttemp']), \
+        'dhthumd' : DHTHumidity(value=data['dhthumd']), \
+        'bmptemp' : BMPTemperature(value=data['bmptemp']), \
+        'bmppres' : BMPPressure(value=data['bmppres'])}
+        
+        return WeatherLog(dt, log)
+
+    def update(self, data=None):
+        if data is not None:
+            for key in data.keys():
+                self.log[key].value = self.log[key].value if key not in data.keys() else data[key].value
+            self.datetime.dht_temperature = self.log['dhttemp']
+            self.datetime.dht_humidity = self.log['dhthumd']
+            self.datetime.bmp_temperature = self.log['bmptemp']
+            self.datetime.bmp_pressure = self.log['bmppres']
+            session.commit()
 
     def delete(self):
-        session.delete(self.datetimerow)
+        session.delete(self.datetime)
         session.commit()
 
 # class that represents a single day of aggregated weather data
 class AggDayWeather():
-    def __init__(self, date_, aggdhttemp, aggdhthumd, aggbmptemp, aggbmppres):
+    def __init__(self, date_, aggdata):
         self.daterow = date_
-        self.aggdhttemp = aggdhttemp
-        self.aggdhthumd = aggdhthumd
-        self.aggbmptemp = aggbmptemp
-        self.aggbmppres = aggbmppres
-        self.daterow.aggDHTTemp = self.aggdhttemp
-        self.daterow.aggDHTHumd = self.aggdhthumd
-        self.daterow.aggBMPTemp = self.aggbmptemp
-        self.daterow.aggBMPPres = self.aggbmppres
+        self.aggdata = aggdata
+
+        self.daterow.aggDHTTemp = self.aggdata['aggdhttemp']
+        self.daterow.aggDHTHumd = self.aggdata['aggdhthumd']
+        self.daterow.aggBMPTemp = self.aggdata['aggbmptemp']
+        self.daterow.aggBMPPres = self.aggdata['aggbmppres']
 
     def __repr__(self):
-        return f"AggDayWeather(daterow={self.daterow}," \
-            f"aggdhttemp={self.aggdhttemp}," \
-            f"aggdhthumd={self.aggdhthumd}," \
-            f"aggbmptemp={self.aggbmptemp}," \
-            f"aggbmppres={self.aggbmppres})"
+        str = f"AggDayWeather(daterow={self.daterow}, "
+        for key in self.aggdata.keys():
+            str += f"{key}={self.aggdata[key]}, "
+        str += ")"
+        return str
 
     def insert(self):
         session.add(self.daterow)
@@ -239,33 +245,38 @@ class AggDayWeather():
 
     @staticmethod
     def select(date):
-        dt = aliased(DateRow, name='d')
+        d = aliased(DateRow, name='d')
         stmt = select(d).where(d.date == date)
         row = session.execute(stmt).first()
         if row is not None:
-            return AggDayWeather(row.d, row.d.aggDHTTemp, \
-                              row.d.aggDHTHumd, \
-                              row.d.aggBMPTemp, \
-                              row.d.aggBMPPres)
+            aggdata = {'aggdhttemp': row.d.aggDHTTemp, 'aggdhthumd': row.d.aggDHTHumd, \
+                   'aggbmptemp': row.d.aggBMPTemp, 'aggbmppres': row.d.aggBMPPres}
+            return AggDayWeather(row.d, aggdata)
 
     @staticmethod
     def selectMultiple(datelow, datehigh):
-        dt = aliased(DateRow, name='d')
+        d = aliased(DateRow, name='d')
         stmt = select(d).where(and_((d.date >= datelow), (d.date <= datehigh)))
         aggweatherlogs = []
         for row in session.execute(stmt):
-            aggweatherlog = AggDayWeather(row.d, row.d.aggDHTTemp, \
-                              row.d.aggDHTHumd, \
-                              row.d.aggBMPTemp, \
-                              row.d.aggBMPPres)
+            aggdata = {'aggdhttemp': row.d.aggDHTTemp, 'aggdhthumd': row.d.aggDHTHumd, \
+                   'aggbmptemp': row.d.aggBMPTemp, 'aggbmppres': row.d.aggBMPPres}
+            return AggDayWeather(row.d, aggdata)
+            aggweatherlog = AggDayWeather(row.d, aggdata)
             aggweatherlogs.append(aggweatherlog)
         return aggweatherlogs
 
-    def update(self, aggdhttemp=None, aggdhthumd=None, aggbmptemp=None, aggbmppres=None):
-        self.aggdhttemp = self.aggdhttemp if aggdhttemp is None else aggdhttemp
-        self.aggdhthumd = self.aggdhthumd if aggdhthumd is None else aggdhthumd
-        self.aggbmptemp = self.aggbmptemp if aggbmptemp is None else aggbmptemp
-        self.aggbmppres = self.aggbmppres if aggbmppres is None else aggbmppres
+    def update(self, data=None):
+        if data is not None:
+            for key in data.keys():
+                self.aggdata[key].mean = data[key].mean
+                self.aggdata[key].std = data[key].std
+                self.aggdata[key].min = data[key].min
+                self.aggdata[key].max = data[key].max
+        self.daterow.aggDHTTemp = self.aggdata['aggdhttemp']
+        self.daterow.aggDHTHumd = self.aggdata['aggdhthumd']
+        self.daterow.aggBMPTemp = self.aggdata['aggbmptemp']
+        self.daterow.aggBMPPres = self.aggdata['aggbmppres']
         session.commit()
 
     def delete(self):
