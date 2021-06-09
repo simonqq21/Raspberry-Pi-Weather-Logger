@@ -13,15 +13,18 @@ def create_path(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-logging_duration = 30 # logging delay
-DEBUG = False
+logging_duration = 30 # logging delay in sec, default 300secs for 5mins
+average_samples = 5 # samples per averaged log, default 6 times 
+DEBUG = True
 
 # path for the python scripts
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
+print(APP_PATH)
 # used for building Flask URLs
 STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
-APP_DATA_PATH = '/media/pi/weather_logger/'
+APP_DATA_PATH = APP_PATH + '/'
+# APP_DATA_PATH = '/media/pi/weather_logger'
 
 # sqlite3 database filename
 DB_FILENAME = 'weather_logs.db'
@@ -37,7 +40,7 @@ PLOT_PREFIX = 'plot_'
 
 # datalogging frequencies in minutes
 RAW_LOGGING_FREQ = 1
-PROCESSED_LOGGING_FREQ = 5
+PROCESSED_LOGGING_FREQ = 5 
 
 # database table names
 DB_WEATHER_TABLES = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]

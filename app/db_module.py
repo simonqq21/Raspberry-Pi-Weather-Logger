@@ -10,6 +10,7 @@ from datetime import datetime, time, timedelta
 from config import APP_DATA_PATH, DB_FILENAME
 
 # sqlite db engine
+print(APP_DATA_PATH + DB_FILENAME)
 engine = create_engine("sqlite+pysqlite:///" + APP_DATA_PATH + DB_FILENAME, echo=False, future=True)
 session = Session(engine)
 Base = declarative_base()
@@ -166,7 +167,7 @@ class WeatherLog():
     def __repr__(self):
         str= f"WeatherLog(time={self.datetime}, "
         for key in self.log.keys():
-            str += f"{key}={self.log[key]}"
+            str += f"{key}={self.log[key]}, "
         return str
 
     def insert(self):
@@ -184,11 +185,16 @@ class WeatherLog():
             return WeatherLog(row.dt, log)
 
     @staticmethod
-    def selectMultiple(date):
-        datetimelow = datetime.combine(date, time(0,0,0))
-        datetimehigh = datetime.combine(date, time(23,59,59))
+    def selectMultiple(date=None):
         dt = aliased(DateTimeRow, name='dt')
-        stmt = select(dt).where(and_((dt.datetime >= datetimelow), (dt.datetime <= datetimehigh)))
+        if date is not None:
+            datetimelow = datetime.combine(date, time(0,0,0))
+            datetimehigh = datetime.combine(date, time(23,59,59))
+            stmt = select(dt).where(and_((dt.datetime >= datetimelow), (dt.datetime <= datetimehigh)))
+            
+        else:
+            stmt = select(dt)
+            
         weatherlogs = []
         for row in session.execute(stmt):
             log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \

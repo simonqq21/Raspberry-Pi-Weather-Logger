@@ -7,6 +7,13 @@ from config import DEBUG
 '''
 Python file containing code that only runs on raspberry pi hardware
 '''
+
+
+# status LED trigger event
+statusLedEvent = Event()
+# thread termination event
+terminateEvent = Event()
+
 # status LED
 statusled = LED(18)
 statusled.on()
@@ -60,3 +67,10 @@ def flashStatusLED(led, duration):
             break
         # stop thread from running too fast and eating CPU resources
         terminateEvent.wait(0.1)
+
+# flash the status LED
+def flashStatusLED(led, duration):
+    led.on()
+    terminateEvent.wait(duration)
+    led.off()
+    
