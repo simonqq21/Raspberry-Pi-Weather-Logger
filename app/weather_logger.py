@@ -9,8 +9,8 @@ from config import APP_PATH, APP_DATA_PATH
 from config import logging_duration, average_samples
 from config import DEBUG
 from functions import exists
-from rpi_functions import statusLedEvent, terminateEvent
-from rpi_functions import statusled, BMP180read, DHT11read, flashStatusLED
+from rpi_functions import terminateEvent
+from rpi_functions import statusled, BMP180read, DHT11read
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from db_module import WeatherLog, AggDayWeather
@@ -24,10 +24,10 @@ def signal_handler(signum, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 # status LED thread
-statusLedThread = Thread(target=flashStatusLED, name="statusledthread", args=(statusled, flash_duration))
-statusLedThread.start()
-statusLedThread2 = Thread(target=flashStatusLED, name='statusledthread2', args=(statusled, flash_duration))
-statusLedThread2.start()
+# statusLedThread = Thread(target=flashStatusLED, name="statusledthread", args=(statusled, flash_duration))
+# statusLedThread.start()
+# statusLedThread2 = Thread(target=flashStatusLED, name='statusledthread2', args=(statusled, flash_duration))
+# statusLedThread2.start()
 
 # weather condition variables
 weather_data = {'dhttemp': 0, 'dhthumd': 0, 'bmptemp': 0, 'bmppres': 0}
@@ -63,6 +63,7 @@ while True:
         if terminateEvent.is_set():
             print("Exiting")
             break;
+        statusled.blink(on_time=1, off_time=0, n=1, background=True)
     
     # terminate main thread when Ctrl-C is entered
     if terminateEvent.is_set():
@@ -82,7 +83,7 @@ while True:
     newlog = WeatherLog.createNew(dtnow, weather_data)
     newlog.insert()
     
-    # set the Event to flash the status LED
-    statusLedEvent.set()
+    #
+    statusled.blink(on_time=10, off_time=0, n=1, background=True)
 
 print("Program exit")

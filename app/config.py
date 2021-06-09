@@ -13,7 +13,7 @@ def create_path(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-logging_duration = 30 # logging delay in sec, default 300secs for 5mins
+logging_duration = 300 # logging delay in sec, default 300secs for 5mins
 average_samples = 5 # samples per averaged log, default 6 times 
 DEBUG = True
 

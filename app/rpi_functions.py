@@ -10,7 +10,8 @@ Python file containing code that only runs on raspberry pi hardware
 
 
 # status LED trigger event
-statusLedEvent = Event()
+# statusLedFlashEvent = Event()
+# statusLedFlashEvent = Event()
 # thread termination event
 terminateEvent = Event()
 
@@ -56,21 +57,16 @@ def DHT11read():
     return instTemperature, instHumidity
 
 # flash the status LED
-def flashStatusLED(led, duration):
-    while True:
-        if statusLedEvent.is_set():
-            led.on()
-            terminateEvent.wait(duration)
-            led.off()
-            statusLedEvent.clear()
-        if terminateEvent.is_set():
-            break
-        # stop thread from running too fast and eating CPU resources
-        terminateEvent.wait(0.1)
+# def flashStatusLED(led, duration):
+#     while True:
+#         if statusLedEvent.is_set():
+#             led.on()
+#             terminateEvent.wait(duration)
+#             led.off()
+#             statusLedEvent.clear()
+#         if terminateEvent.is_set():
+#             break
+#         # stop thread from running too fast and eating CPU resources
+#         terminateEvent.wait(0.1)
 
-# flash the status LED
-def flashStatusLED(led, duration):
-    led.on()
-    terminateEvent.wait(duration)
-    led.off()
     
