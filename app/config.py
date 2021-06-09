@@ -14,7 +14,8 @@ def create_path(path):
         os.makedirs(path)
 
 logging_duration = 300 # logging delay in sec, default 300secs for 5mins
-average_samples = 5 # samples per averaged log, default 6 times 
+average_samples = 5 # samples per averaged log, default 6 times
+logging_interval = logging_duration / average_samples
 DEBUG = True
 
 # path for the python scripts
@@ -43,13 +44,16 @@ RAW_LOGGING_FREQ = 1
 PROCESSED_LOGGING_FREQ = 5 
 
 # database table names
-DB_WEATHER_TABLES = ["Humidity", "Temperature", "BMP_temperature", "Pressure"]
+TABLES = ["Temperature", "Humidity", "BMP_temperature", "Pressure"]
 # database table abbreviations
-DB_WEATHER_TABLES_ABBREVS = ['h', 't', 'btp', 'p']
+TABLE_ABBREVS = ['dhttemp', 'dhthumd', 'bmptemp', 'bmppres']
 # weather data units
-UNITS = ['%', '°C', '°C', 'HPa']
+UNITS = ['°C', '%', '°C', 'HPa']
 # weather data columns
-WEATHER_DATA = list('{} ({})'.format(DB_WEATHER_TABLES[w], UNITS[w]) for w in range(len(DB_WEATHER_TABLES_ABBREVS)))
+WEATHER_DATA_LIST = list('{} ({})'.format(TABLES[w], UNITS[w]) for w in range(len(TABLES)))
+HEADER = dict(zip(TABLE_ABBREVS,WEATHER_DATA_LIST))
+print(HEADER)
+
 # print(WEATHER_DATA)
 # statistics
 STATS = ('mean', 'std', 'min', 'max')

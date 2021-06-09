@@ -1,17 +1,19 @@
 #!/usr/bin/python3
 
 import numpy as np
+import pandas as pd
 import os
 from datetime import datetime, date, time
 import argparse
 import subprocess
-from config import APP_PATH, APP_DATA_PATH, \
-WEATHER_LOGS_FOLDER, SUMMARIES_FOLDER, REPORTS_FOLDER, PLOTS_FOLDER, \
-RAW_LOG_PREFIX, PROCESSED_LOG_PREFIX, SUMMARY_PREFIX, PLOT_PREFIX, REPORT_PREFIX
-from config import WEATHER_DATA, STATS
+from config import APP_PATH, APP_DATA_PATH, REPORTS_FOLDER, PLOTS_FOLDER, PLOT_PREFIX, REPORT_PREFIX
+from config import HEADER, STATS
 from config import DEBUG
-from config import PROCESSED_LOGGING_FREQ
+from config import logging_interval
 from functions import exists, appendNewline
+from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
+from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
+from db_module import WeatherLog, AggDayWeather
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
@@ -31,51 +33,37 @@ parser.add_argument('-y', help='numeric four digit year', default=date.today().y
 parser.add_argument('-g', '--graph', help='graph the data and save it to an image file if specified', action='store_true')
 args = parser.parse_args()
 
-# saving parameters to variables
+# create date object from parameters
 month = args.m
 day = args.d
 year = args.y
-
-# initial averaging of weather data of the specified day to the specified interval
-# get the filename and filepath of the raw log file based on the date from arguments
-strDate = '{:02}'.format(month) + '{:02}'.format(day) + str(year)
-weather_logs_path = APP_DATA_PATH + WEATHER_LOGS_FOLDER
-filepath = weather_logs_path + filename
-# get the filename and filepath of the processed log file based on the date from arguments
-processed_filepath = weather_logs_path + PROCESSED_LOG_PREFIX + strDate + '.csv'
-# call a subprocess of the weatherlogaverage.py to average the weather data
-if exists(filepath):
-    proc1 = subprocess.Popen('python3 {}/weatherlogaverage.py -m {} -d {} -y {} --minute {}'
-    .format(APP_PATH, month, day, year, interval_minutes), stdout=subprocess.PIPE, shell=True)
-    output = proc1.communicate()[0]
-    output = str(output, 'UTF-8')
-    print(output)
-else:
-    print("file for specified date does not exist")
-    exit()
-
-# get the filename of the processed weather data file
-# load the processed weather data CSV file into a numpy 2D string array
-try:
-    filearr = np.genfromtxt(processed_filepath, delimiter=',', dtype=str)
-except:
-    print("Read error")
-    exit()
-# get the CSV file header
-header = WEATHER_DATA
-# print(header)
-
-# create date object from parameters
 day = date(year, month, day)
 
+timelist = []
+dataArr = {}
+for k in HEADER.keys():
+    dataArr[k] = []
+
+# load the data from the db
+weather_logs = WeatherLog.selectMultiple(date1=day)
+for w in weather_logs:
+    print(w)
+    timelist.append(w.datetime.datetime)
+    for k in HEADER.keys():
+        dataArr[k].append(w.log[k].value)
+
+# get the CSV file header
+header = HEADER
+print(header)
+
 # get the time array from filearr and convert it into datetime with the day
-timeList = list(filearr[1:,0])
+
 datetimeArr = np.array(list(datetime.combine(day, datetime.strptime(time,'%H:%M:%S').time()) for time in timeList))
 # print(datetimeArr)
 # print(datetimeArr.shape)
 
 # get the log data arrays from filearr and format it as float64
-dataArr = filearr[1:, 1:].astype(np.float64)
+
 # print(dataArr)
 # print(dataArr.shape)
 

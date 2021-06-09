@@ -155,6 +155,10 @@ Base.metadata.create_all(engine)
 
 # class that represents a single weather log
 class WeatherLog():
+    # datetime_ is a DateTimeRow object
+    # log is a dictionary containing key:value 'dhttemp': a DHTTemperature object, \
+    # 'dhthumd': a DHTHumidity object, 'bmptemp': a BMPTemperature object, and \
+    # 'bmppres': a BMPPressure object.
     def __init__(self, datetime_, log):
         self.datetime = datetime_
         self.log = log
@@ -177,7 +181,7 @@ class WeatherLog():
     @staticmethod
     def select(datetime):
         dt = aliased(DateTimeRow, name='dt')
-        stmt = select(dt).where(dt.datetime == datetime)
+        stmt = select(dt).where(dt.datetime == datetime).order_by(dt.id)
         row = session.execute(stmt).first()
         if row is not None:
             log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
@@ -185,15 +189,19 @@ class WeatherLog():
             return WeatherLog(row.dt, log)
 
     @staticmethod
-    def selectMultiple(date=None):
+    def selectMultiple(date1=None, date2=None):
         dt = aliased(DateTimeRow, name='dt')
-        if date is not None:
-            datetimelow = datetime.combine(date, time(0,0,0))
-            datetimehigh = datetime.combine(date, time(23,59,59))
-            stmt = select(dt).where(and_((dt.datetime >= datetimelow), (dt.datetime <= datetimehigh)))
+        if date1 is not None:
+            datetimelow = datetime.combine(date1, time(0,0,0))
+            if date2 is not None:
+                datetimehigh = datetime.combine(date2, time(23,59,59))
+            else:
+                datetimehigh = datetime.combine(date1, time(23,59,59))
+            stmt = select(dt).where(and_((dt.datetime >= datetimelow), (dt.datetime <= datetimehigh))) \
+                   .order_by(dt.id)
             
         else:
-            stmt = select(dt)
+            stmt = select(dt).order_by(dt.id)
             
         weatherlogs = []
         for row in session.execute(stmt):
@@ -253,7 +261,7 @@ class AggDayWeather():
     def select(date):
         d = aliased(DateRow, name='d')
         stmt = select(d).where(d.date == date)
-        row = session.execute(stmt).first()
+        row = session.execute(stmt).first().order_by(d.id)
         if row is not None:
             aggdata = {'aggdhttemp': row.d.aggDHTTemp, 'aggdhthumd': row.d.aggDHTHumd, \
                    'aggbmptemp': row.d.aggBMPTemp, 'aggbmppres': row.d.aggBMPPres}
@@ -262,7 +270,7 @@ class AggDayWeather():
     @staticmethod
     def selectMultiple(datelow, datehigh):
         d = aliased(DateRow, name='d')
-        stmt = select(d).where(and_((d.date >= datelow), (d.date <= datehigh)))
+        stmt = select(d).where(and_((d.date >= datelow), (d.date <= datehigh))).order_by(dt.id)
         aggweatherlogs = []
         for row in session.execute(stmt):
             aggdata = {'aggdhttemp': row.d.aggDHTTemp, 'aggdhthumd': row.d.aggDHTHumd, \

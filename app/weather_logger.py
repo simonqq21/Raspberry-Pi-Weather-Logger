@@ -6,7 +6,7 @@ from threading import Thread, Event
 import signal
 import subprocess
 from config import APP_PATH, APP_DATA_PATH
-from config import logging_duration, average_samples
+from config import logging_duration, average_samples, logging_interval
 from config import DEBUG
 from functions import exists
 from rpi_functions import terminateEvent
@@ -59,7 +59,7 @@ while True:
         weather_data['bmptemp'] += bmptemp
         weather_data['bmppres'] += bmppres
         # delay per reading that also checks for the terminating event triggered by Ctrl-C
-        terminateEvent.wait(logging_duration / average_samples)
+        terminateEvent.wait(logging_interval)
         if terminateEvent.is_set():
             print("Exiting")
             break;

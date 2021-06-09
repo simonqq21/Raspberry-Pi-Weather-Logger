@@ -4,7 +4,7 @@ from datetime import datetime, date, timedelta
 import csv
 import subprocess
 import re
-from config import WEATHER_DATA, STATS
+from config import HEADER, STATS
 from config import APP_DATA_PATH, APP_PATH
 from config import DEBUG
 
@@ -58,7 +58,7 @@ def subtract_time(time1, time2):
 #     writer = csv.writer(csvfile, delimiter=',')
 #     # write the file header only if the file is empty
 #     if os.stat(filepath).st_size == 0:
-#         writer.writerow(["Time"] + WEATHER_DATA)
+#         writer.writerow(["Time"] + WEATHER_DATA_HEADER_DICT)
 #     csvfile.close()
 #     return filepath
 
@@ -80,7 +80,7 @@ def subtract_time(time1, time2):
 #             weather_data_dict[curr_header][STATS[i]] = float(data[i])
 #     # fill in the data that does not exist with None values
 #     # used so that it will be easy to add more sensors and weather data columns in the future
-#     for d in WEATHER_DATA:
+#     for d in WEATHER_DATA_HEADER_DICT:
 #         if d not in weather_data_dict:
 #             weather_data_dict[d] = {}
 #             for i in range(len(STATS)):
