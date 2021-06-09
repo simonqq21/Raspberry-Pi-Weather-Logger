@@ -29,26 +29,16 @@ parser.add_argument('-m', help='numeric month from 1-12', default=date.today().m
 parser.add_argument('-d', help='numeric day from 1-31', default=date.today().day, type=int)
 parser.add_argument('-y', help='numeric four digit year', default=date.today().year, type=int)
 parser.add_argument('-g', '--graph', help='graph the data and save it to an image file if specified', action='store_true')
-group2 = parser.add_mutually_exclusive_group()
-group2.add_argument('-hr', '--hour', help='The new log interval in hours', type=float)
-group2.add_argument('-min', '--minute', help='The new log interval in minutes. Default value is {} minutes'.format(PROCESSED_LOGGING_FREQ),
-type=int, default=PROCESSED_LOGGING_FREQ)
 args = parser.parse_args()
 
 # saving parameters to variables
 month = args.m
 day = args.d
 year = args.y
-# get the logging interval in minutes
-if args.hour is None:
-    interval_minutes = args.minute
-else:
-    interval_minutes = int(args.hour * 60)
 
 # initial averaging of weather data of the specified day to the specified interval
 # get the filename and filepath of the raw log file based on the date from arguments
 strDate = '{:02}'.format(month) + '{:02}'.format(day) + str(year)
-filename = RAW_LOG_PREFIX + strDate + '.csv'
 weather_logs_path = APP_DATA_PATH + WEATHER_LOGS_FOLDER
 filepath = weather_logs_path + filename
 # get the filename and filepath of the processed log file based on the date from arguments
