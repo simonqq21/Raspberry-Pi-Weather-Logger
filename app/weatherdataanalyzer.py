@@ -39,94 +39,72 @@ day = args.d
 year = args.y
 day = date(year, month, day)
 
-timelist = []
 dataArr = {}
+dataArr['datetime'] = []
 for k in HEADER.keys():
     dataArr[k] = []
 
 # load the data from the db
 weather_logs = WeatherLog.selectMultiple(date1=day)
 for w in weather_logs:
-    print(w)
-    timelist.append(w.datetime.datetime)
+    dataArr['datetime'].append(w.datetime.datetime)
     for k in HEADER.keys():
         dataArr[k].append(w.log[k].value)
 
-# get the CSV file header
-header = HEADER
-print(header)
+# weather data DataFrame
+weather_df = pd.DataFrame(data=dataArr)
+print(weather_df)
+# print(weather_df.dtypes)
+# print(weather_df.columns[1:5])
+# print(weather_df.info())
+# print(weather_df.loc[1])
 
-# get the time array from filearr and convert it into datetime with the day
-
-datetimeArr = np.array(list(datetime.combine(day, datetime.strptime(time,'%H:%M:%S').time()) for time in timeList))
-# print(datetimeArr)
-# print(datetimeArr.shape)
-
-# get the log data arrays from filearr and format it as float64
-
-# print(dataArr)
-# print(dataArr.shape)
-
-# create results array
-mean_std_min_max = np.zeros((4, len(header)), dtype=np.float64)
-# get the mean, std, min, and max for each item in the header and save it to the results array
-mean_std_min_max[0] = dataArr.mean(axis=0)
-mean_std_min_max[1] = dataArr.std(axis=0)
-mean_std_min_max[2] = dataArr.min(axis=0)
-mean_std_min_max[3] = dataArr.max(axis=0)
-# print(mean_std_min_max)
+# create results dataframe
+# get the mean, std, min, and max for each item in the header and save it to the results dataframe
+mean = weather_df.mean(numeric_only=True)
+std = weather_df.std(numeric_only=True)
+min = weather_df.min(numeric_only=True)
+max = weather_df.max(numeric_only=True)
+# print(mean)
+# print(std)
+# print(min)
+# print(max)
+results_df = pd.concat([mean, std, min, max], axis=1)
+results_df.columns = STATS
+print(day)
+print(results_df)
+print('\n')
+# insert aggregated data for the day into the database
+daterow = DateRow(date=day)
+aggdata = {'aggdhttemp': AggDHTTemperature(mean=results_df['mean']['dhttemp'], \
+    std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
+    max=results_df['max']['dhttemp']), \
+    'aggdhthumd': AggDHTHumidity(mean=results_df['mean']['dhttemp'], \
+    std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
+    max=results_df['max']['dhttemp']),
+    'aggbmptemp': AggBMPTemperature(mean=results_df['mean']['dhttemp'], \
+    std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
+    max=results_df['max']['dhttemp']),
+    'aggbmppres': AggBMPPressure(mean=results_df['mean']['dhttemp'], \
+    std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
+                                        max=results_df['max']['dhttemp'])}
+aggdayweather = AggDayWeather(daterow, aggdata)
+aggdayweather.insert()
+print('inserted')
 
 # Get the times when the weather data was at maximum values
 # get the indices in the array where the data in each field is the highest
-maxValIndices = np.where(dataArr == dataArr.max(axis=0))
-# print(maxValIndices)
-# depth stack the resulting arrays to form a 2D array with 1st degree elements with 0th element
-# as value index and 1st element as datetime index
-stackedMaxValIndices = np.dstack((maxValIndices[1], maxValIndices[0])).reshape(-1,2)
-# print(stackedMaxValIndices)
-# lexsort() generates an array of the indices of the sorted array. It is used for sorting an
-# array according to a specific order of dimensions
-# make the indices that indicate how maxValIndices should be sorted the index of stackedMaxValIndices
-# to get the sorted max times index array
-sorted_indices = np.lexsort((stackedMaxValIndices[:,1],stackedMaxValIndices[:,0]))
-maxTimeIndices = stackedMaxValIndices[sorted_indices]
-# print(maxTimeIndices)
-# list of the times of maximum weather conditions
-maxTimeList = []
-# for each value column, get the times of the indices of the maximum values for each value
-# column and append them to the ith sublist in the maxTimeList
-for i in range(len(header)):
-    indices = stackedMaxValIndices[stackedMaxValIndices[:,0] == i][:,1]
-    # print(indices)
-    times = datetimeArr[indices].tolist()
-    maxTimeList.append(times)
-# print(maxTimeList)
+print('max datetimes')
+for k in HEADER.keys():
+    print(f"max {k} = {max[k]}")
+    print(weather_df['datetime'][weather_df[k] == max[k]])
+print('\n') 
+print('min datetimes')
+for k in HEADER.keys():
+    print(f"min {k} = {min[k]}")
+    print(weather_df['datetime'][weather_df[k] == min[k]])
+print('\n')
 
-# Get the times when the weather data was at minimum values
-#  get the indices in the array where the data in each field is the lowest
-minValIndices = np.where(dataArr == dataArr.min(axis=0))
-# print(minValIndices)
-# depth stack the resulting arrays to form a 2D array with 1st degree elements with 0th element
-# as value index and 1st element as datetime index
-stackedMinValIndices = np.dstack((minValIndices[1], minValIndices[0])).reshape(-1,2)
-# print(stackedMinValIndices)
-# lexsort() generates an array of the indices of the sorted array. It is used for sorting an
-# array according to a specific order of dimensions
-# make the indices that indicate how minValIndices should be sorted the index of stackedMinValIndices
-# to get the sorted min times index array
-sorted_indices = np.lexsort((stackedMinValIndices[:,1], stackedMinValIndices[:,0]))
-minTimeIndices = stackedMinValIndices[sorted_indices]
-# print(minTimeIndices)
-# list of the times of minimum weather conditions
-minTimeList = []
-# for each value column, get the times of the indices of the minimum values for each value
-# column and append them to the ith sublist in the minTimeList
-for i in range(len(header)):
-    indices = minTimeIndices[minTimeIndices[:,0] == i][:,1]
-    # print(indices)
-    times = datetimeArr[indices].tolist()
-    minTimeList.append(times)
-# print(minTimeList)
 
 # save the data as a dictionary for ease of data representation and saving to file
 summary_dict = {}

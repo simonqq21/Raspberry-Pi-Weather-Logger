@@ -20,7 +20,7 @@ class DateTimeRow(Base):
     __tablename__ = 'log_datetime'
 
     id = Column(Integer, primary_key=True)
-    datetime = Column(DateTime)
+    datetime = Column(DateTime, unique=True)
     dht_temperature = relationship("DHTTemperature", uselist=False, back_populates="datetimerow")
     dht_humidity = relationship("DHTHumidity", uselist=False, back_populates="datetimerow")
     bmp_temperature = relationship("BMPTemperature", uselist=False, back_populates="datetimerow")
@@ -81,7 +81,7 @@ class BMPPressure(Base):
 class DateRow(Base):
     __tablename__ = 'date'
     id = Column(Integer, primary_key=True)
-    date = Column(Date)
+    date = Column(Date, unique=True)
     aggDHTTemp = relationship('AggDHTTemperature', uselist=False, back_populates='date')
     aggDHTHumd = relationship('AggDHTHumidity', uselist=False, back_populates='date')
     aggBMPTemp = relationship('AggBMPTemperature', uselist=False, back_populates='date')
@@ -156,8 +156,8 @@ Base.metadata.create_all(engine)
 # class that represents a single weather log
 class WeatherLog():
     # datetime_ is a DateTimeRow object
-    # log is a dictionary containing key:value 'dhttemp': a DHTTemperature object, \
-    # 'dhthumd': a DHTHumidity object, 'bmptemp': a BMPTemperature object, and \
+    # log is a dictionary containing key:value 'dhttemp': a DHTTemperature object, 
+    # 'dhthumd': a DHTHumidity object, 'bmptemp': a BMPTemperature object, and 
     # 'bmppres': a BMPPressure object.
     def __init__(self, datetime_, log):
         self.datetime = datetime_
@@ -236,6 +236,10 @@ class WeatherLog():
         session.commit()
 
 # class that represents a single day of aggregated weather data
+# date_ is a DateRow object
+# aggdata is a dictionary containing key:value 'aggdhttemp': AggDHTTemperature object,
+# 'aggdhthumd': AggDHTHumidity object, 'aggbmptemp': AggBMPTemperature object,
+# 'aggbmppres': AggBMPPressure object
 class AggDayWeather():
     def __init__(self, date_, aggdata):
         self.daterow = date_
@@ -270,7 +274,7 @@ class AggDayWeather():
     @staticmethod
     def selectMultiple(datelow, datehigh):
         d = aliased(DateRow, name='d')
-        stmt = select(d).where(and_((d.date >= datelow), (d.date <= datehigh))).order_by(dt.id)
+        stmt = select(d).where(and_((d.date >= datelow), (d.date <= datehigh))).order_by(d.id)
         aggweatherlogs = []
         for row in session.execute(stmt):
             aggdata = {'aggdhttemp': row.d.aggDHTTemp, 'aggdhthumd': row.d.aggDHTHumd, \
