@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import os
+import csv
 from datetime import datetime, date, time
 import argparse
 import subprocess
@@ -92,8 +93,7 @@ aggdayweather = AggDayWeather(daterow, aggdata)
 aggdayweather.insert()
 print('inserted')
 
-# Get the times when the weather data was at maximum values
-# get the indices in the array where the data in each field is the highest
+# Get the times when the weather data was at maximum and minimum values
 print('max datetimes')
 for k in HEADER.keys():
     print(f"max {k} = {max[k]}")
