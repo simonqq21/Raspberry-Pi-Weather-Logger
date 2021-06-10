@@ -34,7 +34,7 @@ class DHTTemperature(Base):
     __tablename__ = 'dht_temperature'
 
     id = Column(Integer, primary_key=True)
-    datetime_id = Column(ForeignKey('log_datetime.id'))
+    datetime_id = Column(ForeignKey('log_datetime.id'), unique=True)
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="dht_temperature")
 
@@ -46,7 +46,7 @@ class DHTHumidity(Base):
     __tablename__ = 'dht_humidity'
 
     id = Column(Integer, primary_key=True)
-    datetime_id = Column(ForeignKey('log_datetime.id'))
+    datetime_id = Column(ForeignKey('log_datetime.id'), unique=True)
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="dht_humidity")
 
@@ -58,7 +58,7 @@ class BMPTemperature(Base):
     __tablename__ = 'bmp_temperature'
 
     id = Column(Integer, primary_key=True)
-    datetime_id = Column(ForeignKey('log_datetime.id'))
+    datetime_id = Column(ForeignKey('log_datetime.id'), unique=True)
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="bmp_temperature")
 
@@ -70,7 +70,7 @@ class BMPPressure(Base):
     __tablename__ = 'bmp_pressure'
 
     id = Column(Integer, primary_key=True)
-    datetime_id = Column(ForeignKey('log_datetime.id'))
+    datetime_id = Column(ForeignKey('log_datetime.id'), unique=True)
     value = Column(Float, nullable=False)
     datetimerow = relationship("DateTimeRow", back_populates="bmp_pressure")
 
@@ -94,7 +94,7 @@ class DateRow(Base):
 class AggDHTTemperature(Base):
     __tablename__ = 'agg_dht_temperature'
     id = Column(Integer, primary_key=True)
-    date_id = Column(ForeignKey('date.id'))
+    date_id = Column(ForeignKey('date.id'), unique=True)
     mean = Column(Float, nullable=False)
     std = Column(Float, nullable=False)
     min = Column(Float, nullable=False)
@@ -109,7 +109,7 @@ class AggDHTTemperature(Base):
 class AggDHTHumidity(Base):
     __tablename__ = 'agg_dht_humidity'
     id = Column(Integer, primary_key=True)
-    date_id = Column(ForeignKey('date.id'))
+    date_id = Column(ForeignKey('date.id'), unique=True)
     mean = Column(Float, nullable=False)
     std = Column(Float, nullable=False)
     min = Column(Float, nullable=False)
@@ -124,7 +124,7 @@ class AggDHTHumidity(Base):
 class AggBMPTemperature(Base):
     __tablename__ = 'agg_bmp_temperature'
     id = Column(Integer, primary_key=True)
-    date_id = Column(ForeignKey('date.id'))
+    date_id = Column(ForeignKey('date.id'), unique=True)
     mean = Column(Float, nullable=False)
     std = Column(Float, nullable=False)
     min = Column(Float, nullable=False)
@@ -139,7 +139,7 @@ class AggBMPTemperature(Base):
 class AggBMPPressure(Base):
     __tablename__ = 'agg_bmp_pressure'
     id = Column(Integer, primary_key=True)
-    date_id = Column(ForeignKey('date.id'))
+    date_id = Column(ForeignKey('date.id'), unique=True)
     mean = Column(Float, nullable=False)
     std = Column(Float, nullable=False)
     min = Column(Float, nullable=False)
@@ -175,8 +175,12 @@ class WeatherLog():
         return str
 
     def insert(self):
-        session.add(self.datetime)
-        session.commit()
+        try:
+            session.add(self.datetime)
+            session.commit()
+        except:
+            print('Unique constraint error!')
+            session.rollback()
 
     @staticmethod
     def select(datetime):
@@ -224,7 +228,7 @@ class WeatherLog():
     def update(self, data=None):
         if data is not None:
             for key in data.keys():
-                self.log[key].value = self.log[key].value if key not in data.keys() else data[key].value
+                self.log[key].value = data[key].value
             self.datetime.dht_temperature = self.log['dhttemp']
             self.datetime.dht_humidity = self.log['dhthumd']
             self.datetime.bmp_temperature = self.log['bmptemp']
@@ -258,8 +262,12 @@ class AggDayWeather():
         return str
 
     def insert(self):
-        session.add(self.daterow)
-        session.commit()
+        try:
+            session.add(self.daterow)
+            session.commit()
+        except:
+            print('Unique constraint error!')
+            session.rollback()
 
     @staticmethod
     def select(date):
@@ -282,7 +290,7 @@ class AggDayWeather():
             return AggDayWeather(row.d, aggdata)
             aggweatherlog = AggDayWeather(row.d, aggdata)
             aggweatherlogs.append(aggweatherlog)
-        return aggweatherlogs
+        return list(aggweatherlogs)
 
     def update(self, data=None):
         if data is not None:

@@ -32,5 +32,3 @@ print('\n')
 print('# rows')
 results = AggDayWeather.selectMultiple(date.min, date.max)
 print(results)
-for r in results:
-    print(r)
