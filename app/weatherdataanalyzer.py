@@ -38,6 +38,12 @@ args = parser.parse_args()
 month = args.m
 day = args.d
 year = args.y
+
+# testing
+month = 6
+day = 10
+year = 2021
+
 day = date(year, month, day)
 
 dataArr = {}
@@ -77,28 +83,33 @@ print(results_df)
 print('\n')
 # insert aggregated data for the day into the database
 daterow = DateRow(date=day)
+aggdayweather = AggDayWeather.select(day)
+if aggdayweather is not None:
+    aggdayweather.delete()
 aggdata = {'aggdhttemp': AggDHTTemperature(mean=results_df['mean']['dhttemp'], \
     std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
     max=results_df['max']['dhttemp']), \
-    'aggdhthumd': AggDHTHumidity(mean=results_df['mean']['dhttemp'], \
-    std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
-    max=results_df['max']['dhttemp']),
-    'aggbmptemp': AggBMPTemperature(mean=results_df['mean']['dhttemp'], \
-    std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
-    max=results_df['max']['dhttemp']),
-    'aggbmppres': AggBMPPressure(mean=results_df['mean']['dhttemp'], \
-    std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
-                                        max=results_df['max']['dhttemp'])}
+    'aggdhthumd': AggDHTHumidity(mean=results_df['mean']['dhthumd'], \
+    std=results_df['std']['dhthumd'], min=results_df['min']['dhthumd'], \
+    max=results_df['max']['dhthumd']),
+    'aggbmptemp': AggBMPTemperature(mean=results_df['mean']['bmptemp'], \
+    std=results_df['std']['bmptemp'], min=results_df['min']['bmptemp'], \
+    max=results_df['max']['bmptemp']),
+    'aggbmppres': AggBMPPressure(mean=results_df['mean']['bmppres'], \
+    std=results_df['std']['bmppres'], min=results_df['min']['bmppres'], \
+                                        max=results_df['max']['bmppres'])}
 aggdayweather = AggDayWeather(daterow, aggdata)
+
 aggdayweather.insert()
+
 print('inserted')
 
 # Get the times when the weather data was at maximum and minimum values
-print('max datetimes')
+print('min and max datetimes')
 for k in HEADER.keys():
     print(f"max {k} = {max[k]}")
     print(weather_df['datetime'][weather_df[k] == max[k]])
-print('\n') 
+print('\n')
 print('min datetimes')
 for k in HEADER.keys():
     print(f"min {k} = {min[k]}")

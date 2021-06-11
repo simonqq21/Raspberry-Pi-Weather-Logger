@@ -156,13 +156,13 @@ Base.metadata.create_all(engine)
 # class that represents a single weather log
 class WeatherLog():
     # datetime_ is a DateTimeRow object
-    # log is a dictionary containing key:value 'dhttemp': a DHTTemperature object, 
-    # 'dhthumd': a DHTHumidity object, 'bmptemp': a BMPTemperature object, and 
+    # log is a dictionary containing key:value 'dhttemp': a DHTTemperature object,
+    # 'dhthumd': a DHTHumidity object, 'bmptemp': a BMPTemperature object, and
     # 'bmppres': a BMPPressure object.
     def __init__(self, datetime_, log):
         self.datetime = datetime_
         self.log = log
-        
+
         self.datetime.dht_temperature = self.log['dhttemp']
         self.datetime.dht_humidity = self.log['dhthumd']
         self.datetime.bmp_temperature = self.log['bmptemp']
@@ -203,10 +203,10 @@ class WeatherLog():
                 datetimehigh = datetime.combine(date1, time(23,59,59))
             stmt = select(dt).where(and_((dt.datetime >= datetimelow), (dt.datetime <= datetimehigh))) \
                    .order_by(dt.id)
-            
+
         else:
             stmt = select(dt).order_by(dt.id)
-            
+
         weatherlogs = []
         for row in session.execute(stmt):
             log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
@@ -222,7 +222,7 @@ class WeatherLog():
         'dhthumd' : DHTHumidity(value=data['dhthumd']), \
         'bmptemp' : BMPTemperature(value=data['bmptemp']), \
         'bmppres' : BMPPressure(value=data['bmppres'])}
-        
+
         return WeatherLog(dt, log)
 
     def update(self, data=None):
@@ -272,8 +272,8 @@ class AggDayWeather():
     @staticmethod
     def select(date):
         d = aliased(DateRow, name='d')
-        stmt = select(d).where(d.date == date)
-        row = session.execute(stmt).first().order_by(d.id)
+        stmt = select(d).where(d.date == date).order_by(d.id)
+        row = session.execute(stmt).first()
         if row is not None:
             aggdata = {'aggdhttemp': row.d.aggDHTTemp, 'aggdhthumd': row.d.aggDHTHumd, \
                    'aggbmptemp': row.d.aggBMPTemp, 'aggbmppres': row.d.aggBMPPres}
