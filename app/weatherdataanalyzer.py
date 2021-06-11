@@ -84,6 +84,7 @@ print(results_df)
 print('\n')
 # insert aggregated data for the day into the database
 aggdayweather = AggDayWeather.select(day)
+print(aggdayweather)
 if aggdayweather is not None:
     aggdayweather.delete()
 daterow = DateRow(date=day)
@@ -102,7 +103,7 @@ aggdata = {'aggdhttemp': AggDHTTemperature(mean=results_df['mean']['dhttemp'], \
 aggdayweather = AggDayWeather(daterow, aggdata)
 aggdayweather.insert()
 
-print('inserted')
+print('i')
 
 # save the data as a dictionary for ease of data representation and saving to file
 min_max_times_dict = {}

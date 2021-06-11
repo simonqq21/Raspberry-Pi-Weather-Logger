@@ -27,11 +27,11 @@ dates = getAllDates()
 today = date.today()
 
 for date in dates:
+    strdate = date.strftime('%m%d%Y')
+    plot_path = plots_path + PLOT_PREFIX + strdate + '.png'
+    report_path = reports_path + REPORT_PREFIX + strdate + '.txt'
     # process all dates before today
     if date < today:
-        strdate = date.strftime('%m%d%Y')
-        plot_path = plots_path + PLOT_PREFIX + strdate + '.png'
-        report_path = reports_path + REPORT_PREFIX + strdate + '.txt'
 
         # check for the existence of the image plot and text report
         if not exists(plot_path) or not exists(report_path):
@@ -40,3 +40,16 @@ for date in dates:
         else:
             print('OK')
         print()
+    # delete any record of
+    else:
+        temp = AggDayWeather.select(date)
+        if temp is not None:
+            temp.delete()
+        try:
+            os.remove(plot_path)
+        except FileNotFoundError:
+            print('no file')
+        try:
+            os.remove(report_path)
+        except FileNotFoundError:
+            print('no file')

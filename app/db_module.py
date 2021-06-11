@@ -190,7 +190,9 @@ class WeatherLog():
         try:
             session.add(self.datetime)
             session.commit()
-        except:
+        except Exception as err:
+            print(err)
+            print(type(err).__name__)
             print('Unique constraint error!')
             session.rollback()
 
@@ -238,18 +240,28 @@ class WeatherLog():
         return WeatherLog(dt, log)
 
     def update(self, data=None):
-        if data is not None:
-            for key in data.keys():
-                self.log[key].value = data[key].value
-            self.datetime.dht_temperature = self.log['dhttemp']
-            self.datetime.dht_humidity = self.log['dhthumd']
-            self.datetime.bmp_temperature = self.log['bmptemp']
-            self.datetime.bmp_pressure = self.log['bmppres']
-            session.commit()
+        try:
+            if data is not None:
+                for key in data.keys():
+                    self.log[key].value = data[key].value
+                self.datetime.dht_temperature = self.log['dhttemp']
+                self.datetime.dht_humidity = self.log['dhthumd']
+                self.datetime.bmp_temperature = self.log['bmptemp']
+                self.datetime.bmp_pressure = self.log['bmppres']
+                session.commit()
+        except Exception as err:
+            print(err)
+            print(type(err).__name__)
+            session.rollback()
 
     def delete(self):
-        session.delete(self.datetime)
-        session.commit()
+        try:
+            session.delete(self.datetime)
+            session.commit()
+        except Exception as err:
+            print(err)
+            print(type(err).__name__)
+            session.rollback()
 
 # class that represents a single day of aggregated weather data
 # date_ is a DateRow object
@@ -277,8 +289,10 @@ class AggDayWeather():
         try:
             session.add(self.daterow)
             session.commit()
-        except:
-            print('Unique constraint error!')
+        except Exception as err:
+            print(err)
+            print(type(err).__name__)
+            print('error!')
             session.rollback()
 
     @staticmethod
@@ -299,26 +313,35 @@ class AggDayWeather():
         for row in session.execute(stmt):
             aggdata = {'aggdhttemp': row.d.aggDHTTemp, 'aggdhthumd': row.d.aggDHTHumd, \
                    'aggbmptemp': row.d.aggBMPTemp, 'aggbmppres': row.d.aggBMPPres}
-            return AggDayWeather(row.d, aggdata)
             aggweatherlog = AggDayWeather(row.d, aggdata)
             aggweatherlogs.append(aggweatherlog)
         return list(aggweatherlogs)
 
     def update(self, data=None):
-        if data is not None:
-            for key in data.keys():
-                self.aggdata[key].mean = data[key].mean
-                self.aggdata[key].std = data[key].std
-                self.aggdata[key].min = data[key].min
-                self.aggdata[key].max = data[key].max
-        self.daterow.aggDHTTemp = self.aggdata['aggdhttemp']
-        self.daterow.aggDHTHumd = self.aggdata['aggdhthumd']
-        self.daterow.aggBMPTemp = self.aggdata['aggbmptemp']
-        self.daterow.aggBMPPres = self.aggdata['aggbmppres']
-        session.commit()
+        try:
+            if data is not None:
+                for key in data.keys():
+                    self.aggdata[key].mean = data[key].mean
+                    self.aggdata[key].std = data[key].std
+                    self.aggdata[key].min = data[key].min
+                    self.aggdata[key].max = data[key].max
+            self.daterow.aggDHTTemp = self.aggdata['aggdhttemp']
+            self.daterow.aggDHTHumd = self.aggdata['aggdhthumd']
+            self.daterow.aggBMPTemp = self.aggdata['aggbmptemp']
+            self.daterow.aggBMPPres = self.aggdata['aggbmppres']
+            session.commit()
+        except Exception as err:
+            print(err)
+            print(type(err).__name__)
+            session.rollback()
 
     def delete(self):
-        session.delete(self.daterow)
-        session.commit()
+        try:
+            session.delete(self.daterow)
+            session.commit()
+        except Exception as err:
+            print(err)
+            print(type(err).__name__)
+            session.rollback()
 
-print(getAllDates())
+# print(getAllDates())
