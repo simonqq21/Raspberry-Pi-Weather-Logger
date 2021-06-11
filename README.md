@@ -5,7 +5,7 @@ This application logs weather data - temperature, barometric pressure, and relat
 
 ## Sample Output
 ### Plot Image
-![weather data for 02192021](/app/static/files/plots/plot_02192021.png)
+![sample plot of weather data for a day](sample_plot.png)
 
 ### Raw CSV File Snippet
     Time,Humidity,Temperature,BMP_temperature,Pressure
