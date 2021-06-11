@@ -24,6 +24,7 @@ image plot of mean, std, min, and max per column per day, if graph is selected
 '''
 
 import numpy as np
+import pandas as pd
 import argparse
 import csv
 import sqlite3
@@ -32,7 +33,7 @@ import re
 import sys
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
-from config import WEATHER_DATA, STATS, DB_WEATHER_TABLES, UNITS
+from config import WEATHER_DATA_LIST, STATS, UNITS
 from config import DAILY_TRENDS_PREFIX
 from functions import deleteAllSimilar, appendNewline
 

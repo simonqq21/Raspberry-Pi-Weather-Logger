@@ -23,12 +23,6 @@ def signal_handler(signum, frame):
 # KeyboardInterrupt signal
 signal.signal(signal.SIGINT, signal_handler)
 
-# status LED thread
-# statusLedThread = Thread(target=flashStatusLED, name="statusledthread", args=(statusled, flash_duration))
-# statusLedThread.start()
-# statusLedThread2 = Thread(target=flashStatusLED, name='statusledthread2', args=(statusled, flash_duration))
-# statusLedThread2.start()
-
 # weather condition variables
 weather_data = {'dhttemp': 0, 'dhthumd': 0, 'bmptemp': 0, 'bmppres': 0}
 
@@ -42,9 +36,9 @@ while True:
         newfiledate = date.today()
 
         # call a process to (re)generate report data for days with incomplete or missing reports
-#         proc1 = subprocess.Popen('python3 {}/process_incomplete_reports.py'.format(APP_PATH),
-#         stdout = subprocess.PIPE, shell=True)
-    
+        proc1 = subprocess.Popen('python3 {}/process_incomplete_reports.py'.format(APP_PATH),
+        stdout = subprocess.PIPE, shell=True)
+
     for d in weather_data:
         weather_data[d] = 0
 
@@ -64,26 +58,25 @@ while True:
             print("Exiting")
             break;
         statusled.blink(on_time=1, off_time=0, n=1, background=True)
-    
+
     # terminate main thread when Ctrl-C is entered
     if terminateEvent.is_set():
         print("Exiting")
         break;
-    
+
     # average
     for d in weather_data:
         weather_data[d] /= average_samples
-        
+    # insert data into db
     dtnow = datetime.now().replace(second=0, microsecond=0)
     timeStr = dtnow.strftime('%H:%M:%S')
     if DEBUG:
         print("{} {:0.3f}% {:0.3f}C {:0.3f}C {:0.3f}Pa".format(timeStr, weather_data['dhttemp'], \
         weather_data['dhthumd'], weather_data['bmptemp'], weather_data['bmppres']))
-    # insert data into db
     newlog = WeatherLog.createNew(dtnow, weather_data)
     newlog.insert()
-    
-    #
+
+    # long blink signifying a log collection
     statusled.blink(on_time=10, off_time=0, n=1, background=True)
 
 print("Program exit")

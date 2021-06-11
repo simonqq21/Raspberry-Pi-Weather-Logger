@@ -55,18 +55,3 @@ def DHT11read():
             humidity, temperature = instHumidity, instTemperature
             if DEBUG: print("Good DHT11 reading")
     return instTemperature, instHumidity
-
-# flash the status LED
-# def flashStatusLED(led, duration):
-#     while True:
-#         if statusLedEvent.is_set():
-#             led.on()
-#             terminateEvent.wait(duration)
-#             led.off()
-#             statusLedEvent.clear()
-#         if terminateEvent.is_set():
-#             break
-#         # stop thread from running too fast and eating CPU resources
-#         terminateEvent.wait(0.1)
-
-    

@@ -29,6 +29,18 @@ class DateTimeRow(Base):
     def __repr__(self):
         return f"DateTimeRow(id={self.id!r}, datetime={self.datetime!r})"
 
+# this function
+def getAllDates():
+    dates = []
+    dt = aliased(DateTimeRow, name='dt')
+    stmt = select(dt.datetime).order_by(dt.datetime)
+    for result in session.execute(stmt).unique():
+        date = result.datetime.date()
+        if date not in dates:
+            dates.append(date)
+    return dates
+
+
 # DHT temperature table
 class DHTTemperature(Base):
     __tablename__ = 'dht_temperature'
@@ -308,3 +320,5 @@ class AggDayWeather():
     def delete(self):
         session.delete(self.daterow)
         session.commit()
+
+print(getAllDates())

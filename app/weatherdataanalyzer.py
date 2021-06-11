@@ -40,9 +40,9 @@ day = args.d
 year = args.y
 
 # testing
-month = 6
-day = 10
-year = 2021
+# month = 6
+# day = 10
+# year = 2021
 
 day = date(year, month, day)
 

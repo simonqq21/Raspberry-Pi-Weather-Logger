@@ -24,8 +24,10 @@ print(APP_PATH)
 # used for building Flask URLs
 STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
+# if DEBUG:
 APP_DATA_PATH = APP_PATH + '/'
-# APP_DATA_PATH = '/media/pi/weather_logger'
+# else:
+    # APP_DATA_PATH = '/media/pi/weather_logger'
 
 # sqlite3 database filename
 DB_FILENAME = 'weather_logs.db'
@@ -38,10 +40,6 @@ PLOTS_FOLDER = 'plots/'
 REPORT_PREFIX = 'report_'
 # filename prefix for plot image files
 PLOT_PREFIX = 'plot_'
-
-# datalogging frequencies in minutes
-RAW_LOGGING_FREQ = 1
-PROCESSED_LOGGING_FREQ = 5 
 
 # database table names
 TABLES = ["Temperature", "Humidity", "BMP_temperature", "Pressure"]

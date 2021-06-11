@@ -3,7 +3,7 @@ from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperat
 from db_module import WeatherLog, AggDayWeather
 from db_module import session
 from sqlalchemy import func, cast
-from sqlalchemy import select 
+from sqlalchemy import select
 from sqlalchemy.orm import aliased
 import sqlalchemy
 from datetime import datetime, date, timedelta
@@ -74,7 +74,8 @@ print('\n')
 
 # delete one row of weather data given the time and date
 # print('# delete one row of weather data given the time and date')
-# weather_data0.delete()
+weather_data1 = WeatherLog.select(dt1)
+weather_data1.delete()
 weather_data1 = WeatherLog.select(dt1)
 if weather_data1 is not None:
     print('weather_data1 = ' + str(weather_data1))
@@ -110,14 +111,14 @@ try:
 except:
     print('Unique constraint error!')
     session.rollback()
-    
+
 try:
     session.add(daterow2)
     session.commit()
 except:
     print('Unique constraint error 2!')
     session.rollback()
-    
+
 stmt = select(DateRow)
 for row in session.execute(stmt):
     print(row)
