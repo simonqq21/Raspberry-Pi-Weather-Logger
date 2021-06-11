@@ -80,12 +80,13 @@ results_df = pd.concat([mean, std, min, max], axis=1)
 results_df.columns = STATS
 print(day)
 print(results_df)
+# results_df.to_csv('testresult.csv')
 print('\n')
 # insert aggregated data for the day into the database
-daterow = DateRow(date=day)
 aggdayweather = AggDayWeather.select(day)
 if aggdayweather is not None:
     aggdayweather.delete()
+daterow = DateRow(date=day)
 aggdata = {'aggdhttemp': AggDHTTemperature(mean=results_df['mean']['dhttemp'], \
     std=results_df['std']['dhttemp'], min=results_df['min']['dhttemp'], \
     max=results_df['max']['dhttemp']), \
@@ -99,34 +100,33 @@ aggdata = {'aggdhttemp': AggDHTTemperature(mean=results_df['mean']['dhttemp'], \
     std=results_df['std']['bmppres'], min=results_df['min']['bmppres'], \
                                         max=results_df['max']['bmppres'])}
 aggdayweather = AggDayWeather(daterow, aggdata)
-
 aggdayweather.insert()
 
 print('inserted')
 
+# save the data as a dictionary for ease of data representation and saving to file
+min_max_times_dict = {}
+for k in HEADER.keys():
+    min_max_times_dict[k] = {}
 # Get the times when the weather data was at maximum and minimum values
 print('min and max datetimes')
 for k in HEADER.keys():
     print(f"max {k} = {max[k]}")
-    print(weather_df['datetime'][weather_df[k] == max[k]])
+    min_max_times_dict[k]['max_times'] = weather_df['datetime'][weather_df[k] == max[k]]
+    # print(weather_df['datetime'][weather_df[k] == max[k]])
 print('\n')
 print('min datetimes')
 for k in HEADER.keys():
     print(f"min {k} = {min[k]}")
-    print(weather_df['datetime'][weather_df[k] == min[k]])
+    min_max_times_dict[k]['min_times'] = weather_df['datetime'][weather_df[k] == min[k]]
 print('\n')
 
+print(min_max_times_dict)
 
-# save the data as a dictionary for ease of data representation and saving to file
-summary_dict = {}
-for i in range(len(header)):
-    sub_dict1 = {}
-    for j in range(len(STATS)):
-        sub_dict1[STATS[j]] =  mean_std_min_max[j][i]
-    sub_dict1['min_times'] = minTimeList[i]
-    sub_dict1['max_times'] = maxTimeList[i]
-    summary_dict[header[i]] = sub_dict1
-# print(summary_dict)
+#
+# weather_df
+# results_df
+# min_max_times_dict
 
 # generate report file
 report_filepath = APP_DATA_PATH + REPORTS_FOLDER + REPORT_PREFIX + day.strftime('%m%d%Y') + '.txt'
@@ -143,10 +143,9 @@ report_file.write(appendNewline(str))
 
 # save the mean, standard deviation, minimum value, and maximum value of each value column
 # to the report file
-for column_name in summary_dict.keys():
-
+for k in HEADER.keys():
     for st in STATS:
-        str = '{} {}: {:.3f}'.format(column_name, st, summary_dict[column_name][st])
+        str = '{} {}: {:.3f}'.format(k, st, results_df[st][k])
         if DEBUG:
             print(str)
         report_file.write(appendNewline(str))
@@ -155,24 +154,23 @@ for column_name in summary_dict.keys():
     report_file.write('\n')
 
 # save the times of the day with the minimum and maximum weather conditions to the report file
-for column_name in summary_dict.keys():
-    str = "Times of the day with minimum {}".format(column_name)
+for k in HEADER.keys():
+    str = "Times of the day with minimum {}".format(k)
     if DEBUG:
         print(str)
     report_file.write(appendNewline(str))
-
-    for time in summary_dict[column_name]['min_times']:
+    for time in min_max_times_dict[k]['min_times']:
         str = time.strftime('%H:%M:%S')
         if DEBUG:
             print(str)
         report_file.write(appendNewline(str))
 
-    str = "Times of the day with maximum {}".format(column_name)
+    str = "Times of the day with maximum {}".format(k)
     if DEBUG:
         print(str)
     report_file.write(appendNewline(str))
 
-    for time in summary_dict[column_name]['max_times']:
+    for time in min_max_times_dict[k]['max_times']:
         str = time.strftime('%H:%M:%S')
         if DEBUG:
             print(str)
@@ -205,19 +203,19 @@ if args.graph:
     # subgraph for humidity
     axes[0].set_title('Relative Humidity over Time', fontdict=titlefont)
     axes[0].set_ylabel('Relative Humidity (%)', fontdict=axisfont)
-    axes[0].plot(datetimeArr, dataArr[:,0], linestyle='-', color='slateblue', linewidth=2)
+    axes[0].plot(dataArr['datetime'], dataArr['dhthumd'], linestyle='-', color='slateblue', linewidth=2)
 
     # subgraph for barometric pressure
     axes[1].set_title('Barometric Pressure over Time', fontdict=titlefont)
     axes[1].set_ylabel('Barometric Pressure (Pa)', fontdict=axisfont)
-    axes[1].plot(datetimeArr, dataArr[:,3], linestyle='-', color='seagreen', linewidth=2)
+    axes[1].plot(dataArr['datetime'], dataArr['bmppres'], linestyle='-', color='seagreen', linewidth=2)
 
     # subgraph for both temperature sensors
     axes[2].set_title('Temperature over Time', fontdict=titlefont)
     axes[2].set_ylabel('Temperature (°C)', fontdict=axisfont)
-    axes[2].plot(datetimeArr, dataArr[:,1], label='DHT11_Temperature', linestyle='-', color='red', linewidth=2)
+    axes[2].plot(dataArr['datetime'], dataArr['dhttemp'], label='DHT11_Temperature', linestyle='-', color='red', linewidth=2)
     axes[2].legend(fontsize=20)
-    axes[2].plot(datetimeArr, dataArr[:,2], label='BMP180_temperature', linestyle='-', color='magenta', linewidth=2)
+    axes[2].plot(dataArr['datetime'], dataArr['bmptemp'], label='BMP180_temperature', linestyle='-', color='magenta', linewidth=2)
     axes[2].legend()
 
     # set tick font size and rotation for all subplots
@@ -233,33 +231,3 @@ if args.graph:
     # save the graph to a file
     plt.savefig(APP_DATA_PATH + PLOTS_FOLDER + PLOT_PREFIX + '{}.png'.format(day.strftime('%m%d%Y')),
     dpi=200, bbox_inches='tight')
-
-# open a new file to save the summarized data
-summary_filename = SUMMARY_PREFIX + day.strftime('%m%d%Y') + '.txt'
-print(summary_filename)
-summary_filepath = APP_DATA_PATH + SUMMARIES_FOLDER + summary_filename
-try:
-    summary_file = open(summary_filepath, 'w')
-except:
-    print('Write error')
-
-# save data to output file
-# write mean, std, min, max, min times, and max times for each value column from the dictionary
-for column_name in summary_dict.keys():
-    str1 = column_name + ':'
-    for s in range(len(STATS)):
-        str1 += '{:.3f}'.format(summary_dict[column_name][STATS[s]]) + ','
-
-    str1 += '['
-    for date in summary_dict[column_name]['min_times']:
-        str1 += date.strftime('%H:%M:%S') + ','
-    str1 += ']'
-
-    str1 += '['
-    for date in summary_dict[column_name]['max_times']:
-        str1 += date.strftime('%H:%M:%S') + ','
-    str1 += ']\n'
-    # print(str1)
-    summary_file.write(str1)
-
-summary_file.close()
