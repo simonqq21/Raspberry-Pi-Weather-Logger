@@ -172,9 +172,6 @@ with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr,
         file.write(nl('{} max_max_days: {}'.format(t, aggdata_overall[t]['max_max_days'])))
         file.write(nl(''))
     file.write(nl(''))
- 
-# ~ print(pivoted_aggdata_df.index.values)
-# ~ print(len(pivoted_aggdata_df['dhthumd']['mean']))
 
 # generate graph if graph option is set
 if args.graph:
@@ -190,14 +187,17 @@ if args.graph:
 
     # set the time format to HH:MM
     timeformat = mdates.DateFormatter('%Y/%m/%d')
+    fmt_day = mdates.DayLocator()
 
     # set the subplots and figure size
     figure, axes = plt.subplots(4,1, figsize=(22, 15), sharex=True)
-
+    print(type(axes[0]))
+    
     # super title
     figure.suptitle('Weather Data Trends from {} to {}'.format(startdate.strftime('%m%d%Y'), \
     enddate.strftime('%m%d%Y')), fontdict=suptitlefont, fontsize=40)
-	
+	# Major ticks every 6 months.
+
     # subgraph for temperature
     axes[0].set_title(WEATHER_DATA_LIST[0], fontdict=titlefont)
     axes[0].set_ylabel(WEATHER_DATA_LIST[0], fontdict=axisfont)
@@ -233,10 +233,11 @@ if args.graph:
     # specify time format of x-axis
     for axis in axes:
         axis.xaxis.set_major_formatter(timeformat)
-        axis.xaxis_date()
         # set tick font size and rotation for all subplots
-        axis.tick_params(labelsize=18)
-        axis.tick_params(axis='x',labelrotation=30)
+        axis.tick_params()
+        axis.tick_params(labelsize=18, axis='x',labelrotation=30)
+        axis.xaxis_date()
+    plt.gca().xaxis.set_major_locator(fmt_day)
 
     figure.subplots_adjust(top=0.92)
     # plt.tight_layout()
