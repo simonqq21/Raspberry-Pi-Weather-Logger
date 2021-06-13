@@ -11,7 +11,7 @@ from config import APP_PATH, APP_DATA_PATH, REPORTS_FOLDER, PLOTS_FOLDER, PLOT_P
 from config import HEADER, STATS
 from config import DEBUG
 from config import logging_interval
-from functions import exists, appendNewline
+from functions import exists, nl
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from db_module import WeatherLog, AggDayWeather
@@ -135,7 +135,7 @@ except:
 str = 'Day: {}'.format(day.strftime('%m/%d/%Y'))
 if DEBUG:
     print(str)
-report_file.write(appendNewline(str))
+report_file.write(nl(str))
 
 # save the mean, standard deviation, minimum value, and maximum value of each value column
 # to the report file
@@ -144,7 +144,7 @@ for k in HEADER.keys():
         str = '{} {}: {:.3f}'.format(k, st, results_df[st][k])
         if DEBUG:
             print(str)
-        report_file.write(appendNewline(str))
+        report_file.write(nl(str))
     if DEBUG:
         print()
     report_file.write('\n')
@@ -154,23 +154,23 @@ for k in HEADER.keys():
     str = "Times of the day with minimum {}".format(k)
     if DEBUG:
         print(str)
-    report_file.write(appendNewline(str))
+    report_file.write(nl(str))
     for time in min_max_times_dict[k]['min_times']:
         str = time.strftime('%H:%M:%S')
         if DEBUG:
             print(str)
-        report_file.write(appendNewline(str))
+        report_file.write(nl(str))
 
     str = "Times of the day with maximum {}".format(k)
     if DEBUG:
         print(str)
-    report_file.write(appendNewline(str))
+    report_file.write(nl(str))
 
     for time in min_max_times_dict[k]['max_times']:
         str = time.strftime('%H:%M:%S')
         if DEBUG:
             print(str)
-        report_file.write(appendNewline(str))
+        report_file.write(nl(str))
     if DEBUG:
         print()
     report_file.write('\n')

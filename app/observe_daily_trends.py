@@ -40,7 +40,7 @@ from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import WEATHER_DATA_LIST, STATS, UNITS, TABLE_ABBREVS
 from config import DAILY_TRENDS_PREFIX
-from functions import deleteAllSimilar, appendNewline
+from functions import deleteAllSimilar, nl
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from db_module import WeatherLog, AggDayWeather
@@ -132,63 +132,46 @@ for t in TABLE_ABBREVS:
 
 for t in TABLE_ABBREVS:
 	aggdata_overall[t]['mean_mean'] = pivoted_aggdata_df[t]['mean'].mean()
-	aggdata_overall[t]['mean_min'] = pivoted_aggdata_df[t]['mean'].min()
-	aggdata_overall[t]['mean_max'] = pivoted_aggdata_df[t]['mean'].max()
+	aggdata_overall[t]['min_mean'] = pivoted_aggdata_df[t]['mean'].min()
+	aggdata_overall[t]['max_mean'] = pivoted_aggdata_df[t]['mean'].max()
 	aggdata_overall[t]['min_min'] = pivoted_aggdata_df[t]['min'].min()
 	aggdata_overall[t]['max_max'] = pivoted_aggdata_df[t]['max'].max()
-	aggdata_overall[t]['min_mean_day'] = \
+	aggdata_overall[t]['min_mean_days'] = \
 		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['mean'] == \
 		pivoted_aggdata_df[t]['mean'].min()].values
-	aggdata_overall[t]['max_mean_day'] = \
+	aggdata_overall[t]['max_mean_days'] = \
 		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['mean'] == \
 		pivoted_aggdata_df[t]['mean'].max()].values
-	aggdata_overall[t]['min_min_day'] = \
+	aggdata_overall[t]['min_min_days'] = \
 		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['min'] == \
 		pivoted_aggdata_df[t]['min'].min()].values
-	aggdata_overall[t]['max_max_day'] = \
+	aggdata_overall[t]['max_max_days'] = \
 		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['max'] == \
 		pivoted_aggdata_df[t]['max'].max()].values
 print(aggdata_overall)
 
+test_df = pd.DataFrame(data=aggdata_overall)
+print(test_df)
+
 # generate a report text file
 with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
-    file.write(appendNewline('---------- Weather Data Daily Trends Report ----------'))
-    file.write(appendNewline('start date: {}'.format(startdatestr)))
-    file.write(appendNewline('end date: {}'.format(enddatestr)))
-    file.write(appendNewline(''))
-    file.write(appendNewline('---------- Key Data -----------'))
-    file.write(appendNewline(''))
-    for t in range(len(DB_WEATHER_TABLES)):
-        file.write(appendNewline('{} mean mean: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['mean']['mean'], UNITS[t])))
-        file.write(appendNewline('{} mean min: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['mean']['min'], UNITS[t])))
-        file.write(appendNewline('{} mean min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['mean']['min_days'])))
-        file.write(appendNewline('{} mean max: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['mean']['max'], UNITS[t])))
-        file.write(appendNewline('{} mean max_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['mean']['max_days'])))
-        file.write(appendNewline('{} min min: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['min']['min'], UNITS[t])))
-        file.write(appendNewline('{} min min_days: {}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['min']['min_days'])))
-        file.write(appendNewline('{} max max: {:.3f}{}'.format(DB_WEATHER_TABLES[t].lower(), \
-        aggregated_results[header[t]]['max']['max'], UNITS[t])))
-        file.write(appendNewline('{} max max_days: {}'.format(DB_WEATHER_TABLES[t].lower(),
-        aggregated_results[header[t]]['max']['max_days'])))
-        file.write(appendNewline(''))
-    file.write(appendNewline(''))
-    file.write(appendNewline('---------- Complete aggregated data ----------'))
-    file.write(appendNewline(''))
-    for h in range(len(header)):
-        for s in stats:
-            for s2 in aggregated_results[header[h]][s]:
-                file.write(appendNewline("{} {} {}: {}".format(header[h], s, s2, \
-                aggregated_results[header[h]][s][s2])))
-            file.write(appendNewline(''))
-        file.write(appendNewline(''))
-    file.write(appendNewline(''))
+    file.write(nl('---------- Weather Data Daily Trends Report ----------'))
+    file.write(nl('start date: {}'.format(startdatestr)))
+    file.write(nl('end date: {}'.format(enddatestr)))
+    file.write(nl(''))
+    for t in TABLE_ABBREVS:
+        file.write(nl('{} mean_mean: {:.3f}'.format(t, aggdata_overall[t]['mean_mean'])))
+        file.write(nl('{} min_mean: {:.3f}'.format(t, aggdata_overall[t]['min_mean'])))
+        file.write(nl('{} min_mean_days: {}'.format(t, aggdata_overall[t]['min_mean_days'])))
+        file.write(nl('{} max_mean: {:.3f}'.format(t, aggdata_overall[t]['max_mean'])))
+        file.write(nl('{} max_mean_days: {}'.format(t, aggdata_overall[t]['max_mean_days'])))
+        file.write(nl('{} min_min: {:.3f}'.format(t, aggdata_overall[t]['min_min'])))
+        file.write(nl('{} min_min_days: {}'.format(t, aggdata_overall[t]['min_min_days'])))
+        file.write(nl('{} max_max: {:.3f}'.format(t, aggdata_overall[t]['max_max'])))
+        file.write(nl('{} max_max_days: {}'.format(t, aggdata_overall[t]['max_max_days'])))
+        file.write(nl(''))
+    file.write(nl(''))
+ 
 
 # generate graph if graph option is set
 if args.graph:

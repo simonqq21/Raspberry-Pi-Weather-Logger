@@ -1,0 +1,45 @@
+---------- Weather Data Daily Trends Report ----------
+start date: 2021-06-10
+end date: 2021-06-12
+
+dhttemp mean_mean: 29.857
+dhttemp min_mean: 29.015
+dhttemp min_mean_days: [datetime.date(2021, 6, 12)]
+dhttemp max_mean: 30.470
+dhttemp max_mean_days: [datetime.date(2021, 6, 10)]
+dhttemp min_min: 28.000
+dhttemp min_min_days: [datetime.date(2021, 6, 11) datetime.date(2021, 6, 12)]
+dhttemp max_max: 33.000
+dhttemp max_max_days: [datetime.date(2021, 6, 11)]
+
+dhthumd mean_mean: 61.240
+dhthumd min_mean: 51.234
+dhthumd min_mean_days: [datetime.date(2021, 6, 10)]
+dhthumd max_mean: 71.578
+dhthumd max_mean_days: [datetime.date(2021, 6, 12)]
+dhthumd min_min: 33.200
+dhthumd min_min_days: [datetime.date(2021, 6, 10)]
+dhthumd max_max: 87.000
+dhthumd max_max_days: [datetime.date(2021, 6, 12)]
+
+bmptemp mean_mean: 28.969
+bmptemp min_mean: 28.480
+bmptemp min_mean_days: [datetime.date(2021, 6, 12)]
+bmptemp max_mean: 29.414
+bmptemp max_mean_days: [datetime.date(2021, 6, 10)]
+bmptemp min_min: 27.400
+bmptemp min_min_days: [datetime.date(2021, 6, 12)]
+bmptemp max_max: 31.920
+bmptemp max_max_days: [datetime.date(2021, 6, 11)]
+
+bmppres mean_mean: 100281.621
+bmppres min_mean: 100136.059
+bmppres min_mean_days: [datetime.date(2021, 6, 10)]
+bmppres max_mean: 100468.039
+bmppres max_mean_days: [datetime.date(2021, 6, 12)]
+bmppres min_min: 99902.000
+bmppres min_min_days: [datetime.date(2021, 6, 10)]
+bmppres max_max: 100716.000
+bmppres max_max_days: [datetime.date(2021, 6, 12)]
+
+

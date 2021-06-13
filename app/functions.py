@@ -19,7 +19,7 @@ def exists(filename):
     return 1
 
 # append newline to string
-def appendNewline(str):
+def nl(str):
     return str + '\n'
 
 # return True if file size is below a certain size, return False otherwise
