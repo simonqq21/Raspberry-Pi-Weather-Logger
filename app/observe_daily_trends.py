@@ -1,6 +1,4 @@
 '''
-csv log file with mean, std, min, and max of each column of each day within the range
-- date, temp mean, temp std, temp min, temp max, humid mean, ...
 save aggregated data for the date range in a report file
 
 Things to determine per weather data column:
@@ -14,7 +12,7 @@ days with the highest mean value
 days with the lowest value 
 days with the highest value 
 
-file contents:
+output data:
 - date range (start and end date)
 - overall mean value of the means per column
 - overall min value of the means per column
@@ -31,11 +29,7 @@ image plot of mean, std, min, and max per column per day, if graph is enabled
 import numpy as np
 import pandas as pd
 import argparse
-import csv
-import sqlite3
 import os
-import re
-import sys
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import WEATHER_DATA_LIST, STATS, UNITS, TABLE_ABBREVS
@@ -75,7 +69,6 @@ args.graph = True
 
 startdatestr = startdate.strftime("%Y-%m-%d")
 enddatestr = enddate.strftime("%Y-%m-%d")
-# print(startdatestr, enddatestr)
 
 # connect to db using sqlalchemy
 # read the daily aggregated data between the two dates from the db
@@ -84,7 +77,7 @@ results = AggDayWeather.selectMultiple(startdate, enddate)
 print(len(results))
 
 '''
-dataframe
+expected dataframe output
 date, WEATHER_DATA_LIST, agg, value
 6/13/2021, dhttemp, mean, 29
 6/13/2021, dhttemp, std, 0.1
@@ -118,7 +111,7 @@ aggdata_tb = pd.DataFrame(data=dataDict)
 # ~ print(aggdata_tb)
 # pivot the dataframe to represent each date as one row
 pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', columns=['WEATHER_DATA_LIST', 'stat_type'])
-print(pivoted_aggdata_df)
+# ~ print(pivoted_aggdata_df)
 
 # delete any existing daily trends csv file before generating new csv file
 deleteAllSimilar(APP_DATA_PATH, DAILY_TRENDS_PREFIX)
@@ -130,8 +123,6 @@ pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
 aggdata_overall = {}
 for t in TABLE_ABBREVS:
 	aggdata_overall[t] = {}
-
-for t in TABLE_ABBREVS:
 	aggdata_overall[t]['mean_mean'] = pivoted_aggdata_df[t]['mean'].mean()
 	aggdata_overall[t]['min_mean'] = pivoted_aggdata_df[t]['mean'].min()
 	aggdata_overall[t]['max_mean'] = pivoted_aggdata_df[t]['mean'].max()
@@ -149,12 +140,12 @@ for t in TABLE_ABBREVS:
 	aggdata_overall[t]['max_max_days'] = \
 		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['max'] == \
 		pivoted_aggdata_df[t]['max'].max()].values
-print(aggdata_overall)
+# ~ print(aggdata_overall)
 
 test_df = pd.DataFrame(data=aggdata_overall)
 print(test_df)
 
-# generate a report text file
+# generate the daily trends report text file
 with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
     file.write(nl('---------- Weather Data Daily Trends Report ----------'))
     file.write(nl('start date: {}'.format(startdatestr)))
@@ -187,16 +178,15 @@ if args.graph:
 
     # set the time format to HH:MM
     timeformat = mdates.DateFormatter('%Y/%m/%d')
+    # one major x tick per day
     fmt_day = mdates.DayLocator()
 
     # set the subplots and figure size
     figure, axes = plt.subplots(4,1, figsize=(22, 15), sharex=True)
-    print(type(axes[0]))
     
     # super title
     figure.suptitle('Weather Data Trends from {} to {}'.format(startdate.strftime('%m%d%Y'), \
     enddate.strftime('%m%d%Y')), fontdict=suptitlefont, fontsize=40)
-	# Major ticks every 6 months.
 
     # subgraph for temperature
     axes[0].set_title(WEATHER_DATA_LIST[0], fontdict=titlefont)
@@ -230,13 +220,15 @@ if args.graph:
     axes[3].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmppres']['max'], label="pressure_max", linestyle='-', color='#1aff1a', linewidth=4)
     axes[3].legend()
 
-    # specify time format of x-axis
     for axis in axes:
+		# specify time format of x-axis
         axis.xaxis.set_major_formatter(timeformat)
         # set tick font size and rotation for all subplots
         axis.tick_params()
         axis.tick_params(labelsize=18, axis='x',labelrotation=30)
+        # treat x axis ticks as dates
         axis.xaxis_date()
+    # set major x tick interval to be one day
     plt.gca().xaxis.set_major_locator(fmt_day)
 
     figure.subplots_adjust(top=0.92)
