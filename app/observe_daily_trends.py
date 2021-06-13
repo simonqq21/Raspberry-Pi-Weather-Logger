@@ -127,15 +127,28 @@ pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
 
 # get the mean, std, min, and max of each data column
 aggdata_overall = {}
-aggdata_overall[date] = []
-aggdata_overall['mean_mean'] = []
-aggdata_overall['mean_min'] = []
-aggdata_overall['mean_max'] = []
-aggdata_overall['min_min'] = []
-aggdata_overall['max_max'] = []
+for t in TABLE_ABBREVS:
+	aggdata_overall[t] = {}
 
 for t in TABLE_ABBREVS:
-	pivoted_aggdata_df[t][mean]
+	aggdata_overall[t]['mean_mean'] = pivoted_aggdata_df[t]['mean'].mean()
+	aggdata_overall[t]['mean_min'] = pivoted_aggdata_df[t]['mean'].min()
+	aggdata_overall[t]['mean_max'] = pivoted_aggdata_df[t]['mean'].max()
+	aggdata_overall[t]['min_min'] = pivoted_aggdata_df[t]['min'].min()
+	aggdata_overall[t]['max_max'] = pivoted_aggdata_df[t]['max'].max()
+	aggdata_overall[t]['min_mean_day'] = \
+		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['mean'] == \
+		pivoted_aggdata_df[t]['mean'].min()].values
+	aggdata_overall[t]['max_mean_day'] = \
+		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['mean'] == \
+		pivoted_aggdata_df[t]['mean'].max()].values
+	aggdata_overall[t]['min_min_day'] = \
+		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['min'] == \
+		pivoted_aggdata_df[t]['min'].min()].values
+	aggdata_overall[t]['max_max_day'] = \
+		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['max'] == \
+		pivoted_aggdata_df[t]['max'].max()].values
+print(aggdata_overall)
 
 # generate a report text file
 with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
