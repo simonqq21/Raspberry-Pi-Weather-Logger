@@ -31,4 +31,6 @@ print('\n')
 # select all rows from each table
 print('# rows')
 results = AggDayWeather.selectMultiple(date.min, date.max)
-print(results)
+if results is not None:
+	print(results)
+	print(len(results))

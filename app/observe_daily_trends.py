@@ -71,6 +71,7 @@ args = parser.parse_args()
 # testing code
 startdate = date(2021, 6, 10)
 enddate = date(2021, 6, 12)
+args.graph = True
 
 startdatestr = startdate.strftime("%Y-%m-%d")
 enddatestr = enddate.strftime("%Y-%m-%d")
@@ -84,7 +85,7 @@ print(len(results))
 
 '''
 dataframe
-date, weather_data, agg, value
+date, WEATHER_DATA_LIST, agg, value
 6/13/2021, dhttemp, mean, 29
 6/13/2021, dhttemp, std, 0.1
 6/13/2021, dhttemp, min, 28
@@ -93,7 +94,7 @@ date, weather_data, agg, value
 # create dictionary to create the dataframe that represents each table from the db
 dataDict = {}
 dataDict['date'] = []
-dataDict['weather_data'] = [] # dhttemp, dhthumd, bmptemp, or bmppres
+dataDict['WEATHER_DATA_LIST'] = [] # dhttemp, dhthumd, bmptemp, or bmppres
 dataDict['stat_type'] = [] # mean, std, min, max
 dataDict['value'] = []
 if results is not None:
@@ -101,7 +102,7 @@ if results is not None:
 		for t in TABLE_ABBREVS:
 			for s in STATS:
 				dataDict['date'].append(result.daterow.date)
-				dataDict['weather_data'].append(t)
+				dataDict['WEATHER_DATA_LIST'].append(t)
 				dataDict['stat_type'].append(s)
 				if s == 'mean':
 					dataDict['value'].append(result.aggdata['agg'+t].mean)
@@ -116,7 +117,7 @@ if results is not None:
 aggdata_tb = pd.DataFrame(data=dataDict)
 # ~ print(aggdata_tb)
 # pivot the dataframe to represent each date as one row
-pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', columns=['weather_data', 'stat_type'])
+pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', columns=['WEATHER_DATA_LIST', 'stat_type'])
 print(pivoted_aggdata_df)
 
 # delete any existing daily trends csv file before generating new csv file
@@ -172,21 +173,14 @@ with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr,
         file.write(nl(''))
     file.write(nl(''))
  
+# ~ print(pivoted_aggdata_df.index.values)
+# ~ print(len(pivoted_aggdata_df['dhthumd']['mean']))
 
 # generate graph if graph option is set
 if args.graph:
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
     import matplotlib
-
-    # save the data to graph
-    graph_data = {}
-    for h in range(len(header)):
-        graph_data[header[h]] = {}
-        for s in range(len(stats)):
-            if stats[s] != 'std':
-                graph_data[header[h]][stats[s]] = stat_numbers[h,:,s]
-    # print(graph_data)
 
     # fonts
     suptitlefont = {'family':'monospace','color':'black'}
@@ -203,37 +197,37 @@ if args.graph:
     # super title
     figure.suptitle('Weather Data Trends from {} to {}'.format(startdate.strftime('%m%d%Y'), \
     enddate.strftime('%m%d%Y')), fontdict=suptitlefont, fontsize=40)
-
-    # subgraph for humidity
-    axes[0].set_title(WEATHER_DATA[0], fontdict=titlefont)
-    axes[0].set_ylabel(WEATHER_DATA[0], fontdict=axisfont)
-    axes[0].plot(dates_arr, graph_data[WEATHER_DATA[0]]['mean'], label="humidity_mean", linestyle='-', color='#0000ff', linewidth=4)
-    axes[0].plot(dates_arr, graph_data[WEATHER_DATA[0]]['min'], label="humidity_min", linestyle='-', color='#000099', linewidth=4)
-    axes[0].plot(dates_arr, graph_data[WEATHER_DATA[0]]['max'], label="humidity_max", linestyle='-', color='#9999ff', linewidth=4)
-    axes[0].legend()
-
+	
     # subgraph for temperature
-    axes[1].set_title(WEATHER_DATA[1], fontdict=titlefont)
-    axes[1].set_ylabel(WEATHER_DATA[1], fontdict=axisfont)
-    axes[1].plot(dates_arr, graph_data[WEATHER_DATA[1]]['mean'], label="temperature_mean", linestyle='-', color='#cd3299', linewidth=4)
-    axes[1].plot(dates_arr, graph_data[WEATHER_DATA[1]]['min'], label="temperature_min", linestyle='-', color='#90236b', linewidth=4)
-    axes[1].plot(dates_arr, graph_data[WEATHER_DATA[1]]['max'], label="temperature_max", linestyle='-', color='#ebadd6', linewidth=4)
+    axes[0].set_title(WEATHER_DATA_LIST[0], fontdict=titlefont)
+    axes[0].set_ylabel(WEATHER_DATA_LIST[0], fontdict=axisfont)
+    axes[0].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhttemp']['mean'], label="temperature_mean", linestyle='-', color='#cd3299', linewidth=4)
+    axes[0].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhttemp']['min'], label="temperature_min", linestyle='-', color='#90236b', linewidth=4)
+    axes[0].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhttemp']['max'], label="temperature_max", linestyle='-', color='#ebadd6', linewidth=4)
+    axes[0].legend()
+    
+    # subgraph for humidity
+    axes[1].set_title(WEATHER_DATA_LIST[1], fontdict=titlefont)
+    axes[1].set_ylabel(WEATHER_DATA_LIST[1], fontdict=axisfont)
+    axes[1].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhthumd']['mean'], label="humidity_mean", linestyle='-', color='#0000ff', linewidth=4)
+    axes[1].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhthumd']['min'], label="humidity_min", linestyle='-', color='#000099', linewidth=4)
+    axes[1].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhthumd']['max'], label="humidity_max", linestyle='-', color='#9999ff', linewidth=4)
     axes[1].legend()
 
     # subgraph for bmp_temperature
-    axes[2].set_title(WEATHER_DATA[2], fontdict=titlefont)
-    axes[2].set_ylabel(WEATHER_DATA[2], fontdict=axisfont)
-    axes[2].plot(dates_arr, graph_data[WEATHER_DATA[2]]['mean'], label="bmp_temperature_mean", linestyle='-', color='#ff0000', linewidth=4)
-    axes[2].plot(dates_arr, graph_data[WEATHER_DATA[2]]['min'], label="bmp_temperature_min", linestyle='-', color='#990000', linewidth=4)
-    axes[2].plot(dates_arr, graph_data[WEATHER_DATA[2]]['max'], label="bmp_temperature_max", linestyle='-', color='#ff8080', linewidth=4)
+    axes[2].set_title(WEATHER_DATA_LIST[2], fontdict=titlefont)
+    axes[2].set_ylabel(WEATHER_DATA_LIST[2], fontdict=axisfont)
+    axes[2].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmptemp']['mean'], label="bmp_temperature_mean", linestyle='-', color='#ff0000', linewidth=4)
+    axes[2].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmptemp']['min'], label="bmp_temperature_min", linestyle='-', color='#990000', linewidth=4)
+    axes[2].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmptemp']['max'], label="bmp_temperature_max", linestyle='-', color='#ff8080', linewidth=4)
     axes[2].legend()
 
     # subgraph for pressure
-    axes[3].set_title(WEATHER_DATA[3], fontdict=titlefont)
-    axes[3].set_ylabel(WEATHER_DATA[3], fontdict=axisfont)
-    axes[3].plot(dates_arr, graph_data[WEATHER_DATA[3]]['mean'], label="pressure_mean", linestyle='-', color='#00b300', linewidth=4)
-    axes[3].plot(dates_arr, graph_data[WEATHER_DATA[3]]['min'], label="pressure_min", linestyle='-', color='#003300', linewidth=4)
-    axes[3].plot(dates_arr, graph_data[WEATHER_DATA[3]]['max'], label="pressure_max", linestyle='-', color='#1aff1a', linewidth=4)
+    axes[3].set_title(WEATHER_DATA_LIST[3], fontdict=titlefont)
+    axes[3].set_ylabel(WEATHER_DATA_LIST[3], fontdict=axisfont)
+    axes[3].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmppres']['mean'], label="pressure_mean", linestyle='-', color='#00b300', linewidth=4)
+    axes[3].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmppres']['min'], label="pressure_min", linestyle='-', color='#003300', linewidth=4)
+    axes[3].plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmppres']['max'], label="pressure_max", linestyle='-', color='#1aff1a', linewidth=4)
     axes[3].legend()
 
     # specify time format of x-axis

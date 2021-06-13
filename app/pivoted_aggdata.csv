@@ -1,4 +1,4 @@
-weather_data,bmppres,bmppres,bmppres,bmppres,bmptemp,bmptemp,bmptemp,bmptemp,dhthumd,dhthumd,dhthumd,dhthumd,dhttemp,dhttemp,dhttemp,dhttemp
+WEATHER_DATA_LIST,bmppres,bmppres,bmppres,bmppres,bmptemp,bmptemp,bmptemp,bmptemp,dhthumd,dhthumd,dhthumd,dhthumd,dhttemp,dhttemp,dhttemp,dhttemp
 stat_type,max,mean,min,std,max,mean,min,std,max,mean,min,std,max,mean,min,std
 date,,,,,,,,,,,,,,,,
 2021-06-10,100367.8,100136.05892857144,99902.0,147.1303121331262,31.5,29.41428571428571,28.72,0.7143392515328878,60.0,51.23392857142858,33.2,7.4325744399678095,32.0,30.469642857142862,30.0,0.7811794369677896
