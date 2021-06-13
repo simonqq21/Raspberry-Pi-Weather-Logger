@@ -2,25 +2,30 @@
 csv log file with mean, std, min, and max of each column of each day within the range
 - date, temp mean, temp std, temp min, temp max, humid mean, ...
 save aggregated data for the date range in a report file
+
+Things to determine per weather data column:
+mean value
+lowest mean value
+highest mean value
+lowest value 
+highest value 
+days with the lowest mean value
+days with the highest mean value
+days with the lowest value 
+days with the highest value 
+
 file contents:
 - date range (start and end date)
 - overall mean value of the means per column
-- overall std value of the means per column
 - overall min value of the means per column
 - overall max value of the means per column
-- overall mean value of the min values per column
-- overall std value of the min values per column
 - overall min value of the min values per column
-- overall max value of the min values per column
-- overall mean value of the max values per column
-- overall std value of the max values per column
-- overall min value of the max values per column
 - overall max value of the max values per column
 - array of days with the lowest mean value per column
 - array of days with the highest mean value per column
 - array of days with the lowest minimum value per column
 - array of days with the highest maximum value per column
-image plot of mean, std, min, and max per column per day, if graph is selected
+image plot of mean, std, min, and max per column per day, if graph is enabled
 '''
 
 import numpy as np
@@ -66,17 +71,10 @@ args = parser.parse_args()
 # testing code
 startdate = date(2021, 6, 10)
 enddate = date(2021, 6, 12)
-# startdate = date(2021, 3, 31)
-# enddate = date(2021, 4, 1)
 
 startdatestr = startdate.strftime("%Y-%m-%d")
 enddatestr = enddate.strftime("%Y-%m-%d")
 # print(startdatestr, enddatestr)
-
-# create array of column headers and stat measures
-print(WEATHER_DATA_LIST)
-header = np.array(WEATHER_DATA_LIST)
-stats = np.array(STATS)
 
 # connect to db using sqlalchemy
 # read the daily aggregated data between the two dates from the db
@@ -116,65 +114,28 @@ if results is not None:
 		
 # save overall results to pd dataframe
 aggdata_tb = pd.DataFrame(data=dataDict)
-print(aggdata_tb)
+# ~ print(aggdata_tb)
+# pivot the dataframe to represent each date as one row
 pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', columns=['weather_data', 'stat_type'])
 print(pivoted_aggdata_df)
-pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
-
-# generate csv file header
-csv_header = 'date,'
-for h in range(len(header)):
-    for s in range(len(stats)):
-        csv_header += header[h] + '_' + stats[s]
-        if h < len(header) - 1 or s < len(stats) - 1:
-            csv_header += ','
-# print(csv_header)
 
 # delete any existing daily trends csv file before generating new csv file
 deleteAllSimilar(APP_DATA_PATH, DAILY_TRENDS_PREFIX)
 
 # save the database results as a csv file for download
-np.savetxt(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.csv'.format(startdatestr, enddatestr), \
-results_matrix[:,1:], delimiter=',', fmt=['%s'] * 17, header=csv_header, comments='')
+pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
 
-# save the array of dates to numpy array
-dates_arr = results_matrix[:,1].astype(np.datetime64)
-# print(dates_arr)
+# get the mean, std, min, and max of each data column
+aggdata_overall = {}
+aggdata_overall[date] = []
+aggdata_overall['mean_mean'] = []
+aggdata_overall['mean_min'] = []
+aggdata_overall['mean_max'] = []
+aggdata_overall['min_min'] = []
+aggdata_overall['max_max'] = []
 
-# save the numerical data to a numpy array
-numbers = np.hstack((results_matrix[:,2:6], results_matrix[:,6:10], \
-                    results_matrix[:,10:14], results_matrix[:,14:18]))
-numbers = numbers.astype(np.float64)
-# print(numbers)
-# print(numbers.shape)
-# print(numbers.dtype)
-# print()
-
-# create a 3d numpy array to hold the data for processing
-stat_numbers = np.empty((len(stats), numbers.shape[0], len(header)))
-for i in range(len(stats)):
-    stat_numbers[i] = numbers[:,i::4]
-stat_numbers = stat_numbers.transpose()
-print(stat_numbers)
-aggregated_results = {}
-
-# get the mean, std, min, and max of the data per day
-for i in range(len(header)):
-    aggregated_results[header[i]] = {}
-    for j in range(len(stats)):
-        aggregated_results[header[i]][stats[j]] = {}
-        # get the mean, std, min, and max of each stat
-        aggregated_results[header[i]][stats[j]]['mean'] = stat_numbers[i,:,j].mean(axis=0)
-        if stats[j] != 'std':
-            aggregated_results[header[i]][stats[j]]['std'] = stat_numbers[i,:,j].std(axis=0)
-        aggregated_results[header[i]][stats[j]]['min'] = stat_numbers[i,:,j].min(axis=0)
-        aggregated_results[header[i]][stats[j]]['max'] = stat_numbers[i,:,j].max(axis=0)
-        # get the days when a value is min and max
-        aggregated_results[header[i]][stats[j]]['min_days'] = \
-        dates_arr[np.where(stat_numbers == stat_numbers[i,:,j].min(axis=0))[1]]
-        aggregated_results[header[i]][stats[j]]['max_days'] = \
-        dates_arr[np.where(stat_numbers == stat_numbers[i,:,j].max(axis=0))[1]]
-# print(aggregated_results)
+for t in TABLE_ABBREVS:
+	pivoted_aggdata_df[t][mean]
 
 # generate a report text file
 with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
