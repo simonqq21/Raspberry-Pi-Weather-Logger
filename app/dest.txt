@@ -1,2 +1,2 @@
-~/sshfs/Documents/codes/weather_logger/app
+/home/pi/sshfs/Documents/codes/weather_logger/app
 

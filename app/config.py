@@ -25,7 +25,7 @@ print(APP_PATH)
 STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
 # if DEBUG:
-APP_DATA_PATH = APP_PATH + '/'
+APP_DATA_PATH = '/home/pi/Documents/weather_logger/'
 # else:
     # APP_DATA_PATH = '/media/pi/weather_logger'
 

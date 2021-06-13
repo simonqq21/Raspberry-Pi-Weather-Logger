@@ -10,7 +10,7 @@ from config import logging_duration, average_samples, logging_interval
 from config import DEBUG
 from functions import exists
 from rpi_functions import terminateEvent
-from rpi_functions import statusled, BMP180read, DHT11read
+from rpi_functions import loggingled, BMP180read, DHT11read
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from db_module import WeatherLog, AggDayWeather
@@ -29,7 +29,7 @@ weather_data = {'dhttemp': 0, 'dhthumd': 0, 'bmptemp': 0, 'bmppres': 0}
 # read sensor and write to log file indefinitely
 newfiledate = date.min
 print('init')
-statusled.off()
+loggingled.off()
 while True:
     # if a new day has started, run the code to generate incomplete daily reports and plot files
     if date.today() > newfiledate:
@@ -57,7 +57,7 @@ while True:
         if terminateEvent.is_set():
             print("Exiting")
             break;
-        statusled.blink(on_time=1, off_time=0, n=1, background=True)
+        loggingled.blink(on_time=1, off_time=0, n=1, background=True)
 
     # terminate main thread when Ctrl-C is entered
     if terminateEvent.is_set():
@@ -77,6 +77,6 @@ while True:
     newlog.insert()
 
     # long blink signifying a log collection
-    statusled.blink(on_time=10, off_time=0, n=1, background=True)
+    loggingled.blink(on_time=10, off_time=0, n=1, background=True)
 
 print("Program exit")

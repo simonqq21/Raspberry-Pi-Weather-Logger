@@ -35,33 +35,6 @@ def isEmpty(filename, size):
 def subtract_time(time1, time2):
     return (datetime.combine(date.min, time1) - datetime.combine(date.min, time2))
 
-# generate csv filename with date today
-# def generateFileName(filenameprefix):
-#     filename = filenameprefix + date.today().strftime('%m%d%Y') + '.csv'
-#     if DEBUG: print(filename)
-#     return filename
-
-# create the complete file path of the log file
-# try to create the dir for logs if it does not exist
-# def generateFilePath(path, filenameprefix):
-#     if path != '':
-#         if not os.path.exists(path):
-#             os.mkdir(path)
-#     filename = generateFileName(filenameprefix)
-#     filepath = path + filename
-#     return filepath
-
-# # create a new csv file and write the csv file header
-# def createOpenLogFile(path, filenameprefix):
-#     filepath = generateFilePath(path, filenameprefix)
-#     csvfile = open(filepath, 'a', newline='')
-#     writer = csv.writer(csvfile, delimiter=',')
-#     # write the file header only if the file is empty
-#     if os.stat(filepath).st_size == 0:
-#         writer.writerow(["Time"] + WEATHER_DATA_HEADER_DICT)
-#     csvfile.close()
-#     return filepath
-
 # call the report generation script with the date parameters
 def generatereport(month, day, year):
     proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} -g'.format
@@ -74,3 +47,4 @@ def deleteAllSimilar(path, prefix):
     for filename in filenames:
         if re.search('^' + prefix, filename) is not None:
             os.remove(path + filename)
+

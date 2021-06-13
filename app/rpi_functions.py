@@ -1,23 +1,39 @@
-from gpiozero import LED
+from gpiozero import LED, Button
 import Adafruit_DHT
 import Adafruit_BMP.BMP085 as BMP085
 from threading import Thread, Event
 from config import DEBUG
+import subprocess
 
 '''
 Python file containing code that only runs on raspberry pi hardware
 '''
 
-
-# status LED trigger event
-# statusLedFlashEvent = Event()
-# statusLedFlashEvent = Event()
+def reboot():
+	global blinkingled, loggingled
+	print('rebooting')
+	command = "/usr/bin/sudo /sbin/shutdown -r now"
+	process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+	output = process.communicate()[0]
+	print(output)
+	blinkingled.off()
+	loggingled.off()
+	exit(0)
+	
 # thread termination event
 terminateEvent = Event()
 
-# status LED
-statusled = LED(18)
-statusled.on()
+# logging LED
+loggingled = LED(18)
+loggingled.on()
+
+# blinking LED
+blinkingled = LED(27)
+blinkingled.blink(on_time=0.25, off_time=1, background=True)
+
+# reboot button
+rebootbtn = Button(17)
+rebootbtn.when_pressed = reboot
 
 # initialize BMP180 sensor
 # loop until the sensor is properly connected and detected
