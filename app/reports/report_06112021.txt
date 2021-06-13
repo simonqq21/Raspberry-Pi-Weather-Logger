@@ -1,0 +1,51 @@
+Day: 06/11/2021
+dhttemp mean: 30.087
+dhttemp std: 0.938
+dhttemp min: 28.000
+dhttemp max: 33.000
+
+dhthumd mean: 60.906
+dhthumd std: 7.525
+dhthumd min: 39.200
+dhthumd max: 80.000
+
+bmptemp mean: 29.011
+bmptemp std: 0.989
+bmptemp min: 27.860
+bmptemp max: 31.920
+
+bmppres mean: 100240.765
+bmppres std: 110.793
+bmppres min: 100087.800
+bmppres max: 100483.800
+
+Times of the day with minimum dhttemp
+22:15:00
+22:20:00
+22:25:00
+22:30:00
+22:35:00
+22:45:00
+22:50:00
+22:55:00
+Times of the day with maximum dhttemp
+11:18:00
+11:33:00
+11:38:00
+
+Times of the day with minimum dhthumd
+11:38:00
+Times of the day with maximum dhthumd
+21:59:00
+
+Times of the day with minimum bmptemp
+07:55:00
+Times of the day with maximum bmptemp
+11:28:00
+11:33:00
+
+Times of the day with minimum bmppres
+04:13:00
+Times of the day with maximum bmppres
+23:15:00
+

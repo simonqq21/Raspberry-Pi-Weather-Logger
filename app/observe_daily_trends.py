@@ -33,9 +33,12 @@ import re
 import sys
 from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
-from config import WEATHER_DATA_LIST, STATS, UNITS
+from config import WEATHER_DATA_LIST, STATS, UNITS, TABLE_ABBREVS
 from config import DAILY_TRENDS_PREFIX
 from functions import deleteAllSimilar, appendNewline
+from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
+from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
+from db_module import WeatherLog, AggDayWeather
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
@@ -61,8 +64,8 @@ args = parser.parse_args()
 # enddate = date(args.endyear, args.endmonth, args.endday)
 
 # testing code
-startdate = date(2021, 2, 12)
-enddate = date(2021, 4, 17)
+startdate = date(2021, 6, 10)
+enddate = date(2021, 6, 12)
 # startdate = date(2021, 3, 31)
 # enddate = date(2021, 4, 1)
 
@@ -71,42 +74,52 @@ enddatestr = enddate.strftime("%Y-%m-%d")
 # print(startdatestr, enddatestr)
 
 # create array of column headers and stat measures
-header = np.array(WEATHER_DATA)
+print(WEATHER_DATA_LIST)
+header = np.array(WEATHER_DATA_LIST)
 stats = np.array(STATS)
 
-# connect to sqlite db
-con = sqlite3.connect(APP_DATA_PATH + DB_FILENAME)
-# set connection to return query results as Rows
-con.row_factory = sqlite3.Row
-cur = con.cursor()
+# connect to db using sqlalchemy
+# read the daily aggregated data between the two dates from the db
+results = AggDayWeather.selectMultiple(startdate, enddate)
+# ~ print(results)
+print(len(results))
 
-# read the data of the days between the two dates from the db
-results = cur.execute('SELECT d.id, d.date, \
-h.mean AS h_mean, h.std AS h_std, h.min AS h_min, h.max AS h_max, \
-t.mean AS t_mean, t.std AS t_std, t.min AS t_min, t.max AS t_max, \
-btp.mean AS btp_mean, btp.std AS btp_std, btp.min AS btp_min, btp.max AS btp_max, \
-p.mean AS p_mean, p.std AS p_std, p.min AS p_min, p.max AS p_max \
-FROM dates d \
-JOIN temperature t ON d.id = t.id \
-JOIN bmp_temperature btp ON d.id = btp.id \
-JOIN humidity h ON d.id = h.id \
-JOIN pressure p ON d.id = p.id \
-WHERE d.date BETWEEN ? AND ? \
-ORDER BY d.date ASC', (startdatestr, enddatestr))
-
-# save overall results to numpy array
-results_matrix = np.empty((1,18))
-results = list(dict(row) for row in results.fetchall())
-for dict_row in results:
-    temp_matrix_row = np.hstack(list(dict_row[key] for key in dict_row))
-    results_matrix = np.vstack((results_matrix, temp_matrix_row))
-# print(results_matrix.shape)
-if results_matrix.shape[0] > 1:
-    results_matrix = results_matrix[1:,:]
-else:
-    print('No results in those dates.')
-    sys.exit(0)
-# print(results_matrix)
+'''
+dataframe
+date, weather_data, agg, value
+6/13/2021, dhttemp, mean, 29
+6/13/2021, dhttemp, std, 0.1
+6/13/2021, dhttemp, min, 28
+6/13/2021, dhttemp, max, 30
+'''
+# create dictionary to create the dataframe that represents each table from the db
+dataDict = {}
+dataDict['date'] = []
+dataDict['weather_data'] = [] # dhttemp, dhthumd, bmptemp, or bmppres
+dataDict['stat_type'] = [] # mean, std, min, max
+dataDict['value'] = []
+if results is not None:
+	for result in results:
+		for t in TABLE_ABBREVS:
+			for s in STATS:
+				dataDict['date'].append(result.daterow.date)
+				dataDict['weather_data'].append(t)
+				dataDict['stat_type'].append(s)
+				if s == 'mean':
+					dataDict['value'].append(result.aggdata['agg'+t].mean)
+				elif s == 'std':
+					dataDict['value'].append(result.aggdata['agg'+t].std)
+				elif s == 'min':
+					dataDict['value'].append(result.aggdata['agg'+t].min)
+				elif s == 'max':
+					dataDict['value'].append(result.aggdata['agg'+t].max)
+		
+# save overall results to pd dataframe
+aggdata_tb = pd.DataFrame(data=dataDict)
+print(aggdata_tb)
+pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', columns=['weather_data', 'stat_type'])
+print(pivoted_aggdata_df)
+pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
 
 # generate csv file header
 csv_header = 'date,'
@@ -278,4 +291,3 @@ if args.graph:
     # plt.tight_layout()
     plt.savefig(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.png'.format(startdatestr, enddatestr), dpi=200, bbox_inches='tight')
     print('saved')
-con.close()

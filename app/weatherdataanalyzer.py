@@ -39,27 +39,22 @@ month = args.m
 day = args.d
 year = args.y
 
-# testing
-# month = 6
-# day = 10
-# year = 2021
-
 day = date(year, month, day)
 
-dataArr = {}
-dataArr['datetime'] = []
+dataDict = {}
+dataDict['datetime'] = []
 for k in HEADER.keys():
-    dataArr[k] = []
+    dataDict[k] = []
 
 # load the data from the db
 weather_logs = WeatherLog.selectMultiple(date1=day)
 for w in weather_logs:
-    dataArr['datetime'].append(w.datetime.datetime)
+    dataDict['datetime'].append(w.datetime.datetime)
     for k in HEADER.keys():
-        dataArr[k].append(w.log[k].value)
+        dataDict[k].append(w.log[k].value)
 
 # weather data DataFrame
-weather_df = pd.DataFrame(data=dataArr)
+weather_df = pd.DataFrame(data=dataDict)
 print(weather_df)
 # print(weather_df.dtypes)
 # print(weather_df.columns[1:5])
@@ -204,19 +199,19 @@ if args.graph:
     # subgraph for humidity
     axes[0].set_title('Relative Humidity over Time', fontdict=titlefont)
     axes[0].set_ylabel('Relative Humidity (%)', fontdict=axisfont)
-    axes[0].plot(dataArr['datetime'], dataArr['dhthumd'], linestyle='-', color='slateblue', linewidth=2)
+    axes[0].plot(dataDict['datetime'], dataDict['dhthumd'], linestyle='-', color='slateblue', linewidth=2)
 
     # subgraph for barometric pressure
     axes[1].set_title('Barometric Pressure over Time', fontdict=titlefont)
     axes[1].set_ylabel('Barometric Pressure (Pa)', fontdict=axisfont)
-    axes[1].plot(dataArr['datetime'], dataArr['bmppres'], linestyle='-', color='seagreen', linewidth=2)
+    axes[1].plot(dataDict['datetime'], dataDict['bmppres'], linestyle='-', color='seagreen', linewidth=2)
 
     # subgraph for both temperature sensors
     axes[2].set_title('Temperature over Time', fontdict=titlefont)
     axes[2].set_ylabel('Temperature (°C)', fontdict=axisfont)
-    axes[2].plot(dataArr['datetime'], dataArr['dhttemp'], label='DHT11_Temperature', linestyle='-', color='red', linewidth=2)
+    axes[2].plot(dataDict['datetime'], dataDict['dhttemp'], label='DHT11_Temperature', linestyle='-', color='red', linewidth=2)
     axes[2].legend(fontsize=20)
-    axes[2].plot(dataArr['datetime'], dataArr['bmptemp'], label='BMP180_temperature', linestyle='-', color='magenta', linewidth=2)
+    axes[2].plot(dataDict['datetime'], dataDict['bmptemp'], label='BMP180_temperature', linestyle='-', color='magenta', linewidth=2)
     axes[2].legend()
 
     # set tick font size and rotation for all subplots
