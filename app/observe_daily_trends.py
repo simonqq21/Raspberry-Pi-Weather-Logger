@@ -58,10 +58,8 @@ specified", action='store_true')
 args = parser.parse_args()
 # print(args)
 
-# testing code
 startdate = date(args.startyear, args.startmonth, args.startday)
 enddate = date(args.endyear, args.endmonth, args.endday)
-# ~ args.graph = True
 
 startdatestr = startdate.strftime("%Y-%m-%d")
 enddatestr = enddate.strftime("%Y-%m-%d")
@@ -116,7 +114,7 @@ pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', co
 deleteAllSimilar(APP_DATA_PATH, DAILY_TRENDS_PREFIX)
 
 # save the database results as a csv file for download
-pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
+# ~ pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
 
 # get the mean, std, min, and max of each data column
 aggdata_overall = {}

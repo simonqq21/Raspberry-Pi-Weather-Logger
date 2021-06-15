@@ -48,6 +48,10 @@ for k in HEADER.keys():
 
 # load the data from the db
 weather_logs = WeatherLog.selectMultiple(date1=day)
+if len(weather_logs) == 0:
+	print('no records, exiting')
+	exit(0)
+	
 for w in weather_logs:
     dataDict['datetime'].append(w.datetime.datetime)
     for k in HEADER.keys():

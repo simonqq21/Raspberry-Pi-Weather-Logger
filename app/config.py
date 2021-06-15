@@ -40,6 +40,9 @@ PLOTS_FOLDER = 'plots/'
 REPORT_PREFIX = 'report_'
 # filename prefix for plot image files
 PLOT_PREFIX = 'plot_'
+# ex[prted data prefix
+EXPORT_PREFIX = 'export_'
+AGG_EXPORT_PREFIX = 'aggexport_'
 
 # database table names
 TABLES = ["Temperature", "Humidity", "BMP_temperature", "Pressure"]
