@@ -40,7 +40,7 @@ for date in dates:
         else:
             print('OK')
         print()
-    # delete any record of
+    # delete the db row and plot and report file of today
     else:
         temp = AggDayWeather.select(date)
         if temp is not None:

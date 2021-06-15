@@ -11,17 +11,26 @@ from config import EXPORT_PREFIX, AGG_EXPORT_PREFIX
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from db_module import WeatherLog, AggDayWeather
+from db_module import getAllAggDates
+
+#get the minimum and maximum dates of aggregated weather data in the db 
+datesList = getAllAggDates()
+if len(datesList) == 0:
+	print('no records, exiting')
+	exit(0)
+mindate = min(datesList)
+maxdate = max(datesList)
 
 # parse cmd arguments
 parser = argparse.ArgumentParser()
 date1 = parser.add_argument_group('date1')
 date2 = parser.add_argument_group('date2')
-date1.add_argument('-y1', '--startyear', type=int, default=date.today().year, help='year of starting date')
-date1.add_argument('-m1', '--startmonth', type=int, default=date.today().month, help='month of starting date')
-date1.add_argument('-d1', '--startday', type=int, default=date.today().day, help='day of starting date')
-date2.add_argument('-y2', '--endyear', type=int, default=date.today().year, help='year of ending date')
-date2.add_argument('-m2', '--endmonth', type=int, default=date.today().month, help='month of ending date')
-date2.add_argument('-d2', '--endday', type=int, default=date.today().day, help='day of ending date')
+date1.add_argument('-y1', '--startyear', type=int, default=mindate.year, help='year of starting date')
+date1.add_argument('-m1', '--startmonth', type=int, default=mindate.month, help='month of starting date')
+date1.add_argument('-d1', '--startday', type=int, default=mindate.day, help='day of starting date')
+date2.add_argument('-y2', '--endyear', type=int, default=maxdate.year, help='year of ending date')
+date2.add_argument('-m2', '--endmonth', type=int, default=maxdate.month, help='month of ending date')
+date2.add_argument('-d2', '--endday', type=int, default=maxdate.day, help='day of ending date')
 args = parser.parse_args()
 
 startdate = date(args.startyear, args.startmonth, args.startday)
@@ -52,7 +61,7 @@ for w in weather_logs:
 
 # weather data DataFrame
 weather_df = pd.DataFrame(data=dataDict)
-print(weather_df)
+# ~ print(weather_df)
 # export weather data dataframe as csv
 weather_df.to_csv(APP_DATA_PATH + EXPORT_PREFIX + startdatestr + '_' + enddatestr + '.csv')
 

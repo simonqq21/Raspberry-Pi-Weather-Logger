@@ -38,21 +38,29 @@ from functions import deleteAllSimilar, nl
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from db_module import WeatherLog, AggDayWeather
+from db_module import getAllAggDates
 
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
 
-# get the two dates
-# argument specs: date1 (-y year -m month -d day) date2 (-y year -m month -d day) -g
+#get the minimum and maximum dates of aggregated weather data in the db 
+datesList = getAllAggDates()
+if len(datesList) == 0:
+	print('no records, exiting')
+	exit(0)
+mindate = min(datesList)
+maxdate = max(datesList)
+
+# date1, date2, and graph arguments
 parser = argparse.ArgumentParser()
 date1 = parser.add_argument_group('date1')
 date2 = parser.add_argument_group('date2')
-date1.add_argument('-y1', '--startyear', type=int, default=date.today().year, help='year of starting date')
-date1.add_argument('-m1', '--startmonth', type=int, default=date.today().month, help='month of starting date')
-date1.add_argument('-d1', '--startday', type=int, default=date.today().day, help='day of starting date')
-date2.add_argument('-y2', '--endyear', type=int, default=date.today().year, help='year of ending date')
-date2.add_argument('-m2', '--endmonth', type=int, default=date.today().month, help='month of ending date')
-date2.add_argument('-d2', '--endday', type=int, default=date.today().day, help='day of ending date')
+date1.add_argument('-y1', '--startyear', type=int, default=mindate.year, help='year of starting date')
+date1.add_argument('-m1', '--startmonth', type=int, default=mindate.month, help='month of starting date')
+date1.add_argument('-d1', '--startday', type=int, default=mindate.day, help='day of starting date')
+date2.add_argument('-y2', '--endyear', type=int, default=maxdate.year, help='year of ending date')
+date2.add_argument('-m2', '--endmonth', type=int, default=maxdate.month, help='month of ending date')
+date2.add_argument('-d2', '--endday', type=int, default=maxdate.day, help='day of ending date')
 parser.add_argument('-g', '--graph', help="graph the data and save it to an image file if \
 specified", action='store_true')
 args = parser.parse_args()
@@ -138,9 +146,6 @@ for t in TABLE_ABBREVS:
 		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['max'] == \
 		pivoted_aggdata_df[t]['max'].max()].values
 # ~ print(aggdata_overall)
-
-test_df = pd.DataFrame(data=aggdata_overall)
-print(test_df)
 
 # generate the daily trends report text file
 with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:

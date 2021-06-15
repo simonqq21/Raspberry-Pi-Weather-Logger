@@ -53,7 +53,7 @@ UNITS = ['°C', '%', '°C', 'HPa']
 # weather data columns
 WEATHER_DATA_LIST = list('{} ({})'.format(TABLES[w], UNITS[w]) for w in range(len(TABLES)))
 HEADER = dict(zip(TABLE_ABBREVS,WEATHER_DATA_LIST))
-print(HEADER)
+# ~ print(HEADER)
 
 # print(WEATHER_DATA)
 # statistics

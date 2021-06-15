@@ -21,9 +21,10 @@ np.set_printoptions(precision=3, suppress=True)
 
 '''
 This program takes optional year, month, day, and interval as parameters.
-This program calls the datalog averager program to process the raw datalog file, then computes
-for the mean, standard deviation, maximum value and minimum value for temperature, pressure,
-and humidity of a particular day. The data will be graphed and saved as an image file.
+This program computes for the mean, standard deviation, maximum value and minimum value for temperature, pressure,
+and humidity of a particular day, and the data will be graphed and saved as an image file and text report.
+This program is not meant to be run standalone unless during testing. It is called by the process_incomplete_reports.py file
+iteratively to generate aggregate data, reports, and plots for the past days. 
 '''
 
 # parse arguments from the command line
@@ -38,7 +39,6 @@ args = parser.parse_args()
 month = args.m
 day = args.d
 year = args.y
-
 day = date(year, month, day)
 
 dataDict = {}
@@ -48,6 +48,7 @@ for k in HEADER.keys():
 
 # load the data from the db
 weather_logs = WeatherLog.selectMultiple(date1=day)
+# exit if no data exists
 if len(weather_logs) == 0:
 	print('no records, exiting')
 	exit(0)
@@ -122,11 +123,6 @@ for k in HEADER.keys():
 print('\n')
 
 print(min_max_times_dict)
-
-#
-# weather_df
-# results_df
-# min_max_times_dict
 
 # generate report file
 report_filepath = APP_DATA_PATH + REPORTS_FOLDER + REPORT_PREFIX + day.strftime('%m%d%Y') + '.txt'
