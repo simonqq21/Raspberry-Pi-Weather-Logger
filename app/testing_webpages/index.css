@@ -1,0 +1,67 @@
+#datetime {
+    display: inline;
+    float:right;
+    padding: 10px;
+    background-color:red;
+    border: 2px solid black;
+    position: relative;
+    right: 10px;
+}
+
+#flex-container {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    align-items: center;
+    /* float: left; */
+}
+
+.unitsradiobox {
+    width: 160px;
+    height: 50px;
+    background-color: rgba(100, 150, 255, 0.5);
+    height:auto;
+    position: absolute;
+    bottom: 10px;
+}
+
+.datacell {
+    max-width: 200px;
+    height:300px;
+    background-color:powderblue;
+    border: 2px solid black;
+    padding:10px;
+    margin: 30px;
+    align:center;
+    outline: 2px solid grey;
+    outline-offset: 10px;
+    position: relative;
+}
+
+.datalabel {
+    font-size:30px;
+    text-align:center;
+    padding:0px;
+    margin:0px;
+    text-decoration: underline;
+}
+
+.data {
+    font-size:50px;
+    text-align:center;
+    padding-top:10px;
+    margin:0px;
+    margin-bottom:20px;
+}
+
+#temperaturedata {
+    color:red;
+}
+
+#humiditydata {
+    color:blue;
+}
+
+#pressuredata {
+    color:green;
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <!-- This page is the main page for the weather logger web application. It displays
+    the current temperature, pressure, and humidity. -->
+        <meta charset="utf-8">
+        <title>Weather Logger Index Page</title>
+<!--
+        <link rel="stylesheet" href="base.css">
+-->
+        <link rel="stylesheet" href="index.css">
+    </head>
+
+    <body>
+        <script type="text/javascript">
+
+        </script>
+		
+		<!-- navbar -->
+		<div id="navbar">
+			<ul id="navbar">
+				<li><a href="#index">Dashboard</a></li>
+				<li><a href="#singleday">Single Day</a></li>
+				<li><a href="#multidays">Multiple Days</a></li>
+				<li style="float: right"><a href="#about">About</a></li>
+			</ul>
+		</div>
+		
+        <!-- main header -->
+        <div id="header">
+			<h1>Weather Logger Index Page</h1>
+        </div>
+        
+		<!-- current date and time -->
+		<div id="datetime">
+			<p>Current date and time: </p>
+			<p id="datetime">02/27/2020 10:00</p>
+		</div>
+        
+        <!-- flexbox for current weather values -->
+        <div id="flex-container">
+            <!-- temperature display -->
+            <div class="weather_data_display">
+                <p class="datalabel">DHTTemperature</p>
+                <p id="temperaturedata" class="data">28 °C</p>
+            </div>
+			
+			<!-- temperature display -->
+            <div class="weather_data_display">
+                <p class="datalabel">BMPTemperature</p>
+                <p id="temperaturedata" class="data">28 °C</p>
+            </div>
+            
+            <!-- humidity display -->
+            <div class="weather_data_display">
+                <p class="datalabel">Relative Humidity</p>
+                <p id="humiditydata" class="data">54 %</p>
+            </div>
+
+            <!-- pressure display -->
+            <div class="weather_data_display">
+                <p class="datalabel">Barometric Pressure</p>
+                <p id="pressuredata" class="data">100113 Pa</p>
+            </div>
+        </div>
+        
+        <div id="unitselector">
+			<form>
+				<input type="radio" id="metric" name="units" value=0 default></input>
+				<label for="metric">Metric</label>
+				<input type="radio" id="imperial" name="units" value=1></input>
+				<label for="imperial">Imperial</label>
+			</form>
+        </div>
+                
+    </body>
+</html>

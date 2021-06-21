@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="{{ url_for('static', filename='js/jquery.js') }}" charset="utf-8"></script>
+        <script src="{{ url_for('static', filename='js/base.js') }}" charset="utf-8"></script>
+        {% block head %}{% endblock %}
+    </head>
+
+    <body>
+        <!-- universal navbar -->
+        <div id="navbar">
+            <ul>
+                <li><a id="about" href="/about">About</a></li>
+                <li><a id="trends" href="/trends">Daily Trends</a></li>
+                <li><a id="history" href="/history">Log History</a></li>
+                <li ><a id="index" class="active" href="/index">Main Page</a></li>
+            </ul>
+        </div>
+        {% block body %}{% endblock %}
+    </body>
+</html>

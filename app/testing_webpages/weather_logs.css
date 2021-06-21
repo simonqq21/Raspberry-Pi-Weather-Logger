@@ -1,0 +1,112 @@
+/* completed view of the loaded data shown when complete data has been returned to the
+web page */
+#completedview {
+    margin-top: -30px;
+    display: none;
+    grid-template-columns: 500px 950px;
+}
+
+/* empty view prompting the user to select data */
+#emptyview {
+    display: block;
+}
+
+/* view shown while data is being loaded */
+#loadingview {
+    display: none;
+}
+
+/* view shown while data is being generated */
+#generatingview {
+    display: none;
+}
+
+#topbutton{
+    margin-top: 100px;
+}
+
+/* style for the text in emptyview, loadingview, and generatingview */
+.prompt {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* style for the statistics table */
+.stattable {
+    /* display: flex;
+    flex-direction: column; */
+    border: 5px solid blue;
+    font-size: 25px;
+}
+
+hr {
+    color: darkorchid;
+    background-color: darkorchid;
+    height:4px;
+    width:100%;
+}
+
+table {
+    width:90%;
+    margin:auto;
+    background-color: white;
+}
+
+/* each weather data column under the times container */
+.columntimes-flex-container {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    margin: 0;
+}
+
+/* the min and max time elements under columntimes-flex-container */
+.columntimes-flex-container div {
+    flex-basis: 250px;
+    margin: 0 30px 0;
+    align-items: flex-start;
+}
+
+/* where the extreme time values are displayed */
+.time {
+    font-size: 25px;
+    background-color: white;
+    padding: 10px;
+    margin: 15px;
+    height: 20px;
+    border: 2px solid black;
+    width: 100%;
+    height: 100px;
+    overflow-y: auto;
+}
+
+/* user date input element */
+#dateinput {
+    outline:2px solid black;
+    width: 205px;
+    height: 25px;
+    font-size: 25px;
+}
+
+/* graph image display container */
+#weathergraph {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* graph image display element */
+#weathergraph img {
+    width:800px;
+    height:600px;
+}
+
+/* flex container for the section containing extreme value times */
+#timesdiv {
+    margin: auto;
+    margin-bottom: 30px;
+    border: 2px solid black;
+    outline: 2px solid grey;
+    outline-offset: 10px;
+    width: 80%;
+}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+<!-- This page shows the weather reports and graphs for a particular day given a user
+selected date. -->
+
+{% block head %}
+<title>Weather Log History</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/weather_logs.css') }}">
+<script src="{{ url_for('static', filename='js/jquery.js') }}" charset="utf-8"></script>
+{% endblock %}
+
+{% block body %}
+<!-- main header -->
+<h1>Weather Log Statistics</h1>
+<hr>
+<!-- user input of the date -->
+<form id="dateform">
+    <label for="rawdatadate" id="dateinput" >Choose a datalog to load:</label><br>
+    <select id="rawdatadate" name="rawdatadate">
+        {% for date in dates %}
+                <option value={{ date }}>{{ date }}</option>
+        {% endfor %}
+    </select>
+    <input id=submitdate type="submit" name="submit" value="submit">
+</form>
+
+<!-- view that displays the completed data after it has been retrieved by javascipt -->
+<div id="completedview">
+    <!-- column 1 -->
+    <div id="main-col1">
+        <!-- display date selected -->
+        <div class="">
+            <h2 style="float: left; margin-left: 10px;">Date Selected: </h2>
+            <input id="dateoutput" style="font-size: 20px; position: relative; top: 12px;" type="text"
+            name="dateoutput" value="" size=10 readonly=true>
+        </div>
+
+        <!-- statistics section -->
+        <h2>Weather Data Statistics</h2>
+        <div id="stattables">
+            <!-- statistics table division to be filled in javascript -->
+        </div>
+
+        <!-- button field -->
+        <div class="vbuttonfield">
+            <!-- button to download the data for a day as .txt -->
+            <button id="reportdlbtn" class="vbutton" type="button" name="reportdlbtn">
+                download report</button>
+            <button id="datadlbtn" class="vbutton" type="button" name="datadlbtn"
+            >download raw data as .csv</button>
+        </div>
+    </div>
+
+    <!-- main column 2 -->
+    <div id="main-col2">
+        <!-- graph of the weather data for a day -->
+        <h2>Weather Data Graph</h2>
+        <div id="weathergraph" >
+            <!-- url to be filled in javascript -->
+            <img src="" alt="weather graph">
+        </div>
+
+        <!-- extreme weather data values for the day -->
+        <h2>Times of the day with minimum and maximum values</h2>
+        <div id="timesdiv">
+            <!-- extreme value times divison to be filled in javascript -->
+        </div>
+    </div>
+</div>
+
+<!-- view to show on first session -->
+<div id="emptyview">
+    <p class="prompt">Please select a raw data log to load from the dropdown.</p>
+    <div class="vbuttonfield">
+        <!-- button to return to main page -->
+    </div>
+</div>
+
+<!-- view to show when the processed data is loading -->
+<div id="loadingview">
+    <p class="prompt">Loading data...</p>
+</div>
+
+<!-- view to show when the data is being generated -->
+<div id="generatingview">
+    <p class="prompt">Generating data...</p>
+</div>
+
+<script src="{{ url_for('static', filename='js/log_history.js') }}" charset="utf-8"></script>
+{% endblock %}
