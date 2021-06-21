@@ -5,9 +5,7 @@
     the current temperature, pressure, and humidity. -->
         <meta charset="utf-8">
         <title>Weather Logger Index Page</title>
-<!--
         <link rel="stylesheet" href="base.css">
--->
         <link rel="stylesheet" href="index.css">
     </head>
 
@@ -19,10 +17,10 @@
 		<!-- navbar -->
 		<div id="navbar">
 			<ul id="navbar">
-				<li><a href="#index">Dashboard</a></li>
-				<li><a href="#singleday">Single Day</a></li>
-				<li><a href="#multidays">Multiple Days</a></li>
-				<li style="float: right"><a href="#about">About</a></li>
+				<li><a href="index.html">Dashboard</a></li>
+				<li><a href="singleday.html">Single Day</a></li>
+				<li><a href="multiday.html">Multiple Days</a></li>
+				<li style="float: right"><a href="about.html">About</a></li>
 			</ul>
 		</div>
 		
@@ -66,10 +64,11 @@
         
         <div id="unitselector">
 			<form>
+				<label for="units">Units: </label>
 				<input type="radio" id="metric" name="units" value=0 default></input>
-				<label for="metric">Metric</label>
+				<label for="">Metric</label>
 				<input type="radio" id="imperial" name="units" value=1></input>
-				<label for="imperial">Imperial</label>
+				<label for="">Imperial</label>
 			</form>
         </div>
                 

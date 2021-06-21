@@ -1,60 +1,5 @@
 /*
-	navbar
-*/
-ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	background-color: #d0d0d0;
-	
-}
-
-/*
-	navbar items
-*/
-li {
-	float: left;
-	color: black;
-	display: inline-block;
-	padding: 14px 16px;
-	
-}
-
-/*
-	the links inside the navbar items
-*/
-li a {
-	text-decoration: none;
-	font-size: 16px;
-}
-
-/*
-	hover behavior on navbar items
-*/
-li:hover {
-	background-color: red;
-}
-
-/*
-	header section
-*/
-#header {
-	
-}
-
-/*
-	centered header text
-*/
-#header h1 {
-	font-size: 30px;
-	text-align: center;
-	margin: 10px;
-	padding: 0px;
-}
-
-/*
-	date and time section
+	date and time div
 */
 #datetime p {
 	display: inline-block;
@@ -65,6 +10,8 @@ li:hover {
 */
 #flex-container {
 	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 }
 
 /*
@@ -72,5 +19,31 @@ li:hover {
 */
 .weather_data_display {
 	margin: 10px;
-	border: 2pxs
+	border: 2px solid black;
+}
+
+/*
+	contents of the individual weather data display divs
+*/
+.weather_data_display * {
+	padding: 0px 10px;
+}
+
+/*
+ * unit selector div
+*/
+#unitselector {
+	width: 30%;
+	margin: 10px auto;
+	text-align: center;
+	border: 2px solid gray;
+	
+}
+
+/*
+ * unit selection radio buttons
+*/
+#unitselector * {
+	display: inline;
+	
 }
