@@ -31,7 +31,7 @@
         
 		<!-- current date and time -->
 		<div id="datetime">
-			<p>Current date and time: </p>
+			<p style="font-weight: bold">Current date and time: </p>
 			<p id="datetime">02/27/2020 10:00</p>
 		</div>
         
@@ -40,31 +40,43 @@
             <!-- temperature display -->
             <div class="weather_data_display">
                 <p class="datalabel">DHTTemperature</p>
-                <p id="temperaturedata" class="data">28 °C</p>
+                <div id="dhttemp_val" class="valdiv">
+					<p class="data">28</p>
+					<p class="tempunit">°C</p>
+                </div>
             </div>
 			
 			<!-- temperature display -->
             <div class="weather_data_display">
                 <p class="datalabel">BMPTemperature</p>
-                <p id="temperaturedata" class="data">28 °C</p>
+                <div id="bmptemp_val" class="valdiv">
+					<p class="data">28</p>
+					<p class="tempunit">°C</p>
+                </div>
             </div>
             
             <!-- humidity display -->
             <div class="weather_data_display">
                 <p class="datalabel">Relative Humidity</p>
-                <p id="humiditydata" class="data">54 %</p>
+                <div id="dhthumd_val" class="valdiv">
+					<p class="data">60</p>
+					<p class="humdunit">%</p>
+                </div>
             </div>
 
             <!-- pressure display -->
             <div class="weather_data_display">
                 <p class="datalabel">Barometric Pressure</p>
-                <p id="pressuredata" class="data">100113 Pa</p>
+                <div id="bmppres_val" class="valdiv">
+					<p class="data">100500</p>
+					<p class="humdunit">Pa</p>
+                </div>
             </div>
         </div>
         
         <div id="unitselector">
 			<form>
-				<label for="units">Units: </label>
+				<label for="units" style="font-weight: bold">Units: </label>
 				<input type="radio" id="metric" name="units" value=0 default></input>
 				<label for="">Metric</label>
 				<input type="radio" id="imperial" name="units" value=1></input>

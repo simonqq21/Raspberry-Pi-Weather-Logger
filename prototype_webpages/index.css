@@ -47,3 +47,30 @@
 	display: inline;
 	
 }
+
+.valdiv {
+	text-align: center;
+	padding: 10px;
+}
+
+.valdiv p {
+	font-size: 50px;
+	display: inline; 
+	padding: 0px;
+}
+
+#dhttemp_val p {
+	color: red;
+}
+
+#bmptemp_val p {
+	color: orange;
+}
+
+#dhthumd_val p {
+	color: blue;
+}
+
+#bmppres_val p {
+	color: green;
+}
