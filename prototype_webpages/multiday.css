@@ -1,6 +1,4 @@
-/*
-date range input div
-*/
+/* date range input div */
 #daterangeinput {
 	display: flex;
 	justify-content: left;
@@ -8,6 +6,7 @@ date range input div
 	margin-left: 4%;
 }
 
+/* flexbox row for the report file and image graph */
 #row {
 	display: flex;
 	flex-wrap: wrap;
@@ -18,9 +17,7 @@ date range input div
 	margin: auto;
 }
 
-/*
-iframe displaying the report file
-*/
+/* container for the iframe displaying the report file */
 #reportfile {
 	border: 2px solid black;
 	text-align: center;
@@ -30,6 +27,7 @@ iframe displaying the report file
 
 }
 
+/* iframe displaying the report file */
 #reportfile iframe {
 	text-align: center;
 	font-size: 100%;
@@ -40,9 +38,7 @@ iframe displaying the report file
 	display: block;
 }
 
-/*
-plot image
-*/
+/* container for the plot image */
 #imageplot {
 	width: 450px;
 	border: 2px solid black;
@@ -50,16 +46,18 @@ plot image
 	padding: 10px;
 }
 
+/* plot image */
 #imageplot img {
 	width: 100%;
 }
 
+/* container for the download links */
 #downloadlinks {
 	margin: auto;
-	margin-left: 4%;
-	
+	margin-left: 4%;	
 }
 
+/* each download link */
 #downloadlinks a {
 	display: inline;
 	text-decoration: none;
