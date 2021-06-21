@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Multi Day Weather Data</title>
+		<link rel="stylesheet" href="base.css">
+		<link rel="stylesheet" href="app.css">
+	</head>
+	
+	<body>
+		<!-- navbar -->
+		<div id="navbar">
+			<ul id="navbar">
+				<li><a href="index.html">Dashboard</a></li>
+				<li><a href="singleday.html">Single Day</a></li>
+				<li><a href="multiday.html">Multiple Days</a></li>
+				<li style="float: right"><a href="about.html">About</a></li>
+			</ul>
+		</div>
+		
+		<!-- main header -->
+        <div id="header">
+			<h1>View/Download data for a single day</h1>
+        </div>
+        
+		<!-- starting and ending date input -->
+		<div id="dateinput">
+			<form>
+				<label for="date">Date: </label>
+				<input type="date" name="date" id="date">
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+		
+<!--  flexbox row for the report file and image graph -->
+		<div id="row">
+			<!-- report text file iframe div -->
+			<div id="reportfile">
+				<iframe src="report_sample.txt" title="Report Text File"></iframe>
+			</div>
+		
+			<!-- graph image div -->
+			<div id="imageplot">
+				<img src="plot_sample.png" title="Plot Image File">
+			</div>
+		</div>
 
+<!-- download links for exported data and reports -->
+		<div id="downloadlinks">
+			<p style="font-size: 16px;">Download exported data as .csv</p>
+			<a href="#">Weather data</a>
+			<a href="#">Aggregated weather data</a>
+		</div>
+	
+	</body>
+</html>
