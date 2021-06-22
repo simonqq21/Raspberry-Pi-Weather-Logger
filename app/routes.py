@@ -12,6 +12,7 @@ from app.db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperatu
 from app.db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from app.db_module import WeatherLog, AggDayWeather
 from app.db_module import getAllAggDates
+import json 
 
 # download URL
 @App.route('/download/<path:filename>')
@@ -42,7 +43,12 @@ def about():
 # return the latest row of weather data values 
 @App.route('/getLatestData', methods=['GET'])
 def getLatestData():
-	pass
+	lastRow = WeatherLog.selectLast()
+	datadict = {"datetime": lastRow.datetime.datetime, "dhttemp": lastRow.log['dhttemp'].value, \
+	"dhthumd": lastRow.log['dhthumd'].value, "bmptemp": lastRow.log['bmptemp'].value, \
+	"bmppres": lastRow.log['bmppres'].value}
+	print(datadict)
+	return jsonify(datadict)
 	
 # return the URL of the image plot given the date, the URL of the report file given the date, and the 
 # download URLs of the exported csv data given the date or date range

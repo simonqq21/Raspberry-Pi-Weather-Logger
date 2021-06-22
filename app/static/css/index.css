@@ -1,7 +1,7 @@
 /*
 	date and time div
 */
-#datetime p {
+#datetimediv p {
 	display: inline-block;
 }
 
@@ -57,6 +57,11 @@
 	font-size: 50px;
 	display: inline; 
 	padding: 0px;
+}
+
+/* the hidden element containing the value read from the database */
+.valdiv .datadefault {
+	display: none;
 }
 
 #dhttemp_val p {

@@ -10,12 +10,16 @@
 
 {% block body %}
 <!-- main header -->
+<script type="text/javascript">
+	
+</script>
+        
 <div id="header">
 	<h1>Weather Logger Index Page</h1>
 </div>
 
 <!-- current date and time -->
-<div id="datetime">
+<div id="datetimediv">
 	<p style="font-weight: bold">Current date and time: </p>
 	<p id="datetime">02/27/2020 10:00</p>
 </div>
@@ -27,6 +31,7 @@
 		<p class="datalabel">DHTTemperature</p>
 		<div id="dhttemp_val" class="valdiv">
 			<p class="data">28</p>
+			<p class="datadefault">28</p>
 			<p class="tempunit">°C</p>
 		</div>
 	</div>
@@ -36,6 +41,7 @@
 		<p class="datalabel">BMPTemperature</p>
 		<div id="bmptemp_val" class="valdiv">
 			<p class="data">28</p>
+			<p class="datadefault">28</p>
 			<p class="tempunit">°C</p>
 		</div>
 	</div>
@@ -45,6 +51,7 @@
 		<p class="datalabel">Relative Humidity</p>
 		<div id="dhthumd_val" class="valdiv">
 			<p class="data">60</p>
+			<p class="datadefault">28</p>
 			<p class="humdunit">%</p>
 		</div>
 	</div>
@@ -54,27 +61,29 @@
 		<p class="datalabel">Barometric Pressure</p>
 		<div id="bmppres_val" class="valdiv">
 			<p class="data">100500</p>
+			<p class="datadefault">28</p>
 			<p class="humdunit">Pa</p>
 		</div>
 	</div>
 </div>
 
 <div id="unitselector">
-	<form>
+	<form id="units">
 		<label for="tempunits" style="font-weight: bold">Temperature units: </label>
-		<input type="radio" id="cels" name="tempunits" value="C" checked></input>
+		<input type="radio" name="tempunits" value="°C" checked></input>
 		<label for="">°C</label>
-		<input type="radio" id="fahr" name="tempunits" value="F"></input>
+		<input type="radio" name="tempunits" value="°F"></input>
 		<label for="">°F</label>
-		<input type="radio" id="kelvin" name="tempunits" value="F"></input>
+		<input type="radio" name="tempunits" value="°K"></input>
 		<label for="">°K</label>
 		<label for="presunits" style="font-weight: bold">Pressure units: </label>
-		<input type="radio" id="pascals" name="presunits" value="Pa" checked></input>
+		<input type="radio" name="presunits" value="Pa" checked></input>
 		<label for="">Pa</label>
-		<input type="radio" id="psi" name="presunits" value="Psi"></input>
+		<input type="radio" name="presunits" value="Psi"></input>
 		<label for="">Psi</label>
-		<input type="radio" id="mmhg" name="presunits" value="mmHg"></input>
+		<input type="radio" name="presunits" value="mmHg"></input>
 		<label for="">mmHg</label>
 	</form>
 </div>
+<script src="/static/js/index.js" charset="utf-8"></script>
 {% endblock %}

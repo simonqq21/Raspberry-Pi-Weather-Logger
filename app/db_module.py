@@ -5,6 +5,7 @@ from sqlalchemy import select, insert, update, delete
 from sqlalchemy import func, cast
 from sqlalchemy.orm import Bundle, aliased
 from sqlalchemy import and_, or_
+from sqlalchemy.pool import StaticPool
 from datetime import datetime, time, timedelta
 try:
 	from config import APP_DATA_PATH, DB_FILENAME
@@ -13,7 +14,9 @@ except:
 
 # sqlite db engine
 print(APP_DATA_PATH + DB_FILENAME)
-engine = create_engine("sqlite+pysqlite:///" + APP_DATA_PATH + DB_FILENAME, echo=False, future=True)
+# configure the sqlite3 engine to use only a single thread
+engine = create_engine("sqlite+pysqlite:///" + APP_DATA_PATH + DB_FILENAME, echo=False, future=True, \
+	connect_args={'check_same_thread':False}, poolclass=StaticPool)
 session = Session(engine)
 Base = declarative_base()
 
@@ -364,5 +367,3 @@ class AggDayWeather():
             print(err)
             print(type(err).__name__)
             session.rollback()
-
-print(WeatherLog.selectLast())
