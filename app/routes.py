@@ -13,16 +13,42 @@ from app.db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemp
 from app.db_module import WeatherLog, AggDayWeather
 from app.db_module import getAllAggDates
 
-# ~ #download URL
-# ~ @App.route('/download/<path:filename>')
-# ~ def downloadFile(filename):
-    # ~ return send_from_directory(APP_DATA_PATH, filename, as_attachment=True)
+# download URL
+@App.route('/download/<path:filename>')
+def downloadFile(filename):
+    return send_from_directory(APP_DATA_PATH, filename, as_attachment=True)
 
-# ~ # base page
-# ~ @App.route('/')
-# ~ @App.route('/index')
-# ~ def index():
-    # ~ return render_template("index.html")
+# render base page
+@App.route('/', methods=['GET'])
+@App.route('/index', methods=['GET'])
+def index():
+    return render_template('index.html')
+
+# render single day page 
+@App.route('/singleday', methods=['GET'])
+def singleday():
+	return render_template('singleday.html')
+	
+# render multiple day page 
+@App.route('/multiday', methods=['GET'])
+def multiday():
+	return render_template('multiday.html')
+
+# render render about page
+@App.route('/about', methods=['GET'])
+def about():
+	return render_template('about.html')
+	
+# return the latest row of weather data values 
+@App.route('/getLatestData', methods=['GET'])
+def getLatestData():
+	pass
+	
+# return the URL of the image plot given the date, the URL of the report file given the date, and the 
+# download URLs of the exported csv data given the date or date range
+@App.route('/getURLs')
+def getURLs():
+	pass 
 
 # ~ '''
 # ~ weather log history page
@@ -144,10 +170,3 @@ from app.db_module import getAllAggDates
         # ~ return jsonify(data=weather_data_dict, plot_url=plot_url, report_path=report_path,
         # ~ data_path=processed_data_path)
 
-# ~ @App.route('/trends', methods=['GET', 'POST'])
-# ~ def trends():
-    # ~ return "trends under construction"
-
-# ~ @App.route('/about', methods=['GET'])
-# ~ def about():
-    # ~ return "about under construction"
