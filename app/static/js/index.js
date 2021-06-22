@@ -7,19 +7,23 @@
 //~ Pa to mmHg: mmHg = Pa / 133.3223684
 
 function CToF(CVal) {
-	return (parseFloat(CVal)*9/5+32);
+	return roundNum(parseFloat(CVal)*9/5+32);
 }
 
 function CToK(CVal) {
-	return (parseFloat(CVal)+273.15);
+	return roundNum(parseFloat(CVal)+273.15);
 }
 
 function PaToPsi(PaVal) {
-	return (parseFloat(PaVal)/6894.7572931783);
+	return roundNum(parseFloat(PaVal)/6894.7572931783);
 }
 
 function PaTommHg(PaVal) {
-	return (parseFloat(PaVal)/133.322);
+	return roundNum(parseFloat(PaVal)/133.322);
+}
+
+function roundNum(num) {
+	return Math.round((num + Number.EPSILON) * 1000) / 1000;
 }
 
 function switchUnits() {
