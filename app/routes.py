@@ -14,6 +14,13 @@ from app.db_module import WeatherLog, AggDayWeather
 from app.db_module import getAllAggDates
 import json 
 
+# ~ convert datestr received from javascript to ISO format
+def fromisoformat(datestr):
+	if re.search('\D', datestr[-1]) is not None:
+		datestr = datestr[:-1]
+	recvdate = datetime.fromisoformat(datestr).date()
+	return recvdate
+	
 # download URL
 @App.route('/download/<path:filename>')
 def downloadFile(filename):
@@ -53,10 +60,27 @@ def getLatestData():
 	return None
 	
 # return the URL of the image plot given the date, the URL of the report file given the date, and the 
-# download URLs of the exported csv data given the date or date range
-@App.route('/getURLs')
-def getURLs():
+# download URLs of the exported csv data given the date
+@App.route('/getURLsWithDate', methods=['GET'])
+def getURLsWithDate():
+	datestr = request.args.get('date', )
+	recvdate = fromisoformat(datestr)
+	print(recvdate)
+	datesList = getAllAggDates()
+	if recvdate in datesList:
+		print(1)
+	else:
+		print(0)
+	return '1'
+
+# return the URL of the image plot given the date, the URL of the report file given the date, and the 
+# download URLs of the exported csv data given the date range
+@App.route('/getURLsWithDateRange', methods=['GET'])
+def getURLsWithDateRange():
+	print(request.form('date'))
 	pass 
+
+
 
 # ~ '''
 # ~ weather log history page
