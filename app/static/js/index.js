@@ -7,22 +7,53 @@
 //~ Pa to mmHg: mmHg = Pa / 133.3223684
 
 function CToF(CVal) {
-	console.log(CVal);
-	return (parseInt(CVal)*9/5+32)
+	return (parseFloat(CVal)*9/5+32);
 }
 
 function CToK(CVal) {
-	return (parseInt(CVal)+273.15)
+	return (parseFloat(CVal)+273.15);
 }
 
 function PaToPsi(PaVal) {
-	return (parseInt(PaVal)/6,894.75729)
+	return (parseFloat(PaVal)/6894.7572931783);
 }
 
 function PaTommHg(PaVal) {
-	return (parseInt(PaVal)/133.3223684)
+	return (parseFloat(PaVal)/133.322);
 }
 
+function switchUnits() {
+	$(".tempunit").text(tempunits);
+	$(".presunit").text(presunits);
+	
+	switch (tempunits) {
+		case '°C': 
+			$("#dhttemp_val .data").text($("#dhttemp_val .datadefault").text());
+			$("#bmptemp_val .data").text($("#bmptemp_val .datadefault").text());
+			console.log('C'); 
+			break;
+		case '°F': 
+			$("#dhttemp_val .data").text(CToF($("#dhttemp_val .datadefault").text()));
+			$("#bmptemp_val .data").text(CToF($("#bmptemp_val .datadefault").text()));
+			console.log('F'); break;
+		case '°K': 
+			$("#dhttemp_val .data").text(CToK($("#dhttemp_val .datadefault").text()));
+			$("#bmptemp_val .data").text(CToK($("#bmptemp_val .datadefault").text()));
+			console.log('K'); break;
+	}
+	
+	switch (presunits) {
+		case 'Pa': 
+			$("#bmppres_val .data").text($("#bmppres_val .datadefault").text());
+			console.log('Pa'); break;
+		case 'Psi': 
+			$("#bmppres_val .data").text(PaToPsi($("#bmppres_val .datadefault").text()));
+			console.log('Psi'); break;
+		case 'mmHg': 
+			$("#bmppres_val .data").text(PaTommHg($("#bmppres_val .datadefault").text()));
+			console.log('mmHg'); break;
+	}
+}
 function updateValues() {
 	console.log("update!");
 	$.get({
@@ -42,31 +73,7 @@ function updateValues() {
 			for (var d in data) {
 				$("#" + d + " .datadefault").text(data[d]);
 			}
-			
-			$(".tempunit").text(tempunits);
-			$(".presunit").text(presunits);
-			
-			switch (tempunits) {
-				case '°C': 
-					$("#dhttemp_val .data").text($("#dhttemp_val .datadefault").text());
-					$("#bmptemp_val .data").text($("#bmptemp_val .datadefault").text());
-					console.log('C'); 
-					break;
-				case '°F': 
-					$("#dhttemp_val .data").text(CToF($("#dhttemp_val .datadefault").text()));
-					$("#bmptemp_val .data").text(CToF($("#bmptemp_val .datadefault").text()));
-					console.log('F'); break;
-				case '°K': 
-					$("#dhttemp_val .data").text(CToK($("#dhttemp_val .datadefault").text()));
-					$("#bmptemp_val .data").text(CToK($("#bmptemp_val .datadefault").text()));
-					console.log('K'); break;
-			}
-			
-			switch (presunits) {
-				case 'Pa': console.log('Pa'); break;
-				case 'Psi': console.log('Psi'); break;
-				case 'mmHg': console.log('mmHg'); break;
-			}
+			switchUnits();
 		}
 	});
 }
@@ -82,8 +89,7 @@ $(document).ready(function() {
 	$("#units").change(function() {
 		tempunits = $("input[name='tempunits']:checked").val();
 		presunits = $("input[name='presunits']:checked").val();
-		
-		
+		switchUnits();
 	});
 });
 
