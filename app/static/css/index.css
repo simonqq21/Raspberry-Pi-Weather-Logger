@@ -1,67 +1,76 @@
-#datetime {
-    display: inline;
-    float:right;
-    padding: 10px;
-    background-color:red;
-    border: 2px solid black;
-    position: relative;
-    right: 10px;
+/*
+	date and time div
+*/
+#datetime p {
+	display: inline-block;
 }
 
+/*
+	flexbox container for weather data
+*/
 #flex-container {
-    display: flex;
-    justify-content: center;
-    margin: auto;
-    align-items: center;
-    /* float: left; */
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 }
 
-.unitsradiobox {
-    width: 160px;
-    height: 50px;
-    background-color: rgba(100, 150, 255, 0.5);
-    height:auto;
-    position: absolute;
-    bottom: 10px;
+/*
+	individual weather data display divs
+*/
+.weather_data_display {
+	margin: 10px;
+	border: 2px solid black;
 }
 
-.datacell {
-    max-width: 200px;
-    height:300px;
-    background-color:powderblue;
-    border: 2px solid black;
-    padding:10px;
-    margin: 30px;
-    align:center;
-    outline: 2px solid grey;
-    outline-offset: 10px;
-    position: relative;
+/*
+	contents of the individual weather data display divs
+*/
+.weather_data_display * {
+	padding: 0px 10px;
 }
 
-.datalabel {
-    font-size:30px;
-    text-align:center;
-    padding:0px;
-    margin:0px;
-    text-decoration: underline;
+/*
+ * unit selector div
+*/
+#unitselector {
+	width: 30%;
+	margin: 10px auto;
+	text-align: center;
+	border: 2px solid gray;
+	
 }
 
-.data {
-    font-size:50px;
-    text-align:center;
-    padding-top:10px;
-    margin:0px;
-    margin-bottom:20px;
+/*
+ * unit selection radio buttons
+*/
+#unitselector * {
+	display: inline;
+	
 }
 
-#temperaturedata {
-    color:red;
+.valdiv {
+	text-align: center;
+	padding: 10px;
 }
 
-#humiditydata {
-    color:blue;
+.valdiv p {
+	font-size: 50px;
+	display: inline; 
+	padding: 0px;
 }
 
-#pressuredata {
-    color:green;
+#dhttemp_val p {
+	color: red;
+}
+
+#bmptemp_val p {
+	color: orange;
+}
+
+#dhthumd_val p {
+	color: blue;
+}
+
+#bmppres_val p {
+	color: green;
 }

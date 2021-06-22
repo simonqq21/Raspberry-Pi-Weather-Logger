@@ -1,69 +1,80 @@
 {% extends 'base.html' %}
-<!-- This page is the main page for the weather logger web application. It displays
-the current temperature, pressure, and humidity. -->
 
 {% block head %}
-<title>Weather Logger Main Page</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-<!-- <script src="{{ url_for('static', filename='js/jquery.js') }}" charset="utf-8"></script> -->
+<!-- This page is the main page for the weather logger web application. It displays
+    the current temperature, pressure, and humidity. -->
+<title>Weather Logger Index Page</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/index.css">
 {% endblock %}
 
 {% block body %}
-<!-- current date and time -->
-<p id="datetime">02/27/2020 10:00</p>
 <!-- main header -->
-<h1>Weather Logger Index Page</h1>
+<div id="header">
+	<h1>Weather Logger Index Page</h1>
+</div>
+
+<!-- current date and time -->
+<div id="datetime">
+	<p style="font-weight: bold">Current date and time: </p>
+	<p id="datetime">02/27/2020 10:00</p>
+</div>
 
 <!-- flexbox for current weather values -->
 <div id="flex-container">
-    <!-- temperature display -->
-    <div class="datacell">
-        <p class="datalabel">Temperature</p>
-        <p id="temperaturedata" class="data">28 °C</p>
-        <!-- temperature unit selector -->
-        <div class="unitsradiobox">
-            <form>
-                <input type="radio" id="°C" name="temp" value="C">
-                <label for="">°C</label>
-                <br>
-                <input type="radio" id="°F" name="temp" value="F">
-                <label for="">°F</label>
-            </form>
-        </div>
-    </div>
+	<!-- temperature display -->
+	<div class="weather_data_display">
+		<p class="datalabel">DHTTemperature</p>
+		<div id="dhttemp_val" class="valdiv">
+			<p class="data">28</p>
+			<p class="tempunit">°C</p>
+		</div>
+	</div>
+	
+	<!-- temperature display -->
+	<div class="weather_data_display">
+		<p class="datalabel">BMPTemperature</p>
+		<div id="bmptemp_val" class="valdiv">
+			<p class="data">28</p>
+			<p class="tempunit">°C</p>
+		</div>
+	</div>
+	
+	<!-- humidity display -->
+	<div class="weather_data_display">
+		<p class="datalabel">Relative Humidity</p>
+		<div id="dhthumd_val" class="valdiv">
+			<p class="data">60</p>
+			<p class="humdunit">%</p>
+		</div>
+	</div>
 
-    <!-- humidity display -->
-    <div class="datacell">
-        <p class="datalabel">Relative Humidity</p>
-        <p id="humiditydata" class="data">54 %</p>
-    </div>
-
-    <!-- temperature display -->
-    <div class="datacell">
-        <p class="datalabel">Barometric Pressure</p>
-        <p id="pressuredata" class="data">100113 Pa</p>
-        <!-- pressure unit selector -->
-        <div class="unitsradiobox">
-            <form>
-                <input type="radio" id="HPa" name="pres" value="HPa">
-                <label for="">HPa</label>
-                <br>
-                <input type="radio" id="mmHg" name="pres" value="mmHg">
-                <label for="">mmHg</label>
-            </form>
-        </div>
-    </div>
+	<!-- pressure display -->
+	<div class="weather_data_display">
+		<p class="datalabel">Barometric Pressure</p>
+		<div id="bmppres_val" class="valdiv">
+			<p class="data">100500</p>
+			<p class="humdunit">Pa</p>
+		</div>
+	</div>
 </div>
 
-<!-- spacer -->
-<div class="" style="height:60px;display:block">
-
-</div>
-<!-- bottom button field -->
-<div class="hbuttonfield">
-    <!-- button to save current weather values as .txt -->
-    <button class="hbutton" type="button" name="savebtn">Save data as .txt</button>
-    <!-- button to go to the log history page -->
-    <button class="hbutton" type="button" name="loghistorybtn" onclick="document.location.href='/history';">Log history page</button>
+<div id="unitselector">
+	<form>
+		<label for="tempunits" style="font-weight: bold">Temperature units: </label>
+		<input type="radio" id="cels" name="tempunits" value="C" checked></input>
+		<label for="">°C</label>
+		<input type="radio" id="fahr" name="tempunits" value="F"></input>
+		<label for="">°F</label>
+		<input type="radio" id="kelvin" name="tempunits" value="F"></input>
+		<label for="">°K</label>
+		<label for="presunits" style="font-weight: bold">Pressure units: </label>
+		<input type="radio" id="pascals" name="presunits" value="Pa" checked></input>
+		<label for="">Pa</label>
+		<input type="radio" id="psi" name="presunits" value="Psi"></input>
+		<label for="">Psi</label>
+		<input type="radio" id="mmhg" name="presunits" value="mmHg"></input>
+		<label for="">mmHg</label>
+	</form>
 </div>
 {% endblock %}

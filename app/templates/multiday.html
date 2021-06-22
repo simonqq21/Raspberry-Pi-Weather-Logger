@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Multi Day Weather Data</title>
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/app.css">
+{% endblock %}
+
+{% block body %}
+<!-- main header -->
+<div id="header">
+	<h1>View/Download data for a range of days</h1>
+</div>
+
+<!-- starting and ending date input -->
+<div id="dateinput">
+	<form>
+		<label for="datestart" style="font-weight: bold">Starting date: </label>
+		<input type="date" name="datestart" id="datestart">
+		<label for="dateend" style="font-weight: bold">Ending date: </label>
+		<input type="date" name="dateend" id="dateend">
+		<input type="submit" value="Submit">
+	</form>
+</div>
+
+<!--  flexbox row for the report file and image graph -->
+<div id="row">
+	<!-- report text file iframe div -->
+	<div id="reportfile">
+		<iframe src="/static/files/dailyweathertrends_sample.txt" title="Report Text File"></iframe>
+	</div>
+
+	<!-- graph image div -->
+	<div id="imageplot">
+		<img src="/static/files/dailyweathertrends_sample.png" title="Plot Image File">
+	</div>
+</div>
+
+<!-- download links for exported data and reports -->
+<div id="downloadlinks">
+	<p style="font-size: 16px; font-weight: bold;">Download exported data as .csv</p>
+	<a href="#">Weather data</a>
+	<a href="#">Aggregated weather data</a>
+</div>
+<br>
+{% endblock %}

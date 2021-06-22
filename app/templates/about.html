@@ -1,9 +1,26 @@
 {% extends 'base.html' %}
 
 {% block head %}
-
+<title>About</title>
+<link rel="stylesheet" href="/static/css/base.css">
 {% endblock %}
 
 {% block body %}
+<!-- main header -->
+<div id="header">
+	<h1>About</h1>
+</div>
 
+<div id="abouttext" style="width: 90%; margin: auto;">
+	<p>		I am a weather logger application that runs off a Raspberry Pi. I log data from environmental
+	sensors connected to the Raspberry Pi that runs me and store them in an SQlite database. Scripts
+	are called every time a new day starts to aggregate the weather data and generate an image plot
+	and text report of the weather data of each completed day. Another Python program is called by the
+	user through the web interface to generate an image plot and text report of the weather data over
+	a range of days, and export the data from the database as a csv file. The weather logger and web
+	server autostart on each (re)boot, and the web interface is easily accessible over the same network
+	as the Raspberry pi.</p>
+	<p>Created by Simon Que</p>
+	<hr>
+</div>
 {% endblock %}

@@ -1,119 +1,47 @@
-body {
-    font-family: Ubuntu, Monospace;
-    background-image: linear-gradient(lightgreen, white);
-    background-size:auto;
-    background-repeat:no-repeat;
-    background-position: fixed;
+/*
+	navbar
+*/
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #d0d0d0;
+	
 }
 
-h1 {
-    font-size:40px;
-    text-align:center;
-    margin-bottom: 10px;
+/*
+	navbar items
+*/
+li {
+	float: left;
+	color: black;
+	display: inline-block;
+	padding: 14px 16px;
+	
 }
 
-h2 {
-    font-size:30px;
-    text-align:center;
+/*
+	the links inside the navbar items
+*/
+li a {
+	text-decoration: none;
+	font-size: 16px;
 }
 
-h3 {
-    font-size:26px;
-    text-align:center;
+/*
+	hover behavior on navbar items
+*/
+li:hover {
+	background-color: red;
 }
 
-input {
-    margin: 10px 10px 30px;
-}
-
-button {
-    background-color: yellow;
-    font-size: 22px;
-    padding: 9px;
-    width: 200px;
-    display: block;
-}
-
-.vbutton {
-    margin: 25px auto 25px;
-}
-
-.hbutton {
-    margin: 0 auto;
-}
-
-table, th, td {
-    border: 2px solid black;
-    border-collapse: collapse;
-}
-
-.hbuttonfield {
-    display:flex;
-    justify-content: center;
-    margin:10px auto 0;
-    width:600px;
-}
-
-.vbuttonfield {
-    display:flex;
-    justify-content: center;
-    margin:10px auto 0;
-    width:600px;
-    flex-direction: column
-}
-
-/* navbar */
-#navbar {
-    text-align: left;
-    background-color: lavender;
-    margin: 0;
-    padding: 0;
-}
-
-#navbar ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    border: 2px solid gray;
-    overflow: hidden;
-}
-
-#navbar li {
-    padding: 0;
-    float: right;
-}
-
-#navbar a {
-    display: block;
-    padding: 10px;
-    margin: 0px;
-    width: 120px;
-    height: 30px;
-    color: black;
-    background-color: lavender;
-    border-left: 2px solid black;
-    text-align: center;
-    text-decoration: none;
-    font-size: 20px;
-}
-
-#navbar a:hover {
-    background-color: yellow;
-}
-
-#navbar .active {
-    color: floralwhite;
-    background-color: rebeccapurple;
-}
-
-.redtext {
-    color: red;
-}
-
-.greentext {
-    color: green;
-}
-
-.bluetext {
-    color: blue;
+/*
+	centered header text
+*/
+#header h1 {
+	font-size: 30px;
+	text-align: center;
+	margin: 10px;
+	padding: 0px;
 }

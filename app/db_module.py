@@ -6,8 +6,10 @@ from sqlalchemy import func, cast
 from sqlalchemy.orm import Bundle, aliased
 from sqlalchemy import and_, or_
 from datetime import datetime, time, timedelta
-
-from config import APP_DATA_PATH, DB_FILENAME
+try:
+	from config import APP_DATA_PATH, DB_FILENAME
+except:
+	from app.config import APP_DATA_PATH, DB_FILENAME
 
 # sqlite db engine
 print(APP_DATA_PATH + DB_FILENAME)
