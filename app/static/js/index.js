@@ -1,4 +1,4 @@
-//~ conversion
+//~ conversion functions
 
 //~ C to F: F = C * 9/5 + 32
 //~ C to K: K = C + 273.15 
@@ -22,14 +22,18 @@ function PaTommHg(PaVal) {
 	return roundNum(parseFloat(PaVal)/133.322);
 }
 
+//~ round off numbers to 3 decimal places
 function roundNum(num) {
 	return Math.round((num + Number.EPSILON) * 1000) / 1000;
 }
 
+//~ function to run either when units changed or data refreshed
 function switchUnits() {
+	//~ change displayed units
 	$(".tempunit").text(tempunits);
 	$(".presunit").text(presunits);
 	
+	//~ temperature units
 	switch (tempunits) {
 		case '°C': 
 			$("#dhttemp_val .data").text($("#dhttemp_val .datadefault").text());
@@ -46,6 +50,7 @@ function switchUnits() {
 			console.log('K'); break;
 	}
 	
+	//~ pressure units
 	switch (presunits) {
 		case 'Pa': 
 			$("#bmppres_val .data").text($("#bmppres_val .datadefault").text());
@@ -57,7 +62,12 @@ function switchUnits() {
 			$("#bmppres_val .data").text(PaTommHg($("#bmppres_val .datadefault").text()));
 			console.log('mmHg'); break;
 	}
+	
+	//~ update humidity values
+	$("#dhthumd_val .data").text($("#dhthumd_val .datadefault").text());
 }
+
+//~ ajax function to update values from db
 function updateValues() {
 	console.log("update!");
 	$.get({
@@ -77,6 +87,7 @@ function updateValues() {
 			for (var d in data) {
 				$("#" + d + " .datadefault").text(data[d]);
 			}
+			
 			switchUnits();
 		}
 	});
@@ -87,9 +98,10 @@ $(document).ready(function() {
 	tempunits = $("input[name='tempunits']:checked").val();
 	presunits = $("input[name='presunits']:checked").val();
 	
-	
+	//~ refresh data every 2.5s
 	setInterval(function() {updateValues();}, (1000 * 60 * 2.5));
 	
+	//~ check when unit selection changes
 	$("#units").change(function() {
 		tempunits = $("input[name='tempunits']:checked").val();
 		presunits = $("input[name='presunits']:checked").val();

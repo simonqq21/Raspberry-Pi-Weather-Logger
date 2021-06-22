@@ -1,37 +1,27 @@
-/*
-	date and time div
-*/
+/* date and time div */
 #datetimediv p {
 	display: inline-block;
 }
 
-/*
-	flexbox container for weather data
-*/
+/* flexbox container for weather data */
 #flex-container {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 }
 
-/*
-	individual weather data display divs
-*/
+/* individual weather data display divs */
 .weather_data_display {
 	margin: 10px;
 	border: 2px solid black;
 }
 
-/*
-	contents of the individual weather data display divs
-*/
+/* contents of the individual weather data display divs */
 .weather_data_display * {
 	padding: 0px 10px;
 }
 
-/*
- * unit selector div
-*/
+/* unit selector div */
 #unitselector {
 	width: 30%;
 	margin: 10px auto;
@@ -48,6 +38,7 @@
 	
 }
 
+/* value div */
 .valdiv {
 	text-align: center;
 	padding: 10px;
@@ -64,6 +55,7 @@
 	display: none;
 }
 
+/* colored value text */
 #dhttemp_val p {
 	color: red;
 }
