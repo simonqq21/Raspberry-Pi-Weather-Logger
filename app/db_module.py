@@ -215,6 +215,17 @@ class WeatherLog():
             log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
                    'bmptemp': row.dt.bmp_temperature, 'bmppres': row.dt.bmp_pressure}
             return WeatherLog(row.dt, log)
+            
+    @staticmethod
+    def selectLast():
+        dt = aliased(DateTimeRow, name='dt')
+        subq = select(func.max(dt.id)).scalar_subquery()
+        stmt = select(dt).where(dt.id == subq)
+        row = session.execute(stmt).first()
+        if row is not None:
+            log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
+                   'bmptemp': row.dt.bmp_temperature, 'bmppres': row.dt.bmp_pressure}
+            return WeatherLog(row.dt, log)
 
     @staticmethod
     def selectMultiple(date1=None, date2=None):
@@ -354,4 +365,4 @@ class AggDayWeather():
             print(type(err).__name__)
             session.rollback()
 
-# print(getAllDates())
+print(WeatherLog.selectLast())
