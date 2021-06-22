@@ -24,7 +24,7 @@ function PaTommHg(PaVal) {
 
 //~ round off numbers to 3 decimal places
 function roundNum(num) {
-	return Math.round((num + Number.EPSILON) * 1000) / 1000;
+	return (Math.round((num) * 1000) / 1000).toFixed(3);
 }
 
 //~ function to run either when units changed or data refreshed
@@ -36,33 +36,32 @@ function switchUnits() {
 	//~ temperature units
 	switch (tempunits) {
 		case '°C': 
-			$("#dhttemp_val .data").text($("#dhttemp_val .datadefault").text());
-			$("#bmptemp_val .data").text($("#bmptemp_val .datadefault").text());
-			console.log('C'); 
+			$("#dhttemp_val .data").text(roundNum($("#dhttemp_val .datadefault").text()));
+			$("#bmptemp_val .data").text(roundNum($("#bmptemp_val .datadefault").text()));
 			break;
 		case '°F': 
 			$("#dhttemp_val .data").text(CToF($("#dhttemp_val .datadefault").text()));
 			$("#bmptemp_val .data").text(CToF($("#bmptemp_val .datadefault").text()));
-			console.log('F'); break;
+			break;
 		case '°K': 
 			$("#dhttemp_val .data").text(CToK($("#dhttemp_val .datadefault").text()));
 			$("#bmptemp_val .data").text(CToK($("#bmptemp_val .datadefault").text()));
-			console.log('K'); break;
+			break;
 	}
 	
 	//~ pressure units
 	switch (presunits) {
 		case 'Pa': 
-			$("#bmppres_val .data").text($("#bmppres_val .datadefault").text());
-			console.log('Pa'); break;
+			$("#bmppres_val .data").text(roundNum($("#bmppres_val .datadefault").text()));
+			break;
 		case 'Psi': 
 			$("#bmppres_val .data").text(PaToPsi($("#bmppres_val .datadefault").text()));
-			console.log('Psi'); break;
+			break;
 		case 'mmHg': 
 			$("#bmppres_val .data").text(PaTommHg($("#bmppres_val .datadefault").text()));
-			console.log('mmHg'); break;
+			break;
 	}
-	
+	console.log($("#bmptemp_val .datadefault").text());
 	//~ update humidity values
 	$("#dhthumd_val .data").text($("#dhthumd_val .datadefault").text());
 }
@@ -76,9 +75,7 @@ function updateValues() {
 			date_ = new Date(result.datetime);
 			dateStr = date_.getFullYear() + '/' + (date_.getMonth() + 1) + '/' + (date_.getDate())
 			+ ' ' + date_.getHours() + ':' + date_.getMinutes();
-			console.log(dateStr);
 			data = {}
-	
 			data["dhttemp_val"] = result.dhttemp;
 			data["dhthumd_val"] = result.dhthumd;
 			data["bmptemp_val"] = result.bmptemp;

@@ -44,11 +44,13 @@ def about():
 @App.route('/getLatestData', methods=['GET'])
 def getLatestData():
 	lastRow = WeatherLog.selectLast()
-	datadict = {"datetime": lastRow.datetime.datetime, "dhttemp": lastRow.log['dhttemp'].value, \
-	"dhthumd": lastRow.log['dhthumd'].value, "bmptemp": lastRow.log['bmptemp'].value, \
-	"bmppres": lastRow.log['bmppres'].value}
-	print(datadict)
-	return jsonify(datadict)
+	if lastRow is not None:
+		datadict = {"datetime": lastRow.datetime.datetime.isoformat(), "dhttemp": lastRow.log['dhttemp'].value, \
+		"dhthumd": lastRow.log['dhthumd'].value, "bmptemp": lastRow.log['bmptemp'].value, \
+		"bmppres": lastRow.log['bmppres'].value}
+		print(datadict)
+		return jsonify(datadict)
+	return None
 	
 # return the URL of the image plot given the date, the URL of the report file given the date, and the 
 # download URLs of the exported csv data given the date or date range
