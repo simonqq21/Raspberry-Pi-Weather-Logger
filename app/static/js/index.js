@@ -61,9 +61,8 @@ function switchUnits() {
 			$("#bmppres_val .data").text(PaTommHg($("#bmppres_val .datadefault").text()));
 			break;
 	}
-	console.log($("#bmptemp_val .datadefault").text());
 	//~ update humidity values
-	$("#dhthumd_val .data").text($("#dhthumd_val .datadefault").text());
+	$("#dhthumd_val .data").text(roundNum($("#dhthumd_val .datadefault").text()));
 }
 
 //~ ajax function to update values from db
