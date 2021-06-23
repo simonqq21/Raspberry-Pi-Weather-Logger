@@ -24,7 +24,7 @@ def fromisoformat(datestr):
 # download URL
 @App.route('/download/<path:filename>')
 def downloadFile(filename):
-    return send_from_directory(APP_DATA_PATH, filename, as_attachment=True)
+    return send_from_directory(APP_DATA_PATH, filename)
 
 # render base page
 @App.route('/', methods=['GET'])
@@ -72,19 +72,28 @@ def getURLsWithDate():
 	if recvdate not in datesList:
 		recvdate = max(datesList)
 	print(recvdate)
-	
+	year = recvdate.year
+	month = recvdate.month
+	day = recvdate.day
+	datestr = recvdate.strftime(FILENAME_DATEFORMAT)
 	# report url 
-	report_url = '/download/' + REPORTS_FOLDER + REPORT_PREFIX + date.strftime(FILENAME_DATEFORMAT) + '.txt'
+	report_url = '/download/' + REPORTS_FOLDER + REPORT_PREFIX + datestr + '.txt'
 	# plot url 
-	plot_url = '/download/' + PLOTS_FOLDER + PLOT_PREFIX + date.strftime(FILENAME_DATEFORMAT) + '.png'
+	plot_url = '/download/' + PLOTS_FOLDER + PLOT_PREFIX + datestr + '.png'
 	# generate exported data 
-	proc1 = subprocess.Popen('python3 {}/export_data.py -m {} -d {} -y {}'.format(APP_PATH, month, day, year), stdout=subprocess.PIPE, shell=True)
+	proc1 = subprocess.Popen('python3 {}/export_data.py -m1 {} -d1 {} -y1 {} -o'.format(APP_PATH, \
+	month, day, year), stdout=subprocess.PIPE, shell=True)
 	proc1.wait()
 	output = proc1.communicate()[0]
 	output = str(output, 'UTF-8')
 	print(output)
+	exported_data_url = '/download/' + EXPORTEDS_FOLDER + EXPORT_PREFIX + datestr + '_' + datestr + '.csv'
+	agg_exported_data_url = '/download/' + EXPORTEDS_FOLDER + EXPORT_PREFIX + datestr + '_' + datestr + '.csv'
 	
-	return '1'
+	jsondata = {"date": recvdate.isoformat(), "report_url": report_url, "plot_url": plot_url, \
+	"exported_data_url": exported_data_url, "agg_exported_data_url": agg_exported_data_url}
+	print(jsondata)
+	return jsonify(jsondata)
 
 # return the URL of the image plot given the date, the URL of the report file given the date, and the 
 # download URLs of the exported csv data given the date range
