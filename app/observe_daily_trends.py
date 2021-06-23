@@ -34,6 +34,7 @@ from datetime import datetime, date
 from config import APP_DATA_PATH, DB_FILENAME
 from config import WEATHER_DATA_LIST, STATS, UNITS, TABLE_ABBREVS
 from config import DAILY_TRENDS_PREFIX
+from config import EXPORTEDS_FOLDER, FILENAME_DATEFORMAT
 from functions import deleteAllSimilar, nl
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
@@ -69,8 +70,8 @@ args = parser.parse_args()
 startdate = date(args.startyear, args.startmonth, args.startday)
 enddate = date(args.endyear, args.endmonth, args.endday)
 
-startdatestr = startdate.strftime("%Y-%m-%d")
-enddatestr = enddate.strftime("%Y-%m-%d")
+startdatestr = startdate.strftime(FILENAME_DATEFORMAT)
+enddatestr = enddate.strftime(FILENAME_DATEFORMAT)
 
 # connect to db using sqlalchemy
 # read the daily aggregated data between the two dates from the db
@@ -119,7 +120,7 @@ pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', co
 # ~ print(pivoted_aggdata_df)
 
 # delete any existing daily trends csv file before generating new csv file
-deleteAllSimilar(APP_DATA_PATH, DAILY_TRENDS_PREFIX)
+# ~ deleteAllSimilar(APP_DATA_PATH, DAILY_TRENDS_PREFIX)
 
 # save the database results as a csv file for download
 # ~ pivoted_aggdata_df.to_csv('pivoted_aggdata.csv')
@@ -148,7 +149,7 @@ for t in TABLE_ABBREVS:
 # ~ print(aggdata_overall)
 
 # generate the daily trends report text file
-with open(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
+with open(APP_DATA_PATH + EXPORTEDS_FOLDER + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
     file.write(nl('---------- Weather Data Daily Trends Report ----------'))
     file.write(nl('start date: {}'.format(startdatestr)))
     file.write(nl('end date: {}'.format(enddatestr)))
@@ -187,8 +188,8 @@ if args.graph:
     figure, axes = plt.subplots(4,1, figsize=(22, 15), sharex=True)
     
     # super title
-    figure.suptitle('Weather Data Trends from {} to {}'.format(startdate.strftime('%m%d%Y'), \
-    enddate.strftime('%m%d%Y')), fontdict=suptitlefont, fontsize=40)
+    figure.suptitle('Weather Data Trends from {} to {}'.format(startdate.strftime(FILENAME_DATEFORMAT), \
+    enddate.strftime(FILENAME_DATEFORMAT)), fontdict=suptitlefont, fontsize=40)
 
     # subgraph for temperature
     dhttempgraph = axes[0]
@@ -239,5 +240,5 @@ if args.graph:
 
     figure.subplots_adjust(top=0.92)
     # plt.tight_layout()
-    plt.savefig(APP_DATA_PATH + DAILY_TRENDS_PREFIX + '{}_{}.png'.format(startdatestr, enddatestr), dpi=200, bbox_inches='tight')
+    plt.savefig(APP_DATA_PATH + EXPORTEDS_FOLDER + DAILY_TRENDS_PREFIX + '{}_{}.png'.format(startdatestr, enddatestr), dpi=200, bbox_inches='tight')
     print('saved')

@@ -11,6 +11,7 @@ from config import APP_PATH, APP_DATA_PATH, REPORTS_FOLDER, PLOTS_FOLDER, PLOT_P
 from config import HEADER, STATS
 from config import DEBUG
 from config import logging_interval
+from config import FILENAME_DATEFORMAT
 from functions import exists, nl
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
@@ -125,7 +126,7 @@ print('\n')
 print(min_max_times_dict)
 
 # generate report file
-report_filepath = APP_DATA_PATH + REPORTS_FOLDER + REPORT_PREFIX + day.strftime('%m%d%Y') + '.txt'
+report_filepath = APP_DATA_PATH + REPORTS_FOLDER + REPORT_PREFIX + day.strftime(FILENAME_DATEFORMAT) + '.txt'
 try:
     report_file = open(report_filepath, 'w')
 except:
@@ -194,7 +195,7 @@ if args.graph:
     figure, axes = plt.subplots(3,1, figsize=(22, 15), sharex=True)
 
     # super title
-    figure.suptitle('Weather Data for {}'.format(day.strftime('%m%d%Y')), fontdict=suptitlefont, fontsize=40)
+    figure.suptitle('Weather Data for {}'.format(day.strftime(FILENAME_DATEFORMAT)), fontdict=suptitlefont, fontsize=40)
 
     # subgraph for humidity
     axes[0].set_title('Relative Humidity over Time', fontdict=titlefont)
@@ -225,5 +226,5 @@ if args.graph:
     # adjust subplots to make room for the supertitle
     figure.subplots_adjust(top=0.92)
     # save the graph to a file
-    plt.savefig(APP_DATA_PATH + PLOTS_FOLDER + PLOT_PREFIX + '{}.png'.format(day.strftime('%m%d%Y')),
+    plt.savefig(APP_DATA_PATH + PLOTS_FOLDER + PLOT_PREFIX + '{}.png'.format(day.strftime(FILENAME_DATEFORMAT)),
     dpi=200, bbox_inches='tight')

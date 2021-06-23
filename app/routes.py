@@ -4,8 +4,8 @@ from datetime import datetime, date
 import os
 import re
 import subprocess
-from app.config import APP_PATH, APP_DATA_PATH, STATIC_PATH, REPORTS_FOLDER, PLOTS_FOLDER, \
-REPORT_PREFIX, PLOT_PREFIX
+from app.config import APP_PATH, APP_DATA_PATH, STATIC_PATH, REPORTS_FOLDER, PLOTS_FOLDER, EXPORTEDS_FOLDER, \
+REPORT_PREFIX, PLOT_PREFIX, DAILY_TRENDS_PREFIX, EXPORT_PREFIX, AGG_EXPORT_PREFIX, FILENAME_DATEFORMAT
 from app.config import APP_DATA_PATH, DB_FILENAME
 from app.config import DEBUG
 from app.db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
@@ -63,14 +63,27 @@ def getLatestData():
 # download URLs of the exported csv data given the date
 @App.route('/getURLsWithDate', methods=['GET'])
 def getURLsWithDate():
+# ~ get date from frontend
 	datestr = request.args.get('date', )
 	recvdate = fromisoformat(datestr)
-	print(recvdate)
+	
+	# if date not present in db, change date to maximum date inside the db
 	datesList = getAllAggDates()
-	if recvdate in datesList:
-		print(1)
-	else:
-		print(0)
+	if recvdate not in datesList:
+		recvdate = max(datesList)
+	print(recvdate)
+	
+	# report url 
+	report_url = '/download/' + REPORTS_FOLDER + REPORT_PREFIX + date.strftime(FILENAME_DATEFORMAT) + '.txt'
+	# plot url 
+	plot_url = '/download/' + PLOTS_FOLDER + PLOT_PREFIX + date.strftime(FILENAME_DATEFORMAT) + '.png'
+	# generate exported data 
+	proc1 = subprocess.Popen('python3 {}/export_data.py -m {} -d {} -y {}'.format(APP_PATH, month, day, year), stdout=subprocess.PIPE, shell=True)
+	proc1.wait()
+	output = proc1.communicate()[0]
+	output = str(output, 'UTF-8')
+	print(output)
+	
 	return '1'
 
 # return the URL of the image plot given the date, the URL of the report file given the date, and the 

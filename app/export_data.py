@@ -5,8 +5,8 @@ import argparse
 import pandas as pd
 import numpy as np 
 from functions import deleteAllSimilar
-from config import APP_DATA_PATH, DB_FILENAME
-from config import HEADER, STATS, UNITS, TABLE_ABBREVS
+from config import APP_DATA_PATH, DB_FILENAME, EXPORTEDS_FOLDER
+from config import HEADER, STATS, UNITS, TABLE_ABBREVS, FILENAME_DATEFORMAT
 from config import EXPORT_PREFIX, AGG_EXPORT_PREFIX
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
@@ -31,17 +31,22 @@ date1.add_argument('-d1', '--startday', type=int, default=mindate.day, help='day
 date2.add_argument('-y2', '--endyear', type=int, default=maxdate.year, help='year of ending date')
 date2.add_argument('-m2', '--endmonth', type=int, default=maxdate.month, help='month of ending date')
 date2.add_argument('-d2', '--endday', type=int, default=maxdate.day, help='day of ending date')
+parser.add_argument('-o', '--oneday', help='specify that the prpogram will only export the data for one day', action='store_true')
 args = parser.parse_args()
 
 startdate = date(args.startyear, args.startmonth, args.startday)
-enddate = date(args.endyear, args.endmonth, args.endday)
+# check the oneday argument
+if args.oneday == True:
+	enddate = startdate
+else:
+	enddate = date(args.endyear, args.endmonth, args.endday)
 
-startdatestr = startdate.strftime("%Y-%m-%d")
-enddatestr = enddate.strftime("%Y-%m-%d")
+startdatestr = startdate.strftime(FILENAME_DATEFORMAT)
+enddatestr = enddate.strftime(FILENAME_DATEFORMAT)
 
 # delete the previous exported data
-deleteAllSimilar(APP_DATA_PATH, EXPORT_PREFIX)
-deleteAllSimilar(APP_DATA_PATH, AGG_EXPORT_PREFIX)
+# ~ deleteAllSimilar(APP_DATA_PATH, EXPORT_PREFIX)
+# ~ deleteAllSimilar(APP_DATA_PATH, AGG_EXPORT_PREFIX)
 
 dataDict = {}
 dataDict['datetime'] = []
@@ -63,7 +68,7 @@ for w in weather_logs:
 weather_df = pd.DataFrame(data=dataDict)
 # ~ print(weather_df)
 # export weather data dataframe as csv
-weather_df.to_csv(APP_DATA_PATH + EXPORT_PREFIX + startdatestr + '_' + enddatestr + '.csv')
+weather_df.to_csv(APP_DATA_PATH + EXPORTEDS_FOLDER + EXPORT_PREFIX + startdatestr + '_' + enddatestr + '.csv')
 
 # load all daily aggregated data between the two dates from the db
 results = AggDayWeather.selectMultiple(startdate, enddate)
@@ -98,4 +103,4 @@ aggdata_tb = pd.DataFrame(data=dataDict)
 # pivot the dataframe to get the desired representation
 pivoted_aggdata_df = pd.pivot_table(aggdata_tb, values='value', index='date', columns=['WEATHER_DATA_LIST', 'stat_type'])
 # export aggregated weather data dataframe as csv
-pivoted_aggdata_df.to_csv(APP_DATA_PATH + AGG_EXPORT_PREFIX + startdatestr + '_' + enddatestr + '.csv')
+pivoted_aggdata_df.to_csv(APP_DATA_PATH + EXPORTEDS_FOLDER + AGG_EXPORT_PREFIX + startdatestr + '_' + enddatestr + '.csv')

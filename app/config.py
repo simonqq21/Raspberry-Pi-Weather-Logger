@@ -35,7 +35,10 @@ DB_FILENAME = 'weather_logs.db'
 # folder names within the static path
 REPORTS_FOLDER = 'reports/'
 PLOTS_FOLDER = 'plots/'
+EXPORTEDS_FOLDER = 'exporteds/'
 
+# filename dateformat 
+FILENAME_DATEFORMAT = '%m%d%Y'
 # filename prefixes
 REPORT_PREFIX = 'report_'
 # filename prefix for plot image files
@@ -60,9 +63,10 @@ HEADER = dict(zip(TABLE_ABBREVS,WEATHER_DATA_LIST))
 STATS = ('mean', 'std', 'min', 'max')
 
 # weather data daily trends csv output filename
-DAILY_TRENDS_PREFIX = 'dailyweathertrends'
+DAILY_TRENDS_PREFIX = 'dailyweathertrends_'
 
 create_path(APP_PATH)
 create_path(APP_DATA_PATH)
 create_path(APP_DATA_PATH + REPORTS_FOLDER)
 create_path(APP_DATA_PATH + PLOTS_FOLDER)
+create_path(APP_DATA_PATH + EXPORTEDS_FOLDER)
