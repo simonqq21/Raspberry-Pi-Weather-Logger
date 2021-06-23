@@ -88,7 +88,7 @@ def getURLsWithDate():
 	output = str(output, 'UTF-8')
 	print(output)
 	exported_data_url = '/download/' + EXPORTEDS_FOLDER + EXPORT_PREFIX + datestr + '_' + datestr + '.csv'
-	agg_exported_data_url = '/download/' + EXPORTEDS_FOLDER + EXPORT_PREFIX + datestr + '_' + datestr + '.csv'
+	agg_exported_data_url = '/download/' + EXPORTEDS_FOLDER + AGG_EXPORT_PREFIX + datestr + '_' + datestr + '.csv'
 	
 	jsondata = {"date": recvdate.isoformat(), "report_url": report_url, "plot_url": plot_url, \
 	"exported_data_url": exported_data_url, "agg_exported_data_url": agg_exported_data_url}
@@ -99,128 +99,49 @@ def getURLsWithDate():
 # download URLs of the exported csv data given the date range
 @App.route('/getURLsWithDateRange', methods=['GET'])
 def getURLsWithDateRange():
-	print(request.form('date'))
-	pass 
-
-
-
-# ~ '''
-# ~ weather log history page
-# ~ if GET request, ask user for date
-# ~ else if POST request, display data on that date
-# ~ '''
-# ~ @App.route('/history', methods=['GET', 'POST'])
-# ~ def log_history():
-    # ~ if DEBUG:
-        # ~ print(request.method)
-
-    # ~ if request.method == 'GET':
-        # ~ # get all raw weather log dates and save them as an array
-        # ~ dates = []
-        # ~ for file in os.listdir(APP_DATA_PATH + WEATHER_LOGS_FOLDER):
-            # ~ if re.search("^" + RAW_LOG_PREFIX, file) is not None:
-                # ~ # format the string into a date
-                # ~ date1 = re.search("\d{8}", file).group()
-                # ~ if DEBUG:
-                    # ~ print(date1)
-                # ~ dates.append(date1[:2] + '/' + date1[2:4] + '/' + date1[4:])
-
-        # ~ # sort dates
-        # ~ dates.sort()
-
-        # ~ # display the page
-        # ~ return render_template("weather_logs.html", dates=dates)
-
-    # ~ # POST request
-    # ~ else:
-        # ~ # get the date the user selected
-        # ~ rawdatadate = request.form['rawdatadate']
-        # ~ '''
-        # ~ things to pass:
-        # ~ mean, std, min, and max for temperature, pressure, and humidity
-        # ~ minimum and maximum times of the day for temperature, pressure, and humidity
-        # ~ averaged raw weather data URL
-        # ~ weather report URL
-        # ~ plot image static URL
-        # ~ '''
-        # ~ # get month, day, and year
-        # ~ month, day, year = int(rawdatadate[:2]), int(rawdatadate[3:5]), int(rawdatadate[6:])
-        # ~ # convert to date object
-        # ~ lDate = date(year, month, day)
-        # ~ # get date string without the slashes
-        # ~ rawdatadate = rawdatadate[:2] + rawdatadate[3:5] + rawdatadate[6:]
-        # ~ # URLs
-        # ~ summary_path, report_path, plot_url = "", "", ""
-
-        # ~ # get the absolute summary file URL
-        # ~ for filename in os.listdir(APP_DATA_PATH + SUMMARIES_FOLDER):
-            # ~ if rawdatadate in filename:
-                # ~ summary_path = APP_DATA_PATH + SUMMARIES_FOLDER + filename
-                # ~ print(summary_path)
-
-        # ~ # get the download report file URL
-        # ~ for filename in os.listdir(APP_DATA_PATH + REPORTS_FOLDER):
-            # ~ if rawdatadate in filename:
-                # ~ report_path = REPORTS_FOLDER + filename
-                # ~ print(report_path)
-
-        # ~ # get the download plot file URL
-        # ~ for filename in os.listdir(APP_DATA_PATH + PLOTS_FOLDER):
-            # ~ if rawdatadate in filename:
-                # ~ plot_url = PLOTS_FOLDER + filename
-                # ~ print(plot_url)
-
-        # ~ # if one of the required generated data does not exist
-        # ~ if summary_path == '' or plot_url == '' or report_path == '' or \
-        # ~ lDate == date.today():
-            # ~ if DEBUG:
-                # ~ print("today!!!")
-                # ~ print("summary file or plot image file does not exist")
-            # ~ # call process to generate the information
-            # ~ proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} \
-            # ~ -g'.format(APP_PATH, month, day, year), stdout=subprocess.PIPE, shell=True)
-            # ~ proc1.wait()
-            # ~ output = proc1.communicate()[0]
-            # ~ output = str(output, 'UTF-8')
-            # ~ print(output)
-            # ~ # get the paths of the generated files
-            # ~ summary_path = APP_DATA_PATH + SUMMARIES_FOLDER + SUMMARY_PREFIX + rawdatadate + '.txt'
-            # ~ report_path = REPORTS_FOLDER + REPORT_PREFIX + rawdatadate + '.txt'
-            # ~ plot_url = PLOTS_FOLDER + PLOT_PREFIX + rawdatadate + '.png'
-
-        # ~ # raw csv data path
-        # ~ processed_data_path = WEATHER_LOGS_FOLDER + PROCESSED_LOG_PREFIX + rawdatadate + '.csv'
-
-        # ~ # process the summary
-        # ~ summarydata = ''
-        # ~ if summary_path != "":
-            # ~ with open(summary_path, 'r') as summaryfile:
-                # ~ summarydata = summaryfile.readlines()
-
-        # ~ # data dictionary
-        # ~ weather_data_dict = {}
-        # ~ header = []
-
-        # ~ for line in summarydata:
-            # ~ curr_header = line.split(':')[0]
-            # ~ header.append(curr_header)
-            # ~ weather_data_dict[curr_header] = {}
-            # ~ data = line.strip('\n').split(':', maxsplit=1)[1].split(',',maxsplit=4)
-            # ~ weather_data_dict[curr_header]['mean'] = data[0]
-            # ~ weather_data_dict[curr_header]['std'] = data[1]
-            # ~ weather_data_dict[curr_header]['min'] = data[2]
-            # ~ weather_data_dict[curr_header]['max'] = data[3]
-
-            # ~ weather_data_dict[curr_header]['min_times'] = data[4].strip('[').strip(']').split('][')[0].split(',')[:-1]
-            # ~ weather_data_dict[curr_header]['max_times'] = data[4].strip('[').strip(']').split('][')[1].split(',')[:-1]
-
-        # ~ print(weather_data_dict)
-        # ~ print(rawdatadate)
-            # ~ # print(summary_path)
-            # ~ # print(plot_url)
-            # ~ # print(report_path)
-            # ~ # print(processed_data_path)
-
-        # ~ return jsonify(data=weather_data_dict, plot_url=plot_url, report_path=report_path,
-        # ~ data_path=processed_data_path)
-
+# ~ get date from frontend
+	datestartstr = request.args.get('datestart', )
+	dateendstr = request.args.get('dateend', )
+	recvdatestart = fromisoformat(datestartstr)
+	recvdateend = fromisoformat(dateendstr)
+	
+	# if date not present in db, change date to maximum date inside the db
+	datesList = getAllAggDates()
+	if recvdateend > max(datesList):
+		recvdateend = max(datesList)
+	if recvdatestart < min(datesList):
+		recvdatestart = min(datesList)
+	if recvdatestart > recvdateend:
+		recvdatestart, recvdateend = recvdateend, recvdatestart
+		
+	yearstart = recvdatestart.year
+	monthstart = recvdatestart.month
+	daystart = recvdatestart.day
+	datestrstart = recvdatestart.strftime(FILENAME_DATEFORMAT)
+	yearend = recvdateend.year
+	monthend = recvdateend.month
+	dayend = recvdateend.day
+	datestrend = recvdateend.strftime(FILENAME_DATEFORMAT)
+	proc1 = subprocess.Popen('python3 {}/observe_daily_trends.py -m1 {} -d1 {} -y1 {} -m2 {} -d2 {} -y2 {} -g'.format(APP_PATH, \
+	monthstart, daystart, yearstart, monthend, dayend, yearend), stdout=subprocess.PIPE, shell=True)
+	proc1.wait()
+	output = proc1.communicate()[0]
+	output = str(output, 'UTF-8')
+	# report url 
+	report_url = '/download/' + EXPORTEDS_FOLDER + DAILY_TRENDS_PREFIX + datestrstart + '_' + datestrend + '.txt'
+	# plot url 
+	plot_url = '/download/' + EXPORTEDS_FOLDER + DAILY_TRENDS_PREFIX + datestrstart + '_' + datestrend + '.png'
+	# generate exported data 
+	proc2 = subprocess.Popen('python3 {}/export_data.py -m1 {} -d1 {} -y1 {} -m2 {} -d2 {} -y2 {}'.format(APP_PATH, \
+	monthstart, daystart, yearstart, monthend, dayend, yearend), stdout=subprocess.PIPE, shell=True)
+	proc2.wait()
+	output = proc2.communicate()[0]
+	output = str(output, 'UTF-8')
+	print(output)
+	exported_data_url = '/download/' + EXPORTEDS_FOLDER + EXPORT_PREFIX + datestrstart + '_' + datestrend + '.csv'
+	agg_exported_data_url = '/download/' + EXPORTEDS_FOLDER + AGG_EXPORT_PREFIX + datestrstart + '_' + datestrend + '.csv'
+	
+	jsondata = {"datestart": recvdatestart.isoformat(), "dateend": recvdateend.isoformat(), "report_url": report_url, "plot_url": plot_url, \
+	"exported_data_url": exported_data_url, "agg_exported_data_url": agg_exported_data_url}
+	print(jsondata)
+	return jsonify(jsondata)

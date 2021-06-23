@@ -25,6 +25,7 @@ submitDate = function submitDate(e) {
 }
 
 $(document).ready(function() {
+	$('#date').val("");
 	$("#reportfile iframe").attr("src", "");
 	$("#imageplot img").attr("src", "");
 	$("#exported").attr('href', "");
