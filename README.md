@@ -204,6 +204,7 @@ This application runs on a Raspberry Pi single board computer (SBC). The Raspber
 ```
 cd /home/pi/Raspberry-Pi-Weather-Logger
 pip3 install -r requirements.txt
+sudo apt-get install libatlas-base-dev
 ```
 
 6. Edit the root crontab on the Raspberry Pi to autostart the server and logger at boot. Open a terminal and enter the ff. commands:
