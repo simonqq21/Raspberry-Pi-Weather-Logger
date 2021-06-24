@@ -1,0 +1,7 @@
+backend routes:
+render each webpage
+return latest dhttemp
+return latest bmptemp
+return latest dhthumd
+return latest bmppres 
+return the url of the text report, image graph, and exported csv data given the date/date range 
