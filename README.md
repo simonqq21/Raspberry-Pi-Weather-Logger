@@ -201,14 +201,13 @@ This application runs on a Raspberry Pi single board computer (SBC). The Raspber
 3. Connect the Raspberry Pi to the network of your choice, and preferrably assign it a static IP address for convenient access.
 4. Copy the project folder in any location within /home/pi on the Raspberry Pi. Suppose you copied the project folder to /home/pi.
 5. install all pip dependencies on the Raspberry Pi. Open a terminal and enter the ff. commands:
-	cd /home/pi/Raspberry-Pi-Weather-Logger
-	pip3 install -r requirements.txt
+'cd /home/pi/Raspberry-Pi-Weather-Logger'
+'pip3 install -r requirements.txt'
 6. Edit the root crontab on the Raspberry Pi to autostart the server and logger at boot. Open a terminal and enter the ff. commands:
-	sudo crontab -e
+'sudo crontab -e'
 Append these lines to the end of the crontab:
-	@reboot sudo python3 /home/pi/Raspberry-Pi-Weather-Logger/app/weather_logger.py
-	@reboot sudo /home/pi/Raspberry-Pi-Weather-Logger/./start.sh
-7. Reboot the Raspberry Pi. Upon reboot, enter the IP address of the Raspberry Pi with port 5000 into the web browser of any device connected to the same network as the Raspberry Pi. Suppose the IP address of the Pi is 192.168.1.12.
-	192.168.1.12:5000
+'@reboot sudo python3 /home/pi/Raspberry-Pi-Weather-Logger/app/weather_logger.py'
+'@reboot sudo /home/pi/Raspberry-Pi-Weather-Logger/./start.sh'
+7. Reboot the Raspberry Pi. Upon reboot, enter the IP address of the Raspberry Pi with port 5000 into the web browser of any device connected to the same network as the Raspberry Pi. Suppose the IP address of the Pi is 192.168.1.12, then the address would be '192.168.1.12:5000'.
 	
 
