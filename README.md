@@ -163,7 +163,7 @@ The requirements.txt file contains all the info for pip3 to download and install
 - **numpy** - fast contiguous arrays and array operations in Python
 - **pandas** - 2d series and dataframe representation built upon numpy
 - **flask** - Python web microframework
--**sqlalchemy** - Python ORM for SQL based databases
+- **sqlalchemy** - Python ORM for SQL based databases
 
 ## Hardware Setup
 This application runs on a Raspberry Pi single board computer (SBC). The Raspberry Pi is the computer used for this application mainly because of its general purpose IO (GPIO) pins, which allow it to interface with external electronics. It also draws very little power, runs Linux, and is well suited for being a lightweight always-on datalogger and web server. The external hardware needed for this application are a **DHT11 1-wire temperature and humidity sensor**, a **BMP180 i2c precision temperature and barometric pressure sensor**, a **DS1307 i2c real time clock (RTC)**, **three LEDs**; a power LED, a "heartbeat" LED to verify that the logger is working, and a logging LED that lights up every time a reading is taken and committed to the database, and a **button** to reboot the Pi in case it malfunctions for any reason. Equivalent drop-in replacement components can be used in place when these are not available.
@@ -183,6 +183,7 @@ This application runs on a Raspberry Pi single board computer (SBC). The Raspber
 - GND --> GND
 - SDA --> GPIO2
 - SCL --> GPIO3
+
 **WARNING!!! ALL LEDS SHOULD HAVE AN ADEQUATE CURRENT LIMITING RESISTOR CONNECTED IN SERIES TO PREVENT THE LED/PI FROM DAMAGE.**
 #### power LED (with 200Ω resistor) --> RPi
 - 5V
