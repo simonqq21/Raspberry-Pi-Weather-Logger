@@ -4,9 +4,14 @@ from datetime import datetime, date, timedelta
 import csv
 import subprocess
 import re
-from config import HEADER, STATS
-from config import APP_DATA_PATH, APP_PATH
-from config import DEBUG
+try:
+    from config import HEADER, STATS
+    from config import APP_DATA_PATH, APP_PATH
+    from config import DEBUG
+except:
+    from app.config import HEADER, STATS
+    from app.config import APP_DATA_PATH, APP_PATH
+    from app.config import DEBUG
 
 # check if a file exists
 def exists(filename):
@@ -47,4 +52,3 @@ def deleteAllSimilar(path, prefix):
     for filename in filenames:
         if re.search('^' + prefix, filename) is not None:
             os.remove(path + filename)
-

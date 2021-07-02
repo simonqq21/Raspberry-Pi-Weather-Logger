@@ -21,13 +21,8 @@ DEBUG = True
 # path for the python scripts
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
 print(APP_PATH)
-# used for building Flask URLs
-STATIC_PATH = '/static/files/'
 # absolute path for the generated data of the weather logger
-# if DEBUG:
 APP_DATA_PATH = '/home/pi/Documents/weather_logger/'
-# else:
-    # APP_DATA_PATH = '/media/pi/weather_logger'
 
 # sqlite3 database filename
 DB_FILENAME = 'weather_logs.db'
@@ -37,7 +32,7 @@ REPORTS_FOLDER = 'reports/'
 PLOTS_FOLDER = 'plots/'
 EXPORTEDS_FOLDER = 'exporteds/'
 
-# filename dateformat 
+# filename dateformat
 FILENAME_DATEFORMAT = '%m%d%Y'
 # filename prefixes
 REPORT_PREFIX = 'report_'
