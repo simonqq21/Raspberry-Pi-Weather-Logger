@@ -22,7 +22,7 @@ DEBUG = True
 APP_PATH = os.path.abspath(os.path.dirname(__file__))
 print(APP_PATH)
 # absolute path for the generated data of the weather logger
-APP_DATA_PATH = '/home/pi/Documents/weather_logger/'
+APP_DATA_PATH = '/home/simonque/Documents/weather_logger/'
 
 # sqlite3 database filename
 DB_FILENAME = 'weather_logs.db'

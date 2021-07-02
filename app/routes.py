@@ -116,12 +116,12 @@ def getURLsWithDateRange():
 
 	# if date not present in db, change date to maximum date inside the db
 	datesList = getAllAggDates()
+	if recvdatestart > recvdateend:
+		recvdatestart, recvdateend = recvdateend, recvdatestart
 	if recvdateend > max(datesList):
 		recvdateend = max(datesList)
 	if recvdatestart < min(datesList):
 		recvdatestart = min(datesList)
-	if recvdatestart > recvdateend:
-		recvdatestart, recvdateend = recvdateend, recvdatestart
 
 	yearstart = recvdatestart.year
 	monthstart = recvdatestart.month
