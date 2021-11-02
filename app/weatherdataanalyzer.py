@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+v#!/usr/bin/python3
 
 import numpy as np
 import pandas as pd
@@ -25,7 +25,7 @@ This program takes optional year, month, day, and interval as parameters.
 This program computes for the mean, standard deviation, maximum value and minimum value for temperature, pressure,
 and humidity of a particular day, and the data will be graphed and saved as an image file and text report.
 This program is not meant to be run standalone unless during testing. It is called by the process_incomplete_reports.py file
-iteratively to generate aggregate data, reports, and plots for the past days. 
+iteratively to generate aggregate data, reports, and plots for the past days.
 '''
 
 # parse arguments from the command line
@@ -53,7 +53,7 @@ weather_logs = WeatherLog.selectMultiple(date1=day)
 if len(weather_logs) == 0:
 	print('no records, exiting')
 	exit(0)
-	
+
 for w in weather_logs:
     dataDict['datetime'].append(w.datetime.datetime)
     for k in HEADER.keys():
