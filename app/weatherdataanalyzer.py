@@ -12,7 +12,7 @@ from config import HEADER, STATS
 from config import DEBUG
 from config import logging_interval
 from config import FILENAME_DATEFORMAT
-from functions import exists, nl
+from functions import exists, newline
 from db_module import DateTimeRow, DHTTemperature, DHTHumidity, BMPTemperature, BMPPressure
 from db_module import DateRow, AggDHTTemperature, AggDHTHumidity, AggBMPTemperature, AggBMPPressure
 from db_module import WeatherLog, AggDayWeather

@@ -28,19 +28,12 @@ APP_DATA_PATH = 'testdata/'
 DB_FILENAME = 'weather_logs.db'
 
 # folder names within the static path
-REPORTS_FOLDER = 'reports/'
-PLOTS_FOLDER = 'plots/'
 EXPORTEDS_FOLDER = 'exporteds/'
 
 # filename dateformat
 FILENAME_DATEFORMAT = '%m%d%Y'
 # filename prefixes
-REPORT_PREFIX = 'report_'
-# filename prefix for plot image files
-PLOT_PREFIX = 'plot_'
-# ex[prted data prefix
 EXPORT_PREFIX = 'export_'
-AGG_EXPORT_PREFIX = 'aggexport_'
 
 # database table names
 TABLES = ["Temperature", "Humidity", "BMP_temperature", "Pressure"]
@@ -51,7 +44,7 @@ UNITS = ['°C', '%', '°C', 'HPa']
 # weather data columns
 WEATHER_DATA_LIST = list('{} ({})'.format(TABLES[w], UNITS[w]) for w in range(len(TABLES)))
 HEADER = dict(zip(TABLE_ABBREVS,WEATHER_DATA_LIST))
-# ~ print(HEADER)
+print(HEADER)
 
 # print(WEATHER_DATA)
 # statistics
@@ -62,6 +55,4 @@ DAILY_TRENDS_PREFIX = 'dailyweathertrends_'
 
 create_path(APP_PATH)
 create_path(APP_DATA_PATH)
-create_path(APP_DATA_PATH + REPORTS_FOLDER)
-create_path(APP_DATA_PATH + PLOTS_FOLDER)
 create_path(APP_DATA_PATH + EXPORTEDS_FOLDER)

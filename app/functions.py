@@ -23,8 +23,8 @@ def exists(filename):
     f.close()
     return 1
 
-# append newline to string
-def nl(str):
+# append  to string
+def newline(str):
     return str + '\n'
 
 # return True if file size is below a certain size, return False otherwise
@@ -40,7 +40,7 @@ def isEmpty(filename, size):
 def subtract_time(time1, time2):
     return (datetime.combine(date.min, time1) - datetime.combine(date.min, time2))
 
-# call the report generation script with the date parameters
+# call the aggregate generation script with the date parameters
 def generatereport(month, day, year):
     proc1 = subprocess.Popen('python3 {}/weatherdataanalyzer.py -m {} -d {} -y {} -g'.format
     (APP_PATH, month, day, year), shell=True)
