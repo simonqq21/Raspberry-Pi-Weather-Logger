@@ -12,6 +12,12 @@ try:
 except:
 	from app.config import APP_DATA_PATH, DB_FILENAME
 
+'''
+sqlite3 commands:
+.tables
+.schema <tablename>
+'''
+
 # sqlite db engine
 print(APP_DATA_PATH + DB_FILENAME)
 # configure the sqlite3 engine to use only a single thread
@@ -34,7 +40,7 @@ class DateTimeRow(Base):
     def __repr__(self):
         return f"DateTimeRow(id={self.id!r}, datetime={self.datetime!r})"
 
-# this function gets all dates 
+# this function gets all dates
 def getAllDates():
     dates = []
     dt = aliased(DateTimeRow, name='dt')
@@ -44,7 +50,7 @@ def getAllDates():
         if date not in dates:
             dates.append(date)
     return dates
-    
+
 # DHT temperature table
 class DHTTemperature(Base):
     __tablename__ = 'dht_temperature'
@@ -106,7 +112,7 @@ class DateRow(Base):
     def __repr__(self):
         return f"DateRow(id={self.id!r}, date={self.date!r})"
 
-# this function gets all dates with aggregated weather data 
+# this function gets all dates with aggregated weather data
 def getAllAggDates():
     dates = []
     d = aliased(DateRow, name='d')
@@ -114,7 +120,7 @@ def getAllAggDates():
     for result in session.execute(stmt).unique():
         dates.append(result.date)
     return dates
-    
+
 # class for daily aggregated DHT temperature
 class AggDHTTemperature(Base):
     __tablename__ = 'agg_dht_temperature'
@@ -218,7 +224,7 @@ class WeatherLog():
             log = {'dhttemp': row.dt.dht_temperature, 'dhthumd': row.dt.dht_humidity, \
                    'bmptemp': row.dt.bmp_temperature, 'bmppres': row.dt.bmp_pressure}
             return WeatherLog(row.dt, log)
-            
+
     @staticmethod
     def selectLast():
         dt = aliased(DateTimeRow, name='dt')

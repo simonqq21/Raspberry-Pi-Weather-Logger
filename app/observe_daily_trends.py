@@ -5,25 +5,15 @@ Things to determine per weather data column:
 mean value
 lowest mean value
 highest mean value
-lowest value 
-highest value 
+lowest value
+highest value
 days with the lowest mean value
 days with the highest mean value
-days with the lowest value 
-days with the highest value 
+days with the lowest value
+days with the highest value
 
-output data:
-- date range (start and end date)
-- overall mean value of the means per column
-- overall min value of the means per column
-- overall max value of the means per column
-- overall min value of the min values per column
-- overall max value of the max values per column
-- array of days with the lowest mean value per column
-- array of days with the highest mean value per column
-- array of days with the lowest minimum value per column
-- array of days with the highest maximum value per column
-image plot of mean, std, min, and max per column per day, if graph is enabled
+This script deletes all weather data logs within a single day once the aggregated data has
+been saved.
 '''
 
 import numpy as np
@@ -44,7 +34,7 @@ from db_module import getAllAggDates
 # set float print precision
 np.set_printoptions(precision=3, suppress=True)
 
-#get the minimum and maximum dates of aggregated weather data in the db 
+#get the minimum and maximum dates of aggregated weather data in the db
 datesList = getAllAggDates()
 if len(datesList) == 0:
 	print('no records, exiting')
@@ -62,8 +52,6 @@ date1.add_argument('-d1', '--startday', type=int, default=mindate.day, help='day
 date2.add_argument('-y2', '--endyear', type=int, default=maxdate.year, help='year of ending date')
 date2.add_argument('-m2', '--endmonth', type=int, default=maxdate.month, help='month of ending date')
 date2.add_argument('-d2', '--endday', type=int, default=maxdate.day, help='day of ending date')
-parser.add_argument('-g', '--graph', help="graph the data and save it to an image file if \
-specified", action='store_true')
 args = parser.parse_args()
 # print(args)
 
@@ -111,7 +99,7 @@ if results is not None:
 					dataDict['value'].append(result.aggdata['agg'+t].min)
 				elif s == 'max':
 					dataDict['value'].append(result.aggdata['agg'+t].max)
-		
+
 # save overall results to pd dataframe
 aggdata_tb = pd.DataFrame(data=dataDict)
 # ~ print(aggdata_tb)
@@ -147,98 +135,3 @@ for t in TABLE_ABBREVS:
 		pivoted_aggdata_df.index[pivoted_aggdata_df[t]['max'] == \
 		pivoted_aggdata_df[t]['max'].max()].values
 # ~ print(aggdata_overall)
-
-# generate the daily trends report text file
-with open(APP_DATA_PATH + EXPORTEDS_FOLDER + DAILY_TRENDS_PREFIX + '{}_{}.txt'.format(startdatestr, enddatestr), 'w') as file:
-    file.write(nl('---------- Weather Data Daily Trends Report ----------'))
-    file.write(nl('start date: {}'.format(startdatestr)))
-    file.write(nl('end date: {}'.format(enddatestr)))
-    file.write(nl(''))
-    for t in TABLE_ABBREVS:
-        file.write(nl('{} mean_mean: {:.3f}'.format(t, aggdata_overall[t]['mean_mean'])))
-        file.write(nl('{} min_mean: {:.3f}'.format(t, aggdata_overall[t]['min_mean'])))
-        file.write(nl('{} min_mean_days: {}'.format(t, aggdata_overall[t]['min_mean_days'])))
-        file.write(nl('{} max_mean: {:.3f}'.format(t, aggdata_overall[t]['max_mean'])))
-        file.write(nl('{} max_mean_days: {}'.format(t, aggdata_overall[t]['max_mean_days'])))
-        file.write(nl('{} min_min: {:.3f}'.format(t, aggdata_overall[t]['min_min'])))
-        file.write(nl('{} min_min_days: {}'.format(t, aggdata_overall[t]['min_min_days'])))
-        file.write(nl('{} max_max: {:.3f}'.format(t, aggdata_overall[t]['max_max'])))
-        file.write(nl('{} max_max_days: {}'.format(t, aggdata_overall[t]['max_max_days'])))
-        file.write(nl(''))
-    file.write(nl(''))
-
-# generate graph if graph option is set
-if args.graph:
-    import matplotlib.pyplot as plt
-    import matplotlib.dates as mdates
-    import matplotlib
-
-    # fonts
-    suptitlefont = {'family':'monospace','color':'black'}
-    titlefont = {'family':'monospace','color':'black','size':20}
-    axisfont = {'family':'monospace','color':'black','size':20}
-    plt.rc('legend', fontsize=20)
-
-    # set the time format to HH:MM
-    timeformat = mdates.DateFormatter('%Y/%m/%d')
-    # one major x tick per day
-    fmt_day = mdates.DayLocator()
-
-    # set the subplots and figure size
-    figure, axes = plt.subplots(4,1, figsize=(22, 15), sharex=True)
-    
-    # super title
-    figure.suptitle('Weather Data Trends from {} to {}'.format(startdate.strftime(FILENAME_DATEFORMAT), \
-    enddate.strftime(FILENAME_DATEFORMAT)), fontdict=suptitlefont, fontsize=40)
-
-    # subgraph for temperature
-    dhttempgraph = axes[0]
-    dhttempgraph.set_title(WEATHER_DATA_LIST[0], fontdict=titlefont)
-    dhttempgraph.set_ylabel(WEATHER_DATA_LIST[0], fontdict=axisfont)
-    dhttempgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhttemp']['mean'], label="temperature_mean", linestyle='-', color='#cd3299', linewidth=4)
-    dhttempgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhttemp']['min'], label="temperature_min", linestyle='-', color='#90236b', linewidth=4)
-    dhttempgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhttemp']['max'], label="temperature_max", linestyle='-', color='#ebadd6', linewidth=4)
-    dhttempgraph.legend()
-    
-    # subgraph for humidity
-    dhthumdgraph = axes[1]
-    dhthumdgraph.set_title(WEATHER_DATA_LIST[1], fontdict=titlefont)
-    dhthumdgraph.set_ylabel(WEATHER_DATA_LIST[1], fontdict=axisfont)
-    dhthumdgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhthumd']['mean'], label="humidity_mean", linestyle='-', color='#0000ff', linewidth=4)
-    dhthumdgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhthumd']['min'], label="humidity_min", linestyle='-', color='#000099', linewidth=4)
-    dhthumdgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['dhthumd']['max'], label="humidity_max", linestyle='-', color='#9999ff', linewidth=4)
-    dhthumdgraph.legend()
-
-    # subgraph for bmp_temperature
-    bmptempgraph = axes[2]
-    bmptempgraph.set_title(WEATHER_DATA_LIST[2], fontdict=titlefont)
-    bmptempgraph.set_ylabel(WEATHER_DATA_LIST[2], fontdict=axisfont)
-    bmptempgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmptemp']['mean'], label="bmp_temperature_mean", linestyle='-', color='#ff0000', linewidth=4)
-    bmptempgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmptemp']['min'], label="bmp_temperature_min", linestyle='-', color='#990000', linewidth=4)
-    bmptempgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmptemp']['max'], label="bmp_temperature_max", linestyle='-', color='#ff8080', linewidth=4)
-    bmptempgraph.legend()
-
-    # subgraph for pressure
-    bmppresgraph = axes[3]
-    bmppresgraph.set_title(WEATHER_DATA_LIST[3], fontdict=titlefont)
-    bmppresgraph.set_ylabel(WEATHER_DATA_LIST[3], fontdict=axisfont)
-    bmppresgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmppres']['mean'], label="pressure_mean", linestyle='-', color='#00b300', linewidth=4)
-    bmppresgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmppres']['min'], label="pressure_min", linestyle='-', color='#003300', linewidth=4)
-    bmppresgraph.plot(pivoted_aggdata_df.index.values, pivoted_aggdata_df['bmppres']['max'], label="pressure_max", linestyle='-', color='#1aff1a', linewidth=4)
-    bmppresgraph.legend()
-
-    for axis in axes:
-		# specify time format of x-axis
-        axis.xaxis.set_major_formatter(timeformat)
-        # set tick font size and rotation for all subplots
-        axis.tick_params()
-        axis.tick_params(labelsize=18, axis='x',labelrotation=30)
-        # treat x axis ticks as dates
-        axis.xaxis_date()
-    # set major x tick interval to be one day
-    plt.gca().xaxis.set_major_locator(fmt_day)
-
-    figure.subplots_adjust(top=0.92)
-    # plt.tight_layout()
-    plt.savefig(APP_DATA_PATH + EXPORTEDS_FOLDER + DAILY_TRENDS_PREFIX + '{}_{}.png'.format(startdatestr, enddatestr), dpi=200, bbox_inches='tight')
-    print('saved')
