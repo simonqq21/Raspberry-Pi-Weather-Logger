@@ -103,3 +103,8 @@ aggdata = {'aggdhttemp': AggDHTTemperature(mean=results_df['mean']['dhttemp'], \
                                         max=results_df['max']['bmppres'])}
 aggdayweather = AggDayWeather(daterow, aggdata)
 aggdayweather.insert()
+
+# delete all weather logs for that day after the aggregated weather data for that day has been
+# inserted into the database
+for i in range(len(weather_logs)):
+    weather_logs[i].delete()
